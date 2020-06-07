@@ -27,8 +27,8 @@ from django.utils.crypto import get_random_string
 #                send_mail('Subject here', 'Here is the message.', settings.EMAIL_HOST_USER,
 #         ['completar@gmail.com'])
 
-def randomCod():
-    unique_id = get_random_string(length=10)
+def randomCod(num):
+    unique_id = get_random_string(length=num)
     return unique_id
 
 
@@ -39,7 +39,7 @@ def register_page(request):
         formCard = RegistroTarjeta(request.POST)
         #formPerfil= CrearPerfil(request.POST)
         # Si el formulario es válido...
-        if form.is_valid() and formCard.is_valid():  # and formPerfil.is_valid:
+        if form.is_valid() and formCard.is_valid():  
 
             # Creamos la nueva cuenta de usuario
             cuenta= form.save()
@@ -48,15 +48,19 @@ def register_page(request):
             raw_password= form.cleaned_data.get('password1')
             #account = authenticate(email=email, password=raw_password)
             
-            instancia_tarjeta= formCard.save(commit=False)
-            instancia_tarjeta.user = cuenta          
-            instancia_tarjeta.save()
-            
-            #enviar mail confirmacion
-            cod = randomCod()
-            send_mail('Aquí tiene su codigo de confirmacion', cod, settings.EMAIL_HOST_USER,[email])
+            numT= formCard.cleaned_data.get("number")
+            codT= formCard.cleaned_data.get("cod")
+            dateT= formCard.cleaned_data.get("date_expiration")
+            cardName= formCard.cleaned_data.get("card_name")
+            bankT=formCard.cleaned_data.get("bank")
 
-            confir= ConfirmationMail(mail=email, codigo=cod, tipo=1 )
+            tarjeta= CreditCards(number=numT, cod=codT, date_expiration=dateT, card_name=cardName, bank=bankT, user=cuenta)
+            tarjeta.save()
+            #enviar mail confirmacion
+            codillo = randomCod(10)
+            send_mail('Aquí tiene su codigo de confirmacion', codillo, settings.EMAIL_HOST_USER,[email])
+
+            confir= ConfirmationMail(mail=email, codigo=codillo, tipo=1 )
             confir.save()
             request.session['emailConfirm']= email
             request.session.modified = True
@@ -133,10 +137,13 @@ def select_perfil(request):
    
     return render(request, "bookflix/select_perfil.html", {'perfiles': perfiles,}) #"tarjetaActual": tarjetaActual, "perfilActual":perfilActual})
 
+
+            
 def login_propio(request):
     # Creamos el formulario de autenticación vacío
     form = AuthenticationForm()
     if request.method == "POST":
+        intent=intentos(request, True)
         # Añadimos los datos recibidos al formulario
         form = AuthenticationForm(data=request.POST)
         # Si el formulario es válido...
@@ -157,10 +164,13 @@ def login_propio(request):
                 request.session['emailConfirm']= user.email
                 request.session.modified = True
                 return redirect('/confirmarCuenta')
+                
+            
     # Si llegamos al final renderizamos el formulario
     publicacion=Billboard.objects.filter(mostrar_en_home=True)
     libros = Book.objects.filter(mostrar_en_home=True)
-    return render(request, "bookflix/login.html", {'form': form, 'publicaciones':publicacion, "libros":libros})
+
+    return render(request, "bookflix/login.html", {'form': form, 'publicaciones':publicacion, "libros":libros,})
 
 def logout(request):
     # Finalizamos la sesión
@@ -198,10 +208,13 @@ def cambiar_tarjeta(request):
     if request.method == 'POST':
         form = RegistroTarjeta(request.POST)
         if form.is_valid():
-            tarjeta = form.save(commit=False)
-            tarjetauser = CreditCards.objects.filter(user_id=request.user)
-            tarjetauser.delete()
-            tarjeta.user= request.user
+            numT= form.cleaned_data.get("number")
+            codT= form.cleaned_data.get("cod")
+            dateT= form.cleaned_data.get("date_expiration")
+            cardName= form.cleaned_data.get("card_name")
+            bankT=form.cleaned_data.get("bank")
+
+            tarjeta= CreditCards(number=numT, cod=codT, date_expiration=dateT, card_name=cardName, bank=bankT, user=request.user)
             tarjeta.save()
             return redirect('/perfil')      
         else:
@@ -209,6 +222,7 @@ def cambiar_tarjeta(request):
     else:
         form=RegistroTarjeta()
     return render(request, "bookflix/cambiar_tarjeta.html", {'form': form})
+
 
 def cambiar_email(request):
     context={}

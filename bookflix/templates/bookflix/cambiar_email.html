@@ -12,16 +12,18 @@
             {% endfor %}
 
             {%for error in cambio_mail.errors %}
-                <p style="color: black", > {{error}} </p>
+                <p style="color: black", > {{error}} en uso  </p>
             {% endfor %}
-            
+
+
             {% if cambio_mail.non_field_errors %}
                 <div style="color:yellow">
                     <p>{{cambio_mail.non_field_errors}} </p>
                 </div>
             {% endif %}
             <button type="submit">Save changes</button>
+            
           </form>
-        
+          <a href="/perfil">volver</a>
     </body>
 </html>

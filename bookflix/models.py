@@ -4,6 +4,7 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.base_user import BaseUserManager
 
 from django.utils import timezone
+from creditcards.models import CardNumberField, CardExpiryField, SecurityCodeField
 
 #Probando, va a quedar un choclo gigante con todos los objetos aca
 #Orden Author-> Gender-> Editorial-> CreditCards-> Account-> Profile->  
@@ -160,12 +161,12 @@ class Account(AbstractBaseUser):
     
 #CreditCards
 class CreditCards(models.Model):
-    number = models.CharField(('numero'),max_length=16, primary_key=True)
-    cod = models.IntegerField()
+    number = CardNumberField('numero')
+    date_expiration= CardExpiryField('fecha de vencimiento')
+    cod = SecurityCodeField('codigo de seguridad')
     card_name = models.CharField("nombre de tarjeta",max_length=50)
-    date_expiration = models.DateField("fecha de vencimiento",auto_now=False, auto_now_add=False)
     bank = models.CharField(('banco'),max_length=50)
-    user = models.OneToOneField(Account, on_delete=models.CASCADE)
+    user = models.OneToOneField(Account, on_delete=models.CASCADE,)
 
     def publish(self):
         self.save()
