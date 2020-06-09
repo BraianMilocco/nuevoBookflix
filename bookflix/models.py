@@ -260,6 +260,27 @@ class Billboard(models.Model):
         verbose_name_plural = "Publicaciones"
 
 
+"-------Trailer-------"
+class Trailer(models.Model):
+    title = models.CharField("titulo", max_length=50, )
+    description = models.TextField(blank=True, null=True)
+    mostrar_en_home= models.BooleanField(default=False)
+    author = models.ForeignKey(Account, on_delete=models.CASCADE)
+    video=  models.URLField(  max_length=255, blank=True, null=True)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+
+    def publish(self):
+        self.save()
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = "Trailer"
+        verbose_name_plural = "Trailers"
+
+
+
 "-------Chapter-------"
 class Chapter(models.Model):
     number = models.IntegerField("numero",default=0)

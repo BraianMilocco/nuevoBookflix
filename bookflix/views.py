@@ -105,10 +105,15 @@ def confirmarCuenta(request):
     return render(request, "bookflix/confirmacion.html", context)
 
 
+def buscarPorAutor(request, autor):                       #mmmm me parece que va a tener que estar en el template
+    libros = Book.object.filter(Author=autor)
+    return render(request, welcome, {"libros":libros}) 
+
 def welcome(request):
     publicacion=Billboard.objects.filter(mostrar_en_home=True)
     libros = Book.objects.filter(mostrar_en_home=True)
-    return render(request, "bookflix/welcome.html",{'publicaciones':publicacion, "libros":libros}) 
+    trailers = Trailer.objects.filter(mostrar_en_home=True)
+    return render(request, "bookflix/welcome.html",{'publicaciones':publicacion,"trailers":trailers, "libros":libros}) 
 
 def barra(request):
     return render(request,"bookflix/barra.html", perfil)

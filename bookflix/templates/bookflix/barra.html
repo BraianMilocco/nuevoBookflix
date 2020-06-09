@@ -41,6 +41,10 @@
             <li><a href="/ ">Home</a></li>
             <li><a href="/publicaciones">Noticias</a></li>
             <li><a href="/logout">LogOut</a></li>
+            <li><a href="/trailers">Trailers</a></li>
+            {% if request.user.is_admin %}
+               <li><a href="/solicitudes">Solicitudes</a></li>
+            {% endif %}
          </ul>
       {% else %}
          <ul>
