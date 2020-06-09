@@ -20,6 +20,7 @@ urlpatterns = [
     path('crear_perfil/', crear_perfil, name='crear_perfil'),
     path('confirmarCuenta/', confirmarCuenta, name='confirmarCuenta'),
     path('solicitudes/', solicitudes, name='solicitudes'),
+    path('recuperarCuenta/', recuperarCuenta, name='recuperarCuenta')
 ] 
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

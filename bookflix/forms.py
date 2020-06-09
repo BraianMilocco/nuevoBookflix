@@ -20,6 +20,8 @@ class RegistroTarjeta(forms.Form):
     card_name = forms.CharField( max_length=50, label='nombre en Tarjeta')
     bank = forms.CharField(max_length=50, label='banco')
     
+class RecuperarCuenta(forms.Form):
+    email= forms.EmailField()
 
 
 class RegistrationForm(UserCreationForm):

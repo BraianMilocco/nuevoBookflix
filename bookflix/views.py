@@ -7,7 +7,7 @@ from django.contrib.auth import logout as do_logout
 from django.shortcuts import redirect
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_protect
-from .forms import RegistrationForm, RegistroTarjeta, CrearPerfil, MailChange, MailConfirmacion
+from .forms import RegistrationForm, RegistroTarjeta, CrearPerfil, MailChange, MailConfirmacion, RecuperarCuenta
 from .models import *
 from django.contrib.auth.forms import UserCreationForm
 from django import shortcuts
@@ -32,12 +32,12 @@ def randomCod(num):
     return unique_id
 
 
+
 def register_page(request):
     context = {}
     if request.POST:
         form = RegistrationForm(request.POST)
         formCard = RegistroTarjeta(request.POST)
-        #formPerfil= CrearPerfil(request.POST)
         # Si el formulario es válido...
         if form.is_valid() and formCard.is_valid():  
 
@@ -94,7 +94,8 @@ def confirmarCuenta(request):
                 usuario.confirmo = True
                 usuario.save()
                 send_mail('Registro Confirmado', 'bienvenido a la familia', settings.EMAIL_HOST_USER,[usuario.email])
-
+                
+                confirmations.delete()
   
                 return redirect('/login')
             else:
@@ -200,6 +201,7 @@ def cambiar_contrasenia(request):
             user = form.save()
             update_session_auth_hash(request, user)  # Important!
             messages.success(request, 'Su Contrasenia fue cambiada con exito')
+            send_mail('Cambio contraseña exitoso Bookflix', "su nueva contrasena es: ... recordala!! no te lo vamos a decir", settings.EMAIL_HOST_USER,[request.user.email])            
             return redirect('/perfil')
         else:
             messages.error(request, 'Corrija el error')
@@ -232,10 +234,14 @@ def cambiar_tarjeta(request):
 
 def cambiar_email(request):
     context={}
+    mm= request.user.email
     if request.POST:
         form= MailChange(request.POST, instance= request.user)
         if form.is_valid():
+            mensaje= "El nuevo mail de la cuenta deja dee ser este, para ser " + form.cleaned_data['email'] + ". En caso de no ser usted, responder a este mail dentro de las 48hs recibido con el asunto 'yo no hice el cambio' "
+            send_mail('Cambio de Mail Bookflix', mensaje, settings.EMAIL_HOST_USER,[mm])
             form.save()
+            send_mail('Nuevo Mail Bookflix', "mensaje de confirmacion del cambio de mail", settings.EMAIL_HOST_USER,[request.user.email])            
             return redirect('/perfil')
         else:
             messages.error(request, 'mail en uso')
@@ -247,6 +253,27 @@ def cambiar_email(request):
         )
     context["cambio_mail"]= form 
     return render(request, "bookflix/cambiar_email.html", context)
+
+def recuperarCuenta(request):
+    context={}
+    if request.POST: 
+        form= RecuperarCuenta(request.POST)
+        if form.is_valid():
+            mail= form.cleaned_data['email']
+            try:
+                aco = Account.objects.get(email=mail)
+                contrasena= randomCod(12)
+                aco= Account.objects.get(email=mail)
+                aco.set_password(contrasena)
+                aco.save()
+                send_mail('Recuperacion cuenta Bookflix', "su nueva contrasena es: "+ contrasena + " podes cambiarla desde tu perfil", settings.EMAIL_HOST_USER,[mail])            
+                return redirect('/login')
+            except Account.DoesNotExist:
+                messages.error(request, 'mail no existe')
+    else: 
+        form= RecuperarCuenta()
+        context['recupero']= form
+    return render(request, "bookflix/recuperarCuenta.html", context)
 
 def crear_perfil(request):
     context={}
@@ -261,3 +288,5 @@ def crear_perfil(request):
         form=CrearPerfil()
         context["profile_creation_form"]=form
     return render(request, 'bookflix/crear_perfil.html', context)
+
+ 

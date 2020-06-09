@@ -1,0 +1,29 @@
+<html>
+    
+    <body>
+        
+        <h2>Cambiar email </h2>
+        <form method="POST">
+            
+            {% csrf_token %}
+            {%for field in recupero %}
+                {{field.label_tag}}
+                {{field}}
+            {% endfor %}
+
+            {%for error in recupero.errors %}
+                <p style="color: black", > {{error}}   </p>
+            {% endfor %}
+
+
+            {% if recupero.non_field_errors %}
+                <div style="color:yellow">
+                    <p>{{recupero.non_field_errors}} </p>
+                </div>
+            {% endif %}
+            <button type="submit">Save changes</button>
+            
+          </form>
+          <a href="/login">volver</a>
+    </body>
+</html>
