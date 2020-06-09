@@ -142,13 +142,14 @@ def select_perfil(request):
    
     return render(request, "bookflix/select_perfil.html", {'perfiles': perfiles,}) #"tarjetaActual": tarjetaActual, "perfilActual":perfilActual})
 
-
+def solicitudes(request):
+    solicitudes = UserSolicitud.objects.filter()
+    return render(request,"bookflix/solicitudes.html",{"solicitudes":solicitudes})
             
 def login_propio(request):
     # Creamos el formulario de autenticación vacío
     form = AuthenticationForm()
     if request.method == "POST":
-        intent=intentos(request, True)
         # Añadimos los datos recibidos al formulario
         form = AuthenticationForm(data=request.POST)
         # Si el formulario es válido...

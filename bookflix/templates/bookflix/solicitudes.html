@@ -1,0 +1,27 @@
+<html>
+    <body>
+        {% include "bookflix/barra.html" %}
+        <h1>Solicitudes</h1>
+
+        <ul id="Solicitudes">
+
+            {% if solicitudes %}
+            {% for solicitud in solicitudes %}
+               <li>
+                    <div>
+                        <p> {{solicitud.user}} </p>
+                        <p>tipo de solicitud = {{solicitud.type_of_solicitud}}</p>
+                        <br> 
+                        </p>
+                    </div>
+                </li>
+            {% endfor %}
+            {% else %}
+            <p>No hay solicitudes de alta disponibles</p>
+            {% endif %}
+        
+        </ul>
+
+
+    </body>
+</html>

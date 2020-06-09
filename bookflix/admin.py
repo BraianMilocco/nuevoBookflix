@@ -65,3 +65,5 @@ admin.site.register(CounterStates)
 admin.site.register(UpDates)
 admin.site.register(ExpirationDates)
 admin.site.register(ConfirmationMail)
+
+admin.site.register(Trailer)
