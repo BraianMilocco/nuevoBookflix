@@ -67,3 +67,4 @@ admin.site.register(ExpirationDates)
 admin.site.register(ConfirmationMail)
 
 admin.site.register(Trailer)
+admin.site.register(Isbn)
