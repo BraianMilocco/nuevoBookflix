@@ -207,12 +207,22 @@ class Profile(models.Model):
         verbose_name = "Perfil"
         verbose_name_plural = "Perfiles"
 
+"-------Isbn-------"
+class Isbn(models.Model):
+    isbn = models.IntegerField(primary_key=True)
+
+    def publish(self):
+        self.save()
+
+    def __str__(self):
+        return self.isbn
+
 "-------Book-------"
 class Book(models.Model):
     title = models.CharField(('titulo'), max_length=50)
     description = models.TextField(('descripcion'))
     image= models.ImageField("imagen", upload_to='portadas_libros', height_field=None, width_field=None, max_length=None)
-    isbn = models.IntegerField(primary_key=True)
+    isbn = models.OneToOneField(Isbn, on_delete=models.CASCADE, verbose_name="isbn")
     author= models.ForeignKey(Author, on_delete=models.CASCADE, verbose_name="autor")
     genders = models.ManyToManyField(Gender, verbose_name="generos")
     editorial = models.ForeignKey(Editorial, on_delete=models.CASCADE)
@@ -220,8 +230,7 @@ class Book(models.Model):
     on_normal = models.BooleanField("ver en normal", default=False)
     on_premium = models.BooleanField("ver en premium",default=False)
     url = models.URLField( max_length=200, blank=True, null=True)
-
-
+    
     def publish(self):
         self.save()
 
@@ -235,7 +244,17 @@ class Book(models.Model):
  
 "-------BookByChapter-------"
 class BookByChapter(models.Model):
-    book= models.OneToOneField(Book, on_delete=models.CASCADE, verbose_name="libro")
+    title = models.CharField(('titulo'), max_length=50)
+    description = models.TextField(('descripcion'))
+    image= models.ImageField("imagen", upload_to='portadas_libros', height_field=None, width_field=None, max_length=None)
+    isbn = models.OneToOneField(Isbn, on_delete=models.CASCADE)
+    author= models.ForeignKey(Author, on_delete=models.CASCADE, verbose_name="autor")
+    genders = models.ManyToManyField(Gender, verbose_name="generos")
+    editorial = models.ForeignKey(Editorial, on_delete=models.CASCADE)
+    mostrar_en_home= models.BooleanField(default=False)
+    on_normal = models.BooleanField("ver en normal", default=False)
+    on_premium = models.BooleanField("ver en premium",default=False)
+    url = models.URLField( max_length=200, blank=True, null=True)
     cant_chapter = models.IntegerField('Cantidad de capitulos', default = 1)
     
     def publish(self):
