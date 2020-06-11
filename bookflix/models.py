@@ -337,25 +337,18 @@ def libroLleno(value):
         return value
 
 
-def legalcap(value):
-    if value == 0:
-        raise ValidationError('no se puede tener un capítulo con numero 0')
-    elif value < 0 :
-        raise ValidationError('no se puede tener un capítulo con número negativo')
-    else:
-        return value
+
 
 "-------Chapter-------"
 class Chapter(models.Model):
     book= models.ForeignKey(BookByChapter, on_delete=models.CASCADE, verbose_name="libro", validators=[libroLleno])
-    title= models.CharField(("Titulo del capítulo"), max_length=50)
+    title= models.CharField(("Titulo del capítulo"), max_length=50, help_text="Ingrese el nombre del capítulo, en caso de no tenerlo, su numero de cap")
     description = models.TextField(("Descripción del capítulo"), blank=True, null=True)
-    number = models.IntegerField("numero",default=0, validators=[legalcap] )
     pdf = models.FileField(upload_to='pdf')
     active = models.BooleanField(("Activado"), default=False)
 
     class Meta:
-        unique_together = ('number', 'book',)
+        unique_together = ('title', 'book',)
         verbose_name = "Capítulo"
         verbose_name_plural = "Capítulos"
 
@@ -364,7 +357,7 @@ class Chapter(models.Model):
     
     def __str__(self):
        
-        return 'capitulo numero: %s, titulado: %s . Del libro %s ' % (str(self.number),self.title, self.book)
+        return ' Libro: %s . Capitulo titulado: %s ' % (self.book, self.title)
 
 #StateOfBook
 
