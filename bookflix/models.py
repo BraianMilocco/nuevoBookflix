@@ -355,7 +355,7 @@ class Chapter(models.Model):
     active = models.BooleanField(("Activado"), default=False)
 
     class Meta:
-        unique_together = ('title', 'book',)
+        unique_together = ('number', 'book',)
         verbose_name = "Capítulo"
         verbose_name_plural = "Capítulos"
 
