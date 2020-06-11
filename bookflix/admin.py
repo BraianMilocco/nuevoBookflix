@@ -25,7 +25,7 @@ class UserCreationForm(forms.ModelForm):
         password1 = self.cleaned_data.get("password1")
         password2 = self.cleaned_data.get("password2")
         if password1 and password2 and password1 != password2:
-            raise forms.ValidationError("Passwords don't match")
+            raise forms.ValidationError("Password no son iguales")
         return password2
 
     def save(self, commit=True):
@@ -34,6 +34,7 @@ class UserCreationForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
 
 admin.site.register(Account, AccountAdmin)
 
@@ -49,22 +50,16 @@ admin.site.register(UserSolicitud)
 
 admin.site.register(StateOfBook)
 
-admin.site.register(ExpirationDatesBillboard)
-admin.site.register(UpDatesBillboard)
+admin.site.register(UpDownBook)
+admin.site.register(UpDownBookByChapter)
+admin.site.register(UpDownChapter)
+admin.site.register(UpDownBillboard)
+admin.site.register(UpDownTrailer)
 admin.site.register(Book)
 admin.site.register(BookByChapter)
 admin.site.register(Chapter)
 admin.site.register(Billboard)
-
-admin.site.register(Comment)
-admin.site.register(Like)
-admin.site.register(LikeComment)
-
-admin.site.register(CounterStates)
-
-admin.site.register(UpDates)
-admin.site.register(ExpirationDates)
+#admin.site.register(CounterStates)
 admin.site.register(ConfirmationMail)
 
 admin.site.register(Trailer)
-admin.site.register(Isbn)

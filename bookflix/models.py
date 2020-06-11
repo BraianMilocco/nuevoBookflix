@@ -1,10 +1,11 @@
 from django.db import models
-
+from django.core.exceptions import FieldError, ValidationError
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.base_user import BaseUserManager
 
 from django.utils import timezone
 from creditcards.models import CardNumberField, CardExpiryField, SecurityCodeField
+
 
 #Probando, va a quedar un choclo gigante con todos los objetos aca
 #Orden Author-> Gender-> Editorial-> CreditCards-> Account-> Profile->  
@@ -25,6 +26,7 @@ class Author(models.Model):
 
     def ret(self):
         return self.name 
+
     def __str__(self):
         return self.name
 
@@ -49,7 +51,6 @@ class Gender(models.Model):
     class Meta:
         verbose_name = "Genero"
         verbose_name_plural = "Generos"
-
 
 
 #Editorial
@@ -114,7 +115,8 @@ class ConfirmationMail(models.Model):
 
     def publish(self):
         self.save()
-
+    def __str__(self):
+        return self.email  
 #Account
 class Account(AbstractBaseUser):
 
@@ -207,31 +209,37 @@ class Profile(models.Model):
         verbose_name = "Perfil"
         verbose_name_plural = "Perfiles"
 
-"-------Isbn-------"
-class Isbn(models.Model):
-    isbn = models.IntegerField(primary_key=True)
+def validateIsbnNum(value):
+    if len(value) == 16 and value.isnumeric():
+        return value
+    else: 
+        raise ValidationError('El isbn son 16 numeros')
 
-    def publish(self):
-        self.save()
+def validateIsbnB(value):
 
-    def __str__(self):
-        return self.isbn
+    try:
+        l= BookByChapter.objects.get(isbn= value)
+        raise ValidationError(' isbn en uso por un libro de Capitulos')
+    except BookByChapter.DoesNotExist:
+        return value
+
 
 "-------Book-------"
 class Book(models.Model):
+    isbn = models.CharField( max_length=16,primary_key=True, validators =[validateIsbnB, validateIsbnNum],)
     title = models.CharField(('titulo'), max_length=50)
-    description = models.TextField(('descripcion'))
-    image= models.ImageField("imagen", upload_to='portadas_libros', height_field=None, width_field=None, max_length=None)
-    isbn = models.OneToOneField(Isbn, on_delete=models.CASCADE, verbose_name="isbn")
+    description = models.TextField(('descripcion'), blank=True, null=True)
+    image= models.ImageField("imagen", upload_to='portadas_libros', height_field=None, width_field=None, max_length=None, blank=True, null=True)
     author= models.ForeignKey(Author, on_delete=models.CASCADE, verbose_name="autor")
     genders = models.ManyToManyField(Gender, verbose_name="generos")
     editorial = models.ForeignKey(Editorial, on_delete=models.CASCADE)
     mostrar_en_home= models.BooleanField(default=False)
     on_normal = models.BooleanField("ver en normal", default=False)
     on_premium = models.BooleanField("ver en premium",default=False)
-    url = models.URLField( max_length=200, blank=True, null=True)
+    pdf = models.FileField(upload_to='pdf', blank=True, null=True)
     
     def publish(self):
+    
         self.save()
 
     class Meta:
@@ -241,28 +249,39 @@ class Book(models.Model):
     def __str__(self):
         return self.title
 
+def validateIsbn(value):
+
+    try:
+        l= Book.objects.get(isbn= value)
+        raise ValidationError('isbn en uso por un libro')
+    except Book.DoesNotExist:
+        return value
  
 "-------BookByChapter-------"
 class BookByChapter(models.Model):
+    isbn = models.CharField( max_length=16, primary_key=True, validators =[validateIsbn, validateIsbnNum], )
     title = models.CharField(('titulo'), max_length=50)
-    description = models.TextField(('descripcion'))
-    image= models.ImageField("imagen", upload_to='portadas_libros', height_field=None, width_field=None, max_length=None)
-    isbn = models.OneToOneField(Isbn, on_delete=models.CASCADE)
+    cant_chapter = models.IntegerField('Cantidad de capitulos', default = 1)
+    description = models.TextField(('descripcion'), blank=True, null=True)
+    image= models.ImageField("imagen", upload_to='portadas_libros', height_field=None, width_field=None, max_length=None, blank=True, null=True)
     author= models.ForeignKey(Author, on_delete=models.CASCADE, verbose_name="autor")
     genders = models.ManyToManyField(Gender, verbose_name="generos")
     editorial = models.ForeignKey(Editorial, on_delete=models.CASCADE)
     mostrar_en_home= models.BooleanField(default=False)
     on_normal = models.BooleanField("ver en normal", default=False)
     on_premium = models.BooleanField("ver en premium",default=False)
-    url = models.URLField( max_length=200, blank=True, null=True)
-    cant_chapter = models.IntegerField('Cantidad de capitulos', default = 1)
-    
+
     def publish(self):
+       
         self.save()
-    
+
+
     class Meta:
         verbose_name = "Libro por capítulo"
         verbose_name_plural = "Libro por capítulos"
+
+    def __str__(self):
+        return self.title
 
 
 "-------Billboard-------"
@@ -305,12 +324,35 @@ class Trailer(models.Model):
 
 
 
+def libroLleno(value):
+    
+    try:
+        b= BookByChapter.objects.get(isbn= value)
+        c= Chapter.objects.filter(book= value).count()
+        if c == b.cant_chapter: 
+            raise ValidationError('El libro no puede contener mas capítulos')
+        else:
+            return value
+    except BookByChapter.DoesNotExist:
+        return value
+
+
+def legalcap(value):
+    if value == 0:
+        raise ValidationError('no se puede tener un capítulo con numero 0')
+    elif value < 0 :
+        raise ValidationError('no se puede tener un capítulo con número negativo')
+    else:
+        return value
 
 "-------Chapter-------"
 class Chapter(models.Model):
-    number = models.IntegerField("numero",default=0)
-    book= models.ForeignKey(BookByChapter, on_delete=models.CASCADE, verbose_name="libro")
-    url = models.URLField( max_length=200, blank=True, null=True)
+    book= models.ForeignKey(BookByChapter, on_delete=models.CASCADE, verbose_name="libro", validators=[libroLleno])
+    title= models.CharField(("Titulo del capítulo"), max_length=50)
+    description = models.TextField(("Descripción del capítulo"), blank=True, null=True)
+    number = models.IntegerField("numero",default=0, validators=[legalcap] )
+    pdf = models.FileField(upload_to='pdf')
+    active = models.BooleanField(("Activado"), default=False)
 
     class Meta:
         unique_together = ('number', 'book',)
@@ -319,8 +361,40 @@ class Chapter(models.Model):
 
     def publish(self):
         self.save()
+    
+    def __str__(self):
+       
+        return 'capitulo numero: %s, titulado: %s . Del libro %s ' % (str(self.number),self.title, self.book)
 
 #StateOfBook
+
+class StateOfBookByChapter(models.Model):
+
+    reading='reading'
+    future_reading='future_reading'
+    finished='finished'
+    AC_CHOICES= (
+        (reading, 'leyendo'),
+        (future_reading, 'futura lectura'),
+        (finished, 'terminado')
+    )
+
+    date= models.DateField("fecha",default=timezone.now)
+    state = models.CharField("estado", max_length=16, choices=AC_CHOICES, default=finished)
+    book = models.ForeignKey(BookByChapter, on_delete=models.CASCADE, verbose_name="libro")
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name="perfil")
+
+    class Meta:
+        unique_together= ('book', 'profile') 
+        verbose_name = "Estado del libro por capítulo"
+        verbose_name_plural = "Estados de libros por capítulo"
+         
+    def publish(self):
+        self.save()
+
+    def __str__(self):
+        b=BookByChapter.objects.get(isbn=self.book)
+        return 'el libro %c se encuentra en el estado: %c' % (b.title, self.state)        
 
 class StateOfBook(models.Model):
 
@@ -347,10 +421,11 @@ class StateOfBook(models.Model):
         self.save()
 
     def __str__(self):
-        return self.state        
+        b=Book.objects.get(isbn=self.book)
+        return 'el libro %c se encuentra en el estado: %c' % (b.title, self.state)            
 
 #Comment
-class Comment(models.Model):
+class CommentBook(models.Model):
 
     is_a_spoiler = models.BooleanField("es espoiler",default=False)
     description = models.TextField("descripcion",)
@@ -362,8 +437,23 @@ class Comment(models.Model):
         self.save()
 
     class Meta:
-        verbose_name = "Comentario"
-        verbose_name_plural = "Comentarios"
+        verbose_name = "Comentario libro"
+        verbose_name_plural = "Comentarios libros"
+
+class CommentBookByChapter(models.Model):
+
+    is_a_spoiler = models.BooleanField("es espoiler",default=False)
+    description = models.TextField("descripcion",)
+    profile= models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name="perfil")
+    publication = models.ForeignKey(BookByChapter, on_delete=models.CASCADE, verbose_name="publicacion")    
+
+
+    def publish(self):
+        self.save()
+
+    class Meta:
+        verbose_name = "Comentario libro por capítulo"
+        verbose_name_plural = "Comentarios libros por capítulo"    
 
 #Like
 class Like(models.Model):
@@ -379,16 +469,30 @@ class Like(models.Model):
         self.save()
 
     class Meta:
-        verbose_name = "Me gusta"
-        verbose_name_plural = "Me gusta/s"
+        verbose_name = "Me gusta libro"
+        verbose_name_plural = "Me gusta/s libros"
 
-
-
-#LikeComment
-class LikeComment(models.Model):
+class LikeBookByChapter(models.Model):
     
     is_like = models.BooleanField("me gusta",default = False)
-    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, verbose_name="comentario")
+    book = models.ForeignKey(BookByChapter, on_delete=models.CASCADE, verbose_name="libro")
+    author = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name="autor")
+    
+    class Meta:
+        unique_together = ('author', 'book')
+
+    def publish(self):
+        self.save()
+
+    class Meta:
+        verbose_name = "Me gusta libro Por Capitulo"
+        verbose_name_plural = "Me gusta/s libros por Capitulo"
+
+#LikeComment
+class LikeCommentBook(models.Model):
+    
+    is_like = models.BooleanField("me gusta",default = False)
+    comment = models.ForeignKey(CommentBook, on_delete=models.CASCADE, verbose_name="comentario")
     author = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name="autor")
 
     class Meta:
@@ -399,62 +503,72 @@ class LikeComment(models.Model):
     def publish(self):
         self.save()
 
-#ExpirationDates
-class ExpirationDates(models.Model):
-
-    book = models.ForeignKey(Book, on_delete=models.CASCADE, verbose_name="libro")
-    expiration_normal= models.DateField("expiracion normal",blank=True, null=True)
-    expiration_premium= models.DateField("expiracion premium",blank=True, null=True)
-
-    def publish(self):
-        self.save()
-
-    class Meta:
-        verbose_name = "DarDeBajaLibro"
-        verbose_name_plural = "DarDeBajaLibros"
-
-#UpDates
-class   UpDates(models.Model):
+class LikeCommentBookByChapter(models.Model):
     
-    book = models.ForeignKey(Book, on_delete=models.CASCADE, verbose_name="libro")
-    up_normal= models.DateField("pasar a normal",blank=True, null=True)
-    up_premium= models.DateField("pasar a premium",blank=True, null=True)
+    is_like = models.BooleanField("me gusta",default = False)
+    comment = models.ForeignKey(CommentBookByChapter, on_delete=models.CASCADE, verbose_name="comentario")
+    author = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name="autor")
+
+    class Meta:
+        unique_together = ('author', 'comment')
+        verbose_name = "Me gusta de comentario"
+        verbose_name_plural = "Me gustas/s de comentarios"
 
     def publish(self):
         self.save()
 
-    class Meta:
-        verbose_name = "DarDeAltaLibro"
-        verbose_name_plural = "DarDeAltaLibros"
+def esCorrecto(value):
+    if value <= timezone.now():
+        raise ValidationError('La fecha no puede ser anterior a hoy. ni hoy')
+    else:
+        return value
 
-
-#ExpirationDates
-class ExpirationDatesBillboard(models.Model):
-
-    publication = models.ForeignKey(Billboard, on_delete=models.CASCADE ,verbose_name="publicacion")
-    expiration_date= models.DateField("fecha de vencimiento",blank=True, null=True)
-
-
-    def publish(self):
-        self.save()
+class UpDownBook(models.Model):
+    book = models.ForeignKey(Book, verbose_name=("libro"), on_delete=models.CASCADE)
+    up_normal= models.DateField("pasar a normal", default= timezone.now(), validators=[esCorrecto])
+    expiration_normal= models.DateField("expiracion normal", default= timezone.now(), validators=[esCorrecto])
+    up_premium= models.DateField("pasar a premium",default= timezone.now(), validators=[esCorrecto])
+    expiration_premium= models.DateField("expiracion premium", default= timezone.now(), validators=[esCorrecto])   
 
     class Meta:
-        verbose_name = "DarDeBajaNovdedad"
-        verbose_name_plural = "DarDeBajaNovedades"
+        verbose_name = "Subir-Bajar-Libro"
+        verbose_name_plural = "Subir-Bajar-Libro"
 
-#UpDates
-class   UpDatesBillboard(models.Model):
-    
-    publication = models.ForeignKey(Billboard, on_delete=models.CASCADE, verbose_name="publicacion")
-    up_date= models.DateField("actualizar",blank=True, null=True)
-
-    def publish(self):
-        self.save()
+class UpDownBookByChapter(models.Model):
+    book = models.ForeignKey(BookByChapter, verbose_name=("libro"), on_delete=models.CASCADE)
+    up_normal= models.DateField("pasar a normal", default= timezone.now(), validators=[esCorrecto])
+    expiration_normal= models.DateField("expiracion normal", default= timezone.now(), validators=[esCorrecto])
+    up_premium= models.DateField("pasar a premium",default= timezone.now(), validators=[esCorrecto])
+    expiration_premium= models.DateField("expiracion premium", default= timezone.now(), validators=[esCorrecto])    
 
     class Meta:
-        verbose_name = "DarDeAltaNovedades"
-        verbose_name_plural = "DarDeAltaNovedades"
-#UserSolicitud
+        verbose_name = "Subir-Bajar-LibroPorCapitulo"
+        verbose_name_plural = "Subir-Bajar-LibroPorCapitulo"
+
+class UpDownChapter(models.Model):
+    chapter = models.ForeignKey(Chapter, verbose_name=("Capitulo"), on_delete=models.CASCADE)
+    up= models.DateField("DarDeAlta", default= timezone.now(), validators=[esCorrecto])
+    expirationl= models.DateField("DarDeBaja", default= timezone.now(), validators=[esCorrecto])
+    class Meta:
+        verbose_name = "Subir-Bajar-Capitulo"
+        verbose_name_plural = "Subir-Bajar-Capitulos"
+
+class UpDownBillboard(models.Model):
+    Billboard = models.ForeignKey(Billboard, verbose_name=("Publicacion"), on_delete=models.CASCADE)
+    up= models.DateField("DarDeAlta", default= timezone.now(), validators=[esCorrecto])
+    expirationl= models.DateField("DarDeBaja", default= timezone.now(), validators=[esCorrecto])
+    class Meta:
+        verbose_name = "Subir-Bajar-Publicacion"
+        verbose_name_plural = "Subir-Bajar-Publicaciones"
+
+class UpDownTrailer(models.Model):
+    trailer = models.ForeignKey(Trailer, verbose_name=("Publicacion"), on_delete=models.CASCADE)
+    up= models.DateField("DarDeAlta", default= timezone.now(), validators=[esCorrecto])
+    expirationl= models.DateField("DarDeBaja", default= timezone.now(), validators=[esCorrecto])
+    class Meta:
+        verbose_name = "Subir-Bajar-Trailer"
+        verbose_name_plural = "Subir-Bajar-Trailer"
+
 
 class UserSolicitud(models.Model):
     pass
@@ -520,5 +634,10 @@ class CounterStates(models.Model):
         verbose_name = "Estadística de libro"
         verbose_name_plural = "Estadísticas de libros"
 
+class DenunciarComentarioLibro(models.Model):
+    comentario = models.ForeignKey(CommentBook, on_delete=models.CASCADE)
+
+class DenunciarComentarioLibro(models.Model):
+    comentario = models.ForeignKey(CommentBookByChapter, on_delete=models.CASCADE)
     
 
