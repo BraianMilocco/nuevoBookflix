@@ -49,7 +49,7 @@
     {% if libros %}
     {% for libro in libros %}
        <li >
-            {% if request.user.plan == "free" and libro.on_normal == True %}
+            {% if request.user.plan == "free"  %}
             <div>
                 <img  src="{{libro.image.url}}"  alt="fondo" >
                 <br>
