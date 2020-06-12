@@ -63,3 +63,7 @@ admin.site.register(Billboard)
 admin.site.register(ConfirmationMail)
 
 admin.site.register(Trailer)
+
+admin.site.register(CuentaqueUsoPrueba)
+admin.site.register(MailQueusoPrueba)
+admin.site.register(TarjetaQueUsoPrueba)

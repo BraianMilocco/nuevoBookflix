@@ -1,0 +1,27 @@
+<html>
+    <body>
+        {% include "bookflix/barra.html" %}
+        <div>
+           
+            <img  src="{{libro.image.url}}"  alt="fondo" >
+                    <br>
+                    <!-- -->
+                    <br> 
+                    <p> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </p>
+                    <br>
+                    <p> Género(s): {%for genero in libro.genders.all %}
+                        | {{genero.name}} |
+
+                    {% endfor %}
+                    </p>
+                    <br>
+                    <p> Capítulo(s): {%for capitulo in libro.cant_chapter.all %}  {# acá sería otro tipo de for #}
+                        | cap en proceso |                                          {# acá buscaría por el número de capítulo y lo traigo de la base #}
+
+                    {% endfor %}
+                    </p>
+        </div>
+        <p>-----------</p>
+        <a href="/leer_libro/{{libro.author}}">{{libro.title}}</a>
+    </body>
+</html>

@@ -289,4 +289,13 @@ def crear_perfil(request):
         context["profile_creation_form"]=form
     return render(request, 'bookflix/crear_perfil.html', context)
 
- 
+def solicitar_cambio(request):
+     return render(request,"bookflix/solicitar_cambio.html")
+
+def leer_libro(request):
+     libro = Book.objects.get(title="dr stone")
+     return render(request,"bookflix/leer_libro.html",{"libro":libro}) 
+
+
+def libro_capitulo(request):
+     return render(request,"bookflix/libro_capitulo.html") 

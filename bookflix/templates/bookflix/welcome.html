@@ -21,12 +21,12 @@
             text-transform: uppercase;
         }
         #libros li{
-            display: inline;
+            display: inline-block;
             margin: 10px 10px 10px 10px;
             border: 10px 10px 10px 10px ;
         }
         #libros div p{
-            display: inline;
+            display: inline-block;
             margin-left: 1%;
             border: 10px;
         }
@@ -44,15 +44,16 @@
 </h1>
 
  <hr>
- <ul id="libros">
+ <ul id="libros";>
 
     {% if libros %}
     {% for libro in libros %}
-       <li>
+       <li >
+            {% if request.user.plan == "free" and libro.on_normal == True %}
             <div>
                 <img  src="{{libro.image.url}}"  alt="fondo" >
                 <br>
-                <a href="/libro/{{libro.author}}">{{libro.title}}</a>
+                <a href="/solicitar_cambio/">{{libro.title}}</a>
                 <!-- -->
                 <br> 
                 <p> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </p>
@@ -62,7 +63,39 @@
 
                 {% endfor %}
                 </p>
-            </div>
+            </div>               
+            {% elif request.user.plan == "normal" and libro.on_normal == True %}
+                <div>
+                    <img  src="{{libro.image.url}}"  alt="fondo" >
+                    <br>
+                    <a href="/leer_libro/{{libro.author}}">{{libro.title}}</a>
+                    <!-- -->
+                    <br> 
+                    <p> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </p>
+                    <br>
+                    <p> Género(s): {%for genero in libro.genders.all %}
+                        | {{genero.name}} |
+
+                    {% endfor %}
+                    </p>
+                </div>
+            {% else %}
+                <div>
+                    <img  src="{{libro.image.url}}"  alt="fondo" >
+                    <br>
+                    <a href="/leer_libro/{{libro.author}}">{{libro.title}}</a>
+                    <!-- -->
+                    <br> 
+                    <p> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </p>
+                    <br>
+                    <p> Género(s): {%for genero in libro.genders.all %}
+                        | {{genero.name}} |
+
+                    {% endfor %}
+                    </p>
+                </div>
+            {% endif%}
+              
         </li>
     {% endfor %}
     {% else %}

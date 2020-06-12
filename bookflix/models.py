@@ -108,7 +108,7 @@ class MyAccountManager(BaseUserManager):
 
 #ConfirmationMail
 class ConfirmationMail(models.Model):
-    mail= models.EmailField( max_length=254, unique=True)
+    mail= models.EmailField( max_length=254, unique=True) 
     codigo = models.CharField( max_length=10)
     tipo = models.IntegerField()
     #tipo de mails de confirmacion: 1 para confirmar cuenta, 2 confirmar cambio de contraseña 
@@ -132,7 +132,7 @@ class Account(AbstractBaseUser):
         (admin, 'admin')
     )
 
-    email = models.EmailField(verbose_name='mail',max_length=60, unique=True)
+    email = models.EmailField(verbose_name='mail',max_length=60, unique=True) 
     username = models.CharField("nombre de usuario", max_length=50, unique=True)
     
     date_joined = models.DateTimeField(verbose_name='date joined', auto_now_add=True)
@@ -640,4 +640,13 @@ class DenunciarComentarioLibro(models.Model):
 class DenunciarComentarioLibro(models.Model):
     comentario = models.ForeignKey(CommentBookByChapter, on_delete=models.CASCADE)
     
+class MailQueusoPrueba(models.Model):
+    mail = models.EmailField( max_length=254, blank=True, null=True)
 
+
+class TarjetaQueUsoPrueba(models.Model):
+    numero = CardNumberField()
+
+
+class CuentaqueUsoPrueba(models.Model):
+    usuario = models.OneToOneField(Account, on_delete=models.CASCADE)
