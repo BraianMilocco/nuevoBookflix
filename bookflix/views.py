@@ -22,6 +22,8 @@ from django.conf import settings
 
 from django.utils.crypto import get_random_string
 
+from django.core import serializers
+
 #codigo de mail
 #do_login(request, user)
 #                send_mail('Subject here', 'Here is the message.', settings.EMAIL_HOST_USER,
@@ -299,3 +301,18 @@ def leer_libro(request):
 
 def libro_capitulo(request):
      return render(request,"bookflix/libro_capitulo.html") 
+
+
+def perfil_seleccionado(request,id_perfil):
+    #perfil_actual = Profile.objects.get(name=usuario,name=perfil) #mmm a ver como busco por dos criterios
+    #usuario = request.sesion.authuserid
+    #str(id_perfil)
+    perfil_actual = Profile.objects.get(id=id_perfil)
+    #Lo que va entre estos comentarios es falopa para ver como setear el objeto el perfil
+    perfil_actual.is_active_now = True 
+    perfil_actual.save()
+    request.session['nombrePerfil']= perfil_actual.name
+    perfil_actual = serializers.serialize("json", Profile.objects.all())
+    request.session['perfil_actual']= perfil_actual
+    #request.session['perfil_actual']= perfil_actual.name
+    return redirect("/") 

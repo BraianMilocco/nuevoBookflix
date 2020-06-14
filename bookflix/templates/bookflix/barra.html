@@ -37,11 +37,13 @@
     <div id="navegador">
       {% if request.user.is_active %}
          <ul>
-            <li><a href="/perfil">perfil</a></li>     
+            <li style="padding: 2px 7px 2px 7px;color: #666;background-color: #eeeeee;border: 1px solid #ccc;text-decoration: none;border-radius: 10px 10px 10px 10px;margin-right: 30px;">Perfil Actual: {{request.session.nombrePerfil}}</li>
+            <li><a href="/perfil">Cuenta</a></li>     
             <li><a href="/ ">Home</a></li>
             <li><a href="/publicaciones">Noticias</a></li>
             <li><a href="/logout">Cerrar Sesion</a></li>
             <li><a href="/trailers">Trailers</a></li>
+            <li><a href="/select_perfil">Perfiles</a></li>
             {% if request.user.is_admin %}
                <li><a href="/solicitudes">Solicitudes</a></li>
             {% else %}

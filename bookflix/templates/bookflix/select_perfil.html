@@ -11,7 +11,8 @@
                 {% for perfil in perfiles %} 
        
                     <p>
-                        <a style="margin: 10;" href="/">-{{ perfil.name }}</a>   
+                        {#<a style="margin: 10;" href="/">-{{ perfil.name }}</a>  #}
+                        <a style="margin: 10;" href="/perfil_seleccionado/{{perfil.id}}">{{perfil.name}}</a>  
                     </p>
        
                 {% endfor %}
@@ -25,7 +26,8 @@
                 {% for perfil in perfiles %} 
 
                     <p>
-                        <a style="margin: 10;" href="/">-{{ perfil.name }}</a>   
+                        {#<a style="margin: 10;" href="/">-{{ perfil.name }}</a>  #}
+                        <a style="margin: 10;" href="/perfil_seleccionado/{{perfil.id}}">{{perfil.name}}</a>  
                     </p>
 
                 {% endfor %}
@@ -43,7 +45,8 @@
                 {% for perfil in perfiles %} 
 
                     <p>
-                        <a style="margin: 10;" href="/">-{{ perfil.name }}</a>   
+                        {#<a style="margin: 10;" href="/">-{{ perfil.name }}</a>  #}
+                        <a style="margin: 10;" href="/perfil_seleccionado/{{perfil.id}}">{{perfil.name}}</a>  
                     </p>
 
                 {% endfor %}
