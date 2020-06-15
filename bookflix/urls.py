@@ -22,7 +22,7 @@ urlpatterns = [
     path('solicitudes/', solicitudes, name='solicitudes'),
     path('solicitar_cambio/', solicitar_cambio, name='solicitar_cambio'),
     path('recuperarCuenta/', recuperarCuenta, name='recuperarCuenta'),
-    path('leer_libro/', leer_libro, name='leerlibro'),
+    path('leer_libro/<isbn>/', leer_libro, name='leerlibro'),
     path('libro_capitulo/', libro_capitulo, name='libro_capitulo'), 
     path("perfil_seleccionado/<id_perfil>/", perfil_seleccionado, name="perfil_seleccionado"),  
 

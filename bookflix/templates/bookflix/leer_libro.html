@@ -2,8 +2,12 @@
     <body>
         {% include "bookflix/barra.html" %}
         <div>
-           
-            <img  src="{{libro.image.url}}"  alt="fondo" >
+            <div style="display: inline; margin: auto;">
+                <img src="{{libro.image.url}}"  alt="fondo" > 
+                <button style="position: absolute;margin-left: 10;">Agregar a futuras lecturas</button>
+                <button onclick="enviarPost( 'publicacion')" style="position: absolute;margin-top: 40;margin-left:10;">Leer Libro</button> 
+                <input id="submit" type="button" value="Click" href="/"/>           
+            </div>  
                     <br>
                     <!-- -->
                     <br> 

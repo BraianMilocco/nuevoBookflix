@@ -294,25 +294,31 @@ def crear_perfil(request):
 def solicitar_cambio(request):
      return render(request,"bookflix/solicitar_cambio.html")
 
-def leer_libro(request):
-     libro = Book.objects.get(title="dr stone")
+def leer_libro(request,isbn):
+     libro = Book.objects.get(isbn=isbn)
      return render(request,"bookflix/leer_libro.html",{"libro":libro}) 
 
 
 def libro_capitulo(request):
-     return render(request,"bookflix/libro_capitulo.html") 
+
+    return render(request,"bookflix/libro_capitulo.html") 
 
 
 def perfil_seleccionado(request,id_perfil):
-    #perfil_actual = Profile.objects.get(name=usuario,name=perfil) #mmm a ver como busco por dos criterios
-    #usuario = request.sesion.authuserid
-    #str(id_perfil)
     perfil_actual = Profile.objects.get(id=id_perfil)
-    #Lo que va entre estos comentarios es falopa para ver como setear el objeto el perfil
     perfil_actual.is_active_now = True 
     perfil_actual.save()
     request.session['nombrePerfil']= perfil_actual.name
     perfil_actual = serializers.serialize("json", Profile.objects.all())
+    request.session['perfil_actual']= perfil_actual
+    #request.session['perfil_actual']= perfil_actual.name
+    return redirect("/") 
+
+
+def libro(request,isbn):
+    libro = Book.objects.get(isbn=isbn)
+    #perfil_actual.is_active_now = True 
+    #perfil_actual.save()
     request.session['perfil_actual']= perfil_actual
     #request.session['perfil_actual']= perfil_actual.name
     return redirect("/") 
