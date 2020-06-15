@@ -1,5 +1,7 @@
+{% load static %}
 <html>
     <body>
-        {% inclide "bookflix/barra.html" %}
+        {% include "bookflix/barra.html" %}
+        <embed style="width:900px; height:700px;" frameborder="0" id='pdf' src="{% static 'cmd.pdf' %}"></embed>
     </body>
 </html>
