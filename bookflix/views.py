@@ -314,11 +314,3 @@ def perfil_seleccionado(request,id_perfil):
     #request.session['perfil_actual']= perfil_actual.name
     return redirect("/") 
 
-
-def libro(request,isbn):
-    libro = Book.objects.get(isbn=isbn)
-    #perfil_actual.is_active_now = True 
-    #perfil_actual.save()
-    request.session['perfil_actual']= perfil_actual
-    #request.session['perfil_actual']= perfil_actual.name
-    return redirect("/") 
