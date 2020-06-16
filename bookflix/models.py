@@ -348,8 +348,8 @@ def numerolegal(value):
 "-------Chapter-------"
 class Chapter(models.Model):
     book= models.ForeignKey(BookByChapter, on_delete=models.CASCADE, verbose_name="libro", validators=[libroLleno])
-    title= models.CharField(("Titulo del capítulo"), max_length=50, validators=[numerolegal], help_text="Ingrese el nombre del capítulo, en caso de no tenerlo, su numero de cap, esta información se mostrará al usuario")
-    number = models.IntegerField(("numero de capitulo"), help_text="este dato es solo para ordenar las busquedas internas, sepa que si un libro tiene dos capitulos y aquí pone 10 (en vez de 1) , no afectara al libro, pero en el orden se mostrara al final")
+    title= models.CharField(("Titulo del capítulo"), max_length=50,  help_text="Ingrese el nombre del capítulo, en caso de no tenerlo, su numero de cap, esta información se mostrará al usuario")
+    number = models.IntegerField(("numero de capitulo"),validators=[numerolegal], help_text="este dato es solo para ordenar las busquedas internas, sepa que si un libro tiene dos capitulos y aquí pone 10 (en vez de 1) , no afectara al libro, pero en el orden se mostrara al final")
     description = models.TextField(("Descripción del capítulo"), blank=True, null=True)
     pdf = models.FileField(upload_to='pdf')
     active = models.BooleanField(("Activado"), default=False)
@@ -364,7 +364,7 @@ class Chapter(models.Model):
     
     def __str__(self):
        
-        return ' Libro: %s . Capitulo titulado: %s y es el capitulo numero: %s' % (self.book, self.title, self.number)
+        return ' Libro: %s . Capitulo titulado: %s y es el capitulo numero: %s' % (self.book, self.title, str(self.number))
 
 #StateOfBook
 
