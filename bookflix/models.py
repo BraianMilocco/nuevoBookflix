@@ -20,7 +20,6 @@ class Author(models.Model):
     description = models.TextField("descripcion",blank=True, null=True)
     created_date = models.DateTimeField("fecha de creacion", default=timezone.now)
 
-
     def publish(self):
         self.save()
 
@@ -108,7 +107,7 @@ class MyAccountManager(BaseUserManager):
 
 #ConfirmationMail
 class ConfirmationMail(models.Model):
-    mail= models.EmailField( max_length=254, unique=True) 
+    mail= models.EmailField( max_length=254, unique=True)
     codigo = models.CharField( max_length=10)
     tipo = models.IntegerField()
     #tipo de mails de confirmacion: 1 para confirmar cuenta, 2 confirmar cambio de contraseña 
@@ -132,7 +131,7 @@ class Account(AbstractBaseUser):
         (admin, 'admin')
     )
 
-    email = models.EmailField(verbose_name='mail',max_length=60, unique=True) 
+    email = models.EmailField(verbose_name='mail',max_length=60, unique=True)
     username = models.CharField("nombre de usuario", max_length=50, unique=True)
     
     date_joined = models.DateTimeField(verbose_name='date joined', auto_now_add=True)
@@ -208,6 +207,7 @@ class Profile(models.Model):
     class Meta:
         verbose_name = "Perfil"
         verbose_name_plural = "Perfiles"
+        unique_together= ('name', 'account')
 
 def validateIsbnNum(value):
     if len(value) == 16 and value.isnumeric():
@@ -229,7 +229,7 @@ class Book(models.Model):
     isbn = models.CharField( max_length=16,primary_key=True, validators =[validateIsbnB, validateIsbnNum],)
     title = models.CharField(('titulo'), max_length=50)
     description = models.TextField(('descripcion'), blank=True, null=True)
-    image= models.ImageField("imagen", upload_to='portadas_libros', height_field=None, width_field=None, max_length=None, blank=True, null=True)
+    image= models.ImageField("imagen", upload_to='portadas_libros', height_field=None, width_field=None, max_length=None, )
     author= models.ForeignKey(Author, on_delete=models.CASCADE, verbose_name="autor")
     genders = models.ManyToManyField(Gender, verbose_name="generos")
     editorial = models.ForeignKey(Editorial, on_delete=models.CASCADE)
@@ -263,7 +263,7 @@ class BookByChapter(models.Model):
     title = models.CharField(('titulo'), max_length=50)
     cant_chapter = models.IntegerField('Cantidad de capitulos', default = 1)
     description = models.TextField(('descripcion'), blank=True, null=True)
-    image= models.ImageField("imagen", upload_to='portadas_libros', height_field=None, width_field=None, max_length=None, blank=True, null=True)
+    image= models.ImageField("imagen", upload_to='portadas_libros', height_field=None, width_field=None, max_length=None, )
     author= models.ForeignKey(Author, on_delete=models.CASCADE, verbose_name="autor")
     genders = models.ManyToManyField(Gender, verbose_name="generos")
     editorial = models.ForeignKey(Editorial, on_delete=models.CASCADE)
@@ -324,19 +324,6 @@ class Trailer(models.Model):
 
 
 
-def libroLleno(value):
-    
-    try:
-        b= BookByChapter.objects.get(isbn= value)
-        c= Chapter.objects.filter(book= value).count()
-        if c == b.cant_chapter: 
-            raise ValidationError('El libro no puede contener mas capítulos')
-        else:
-            return value
-    except BookByChapter.DoesNotExist:
-        return value
-
-
 def numerolegal(value):
     if value == 0:
         raise ValidationError('un capitulo no puede ser numero cero')
@@ -347,9 +334,30 @@ def numerolegal(value):
 
 "-------Chapter-------"
 class Chapter(models.Model):
+    aux=0
+
+    def libroLleno(value):
+    
+        try:
+            b= BookByChapter.objects.get(isbn= value)
+            c= Chapter.objects.filter(book= value).count()
+            if c == b.cant_chapter: 
+                raise ValidationError('El libro no puede contener mas capítulos')
+            else:
+                self.aux= b.cant_chapter
+                return value
+        except BookByChapter.DoesNotExist:
+            return value
+    
+    def verificar_numero(value):
+        if value > self.aux:
+            raise ValidationError('Este Libro puede tener hasta el capítulo: ' + str(self.aux))
+        else:
+            return value
+    
     book= models.ForeignKey(BookByChapter, on_delete=models.CASCADE, verbose_name="libro", validators=[libroLleno])
-    title= models.CharField(("Titulo del capítulo"), max_length=50,  help_text="Ingrese el nombre del capítulo, en caso de no tenerlo, su numero de cap, esta información se mostrará al usuario")
-    number = models.IntegerField(("numero de capitulo"),validators=[numerolegal], help_text="este dato es solo para ordenar las busquedas internas, sepa que si un libro tiene dos capitulos y aquí pone 10 (en vez de 1) , no afectara al libro, pero en el orden se mostrara al final")
+    title= models.CharField(("Titulo del capítulo"), max_length=50, help_text="Ingrese el nombre del capítulo, en caso de no tenerlo, su numero de cap, esta información se mostrará al usuario")
+    number = models.IntegerField(("numero de capitulo"), validators=[numerolegal, verificar_numero], help_text="este dato es solo para ordenar las busquedas internas, sepa que si un libro tiene dos capitulos y aquí pone 10 (en vez de 1) , no afectara al libro, pero en el orden se mostrara al final")
     description = models.TextField(("Descripción del capítulo"), blank=True, null=True)
     pdf = models.FileField(upload_to='pdf')
     active = models.BooleanField(("Activado"), default=False)
@@ -359,12 +367,14 @@ class Chapter(models.Model):
         verbose_name = "Capítulo"
         verbose_name_plural = "Capítulos"
 
+
     def publish(self):
+
         self.save()
     
     def __str__(self):
        
-        return ' Libro: %s . Capitulo titulado: %s y es el capitulo numero: %s' % (self.book, self.title, str(self.number))
+        return ' Libro: %s . Capitulo titulado: %s y es el capitulo numero: %s' % (self.book, self.title, self.number)
 
 #StateOfBook
 
@@ -458,7 +468,7 @@ class CommentBookByChapter(models.Model):
 #Like
 class Like(models.Model):
     
-    is_like = models.BooleanField("me gusta",default = False)
+    points = models.IntegerField("Puntos",default = False)
     book = models.ForeignKey(Book, on_delete=models.CASCADE, verbose_name="libro")
     author = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name="autor")
     
@@ -474,7 +484,7 @@ class Like(models.Model):
 
 class LikeBookByChapter(models.Model):
     
-    is_like = models.BooleanField("me gusta",default = False)
+    points = models.IntegerField("Puntos",default = False)
     book = models.ForeignKey(BookByChapter, on_delete=models.CASCADE, verbose_name="libro")
     author = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name="autor")
     
@@ -637,8 +647,9 @@ class CounterStates(models.Model):
 class DenunciarComentarioLibro(models.Model):
     comentario = models.ForeignKey(CommentBook, on_delete=models.CASCADE)
 
-class DenunciarComentarioLibro(models.Model):
+class DenunciarComentarioLibroPorCap(models.Model):
     comentario = models.ForeignKey(CommentBookByChapter, on_delete=models.CASCADE)
+    
     
 class MailQueusoPrueba(models.Model):
     mail = models.EmailField( max_length=254, blank=True, null=True)

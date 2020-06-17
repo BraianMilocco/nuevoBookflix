@@ -279,16 +279,23 @@ def recuperarCuenta(request):
 
 def crear_perfil(request):
     context={}
+    request.session['ErrorDePerfil'] = "1"
+    request.session.modified = True
     if request.POST:
         form= CrearPerfil(request.POST)
         if form.is_valid():
-            perfil= form.save(commit=False)
-            perfil.account = request.user
-            perfil.save()
-            return redirect ('/select_perfil')
-    else:
-        form=CrearPerfil()
-        context["profile_creation_form"]=form
+            try:
+                p= Profile.objects.get(name= form.cleaned_data['name'], account=request.user)
+                request.session['ErrorDePerfil'] = "2"
+                request.session.modified = True
+            except Profile.DoesNotExist:
+                perfil= form.save(commit=False)
+                perfil.account = request.user
+                perfil.save()
+                return redirect ('/select_perfil')
+    
+    form=CrearPerfil()
+    context["profile_creation_form"]=form
     return render(request, 'bookflix/crear_perfil.html', context)
 
 def solicitar_cambio(request):
