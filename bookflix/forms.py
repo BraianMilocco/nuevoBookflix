@@ -7,18 +7,14 @@ from django.forms import ValidationError
 from datetime import datetime, timedelta
 from creditcards.forms import CardNumberField, CardExpiryField, SecurityCodeField
 
-"""class UserSolicitudForm(ModelForm):
-    class Meta: 
-        model = UserSolicitud
-        fields = ('type_of_plan',)
-        typePlan_CHOICES = (   
-                ('free', 'free'), #First one is the value of select option and second is the displayed value in option
-                ('normal', 'normal'),
-                ('premium', 'premium'),
-                )
-        widgets = {
-            'type_of_plan':forms.ChoiceField(choices=typePlan_CHOICES,)
-        }"""
+class UserSolicitudForm(forms.Form):
+    CHOICESS= GEEKS_CHOICES =( 
+    ("free", "free"), 
+    ("normal", "normal"), 
+    ("premium", "premium"), )
+
+    tipo_de_plan= forms.ChoiceField(label="Seleccione Plan", choices=CHOICESS, )
+
 
 class MailConfirmacion(forms.Form):
     codigoV = forms.CharField(label='codigo Validacion')

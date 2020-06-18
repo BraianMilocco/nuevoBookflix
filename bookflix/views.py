@@ -7,7 +7,7 @@ from django.contrib.auth import logout as do_logout
 from django.shortcuts import redirect
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_protect
-from .forms import  RegistrationForm, RegistroTarjeta, CrearPerfil, MailChange, MailConfirmacion, RecuperarCuenta
+from .forms import UserSolicitudForm, RegistrationForm, RegistroTarjeta, CrearPerfil, MailChange, MailConfirmacion, RecuperarCuenta
 from .models import *
 from django.contrib.auth.forms import UserCreationForm
 from django import shortcuts
@@ -129,7 +129,8 @@ def perfil(request):
     #Para saber los datos del usuario tenes conectado que usar request.user."atributo"
     #tenes que arreglar todo ahi ese objeto perfil no va a funcionar
     tarjetaActual = CreditCards.objects.get(user =request.user)
-    return render(request, "bookflix/perfil.html",{'tarjetaActual': tarjetaActual})
+    numTarjeta = tarjetaActual.number[-3] + tarjetaActual.number[-2] + tarjetaActual.number[-1]
+    return render(request, "bookflix/perfil.html",{'tarjetaActual': tarjetaActual, 'numeroPa': numTarjeta})
 
 def publicaciones(request):
     publicacion=Billboard.objects.filter(mostrar_en_home=True)
@@ -146,7 +147,7 @@ def select_perfil(request):
     return render(request, "bookflix/select_perfil.html", {'perfiles': perfiles,}) #"tarjetaActual": tarjetaActual, "perfilActual":perfilActual})
 
 def solicitudes(request):
-    solicitudes = UserSolicitud.objects.filter()
+    solicitudes = UserSolicitud.objects.filter(type_of_solicitud='alta', is_accepted=0)
     return render(request,"bookflix/solicitudes.html",{"solicitudes":solicitudes})
             
 def login_propio(request):
@@ -186,13 +187,6 @@ def logout(request):
     do_logout(request)
     # Redireccionamos a la portada
     return redirect('/login')
-
-
-
-
-# Desde acá van todos los "cambiar algo"
-
-
 
 
 def cambiar_contrasenia(request):
@@ -299,7 +293,38 @@ def crear_perfil(request):
     return render(request, 'bookflix/crear_perfil.html', context)
 
 def solicitar_cambio(request):
-
+    context= { }
+    request.session['ErrorSolicitudCambio']= "Su plan es: " + request.user.plan + ". Si selecciona el mismo no tendrá efecto" 
+    request.session.modified = True
+    if request.POST:   
+        form= UserSolicitudForm(request.POST)
+        if form.is_valid():
+            planSolicitad= form.cleaned_data['tipo_de_plan']
+            if planSolicitad == request.user.plan:
+                request.session['ErrorSolicitudCambio']="Qué le dijimos? no puede elegir su plan XD"
+                request.session.modified=True
+            elif planSolicitad == 'free':
+                sol=UserSolicitud(type_of_solicitud='baja', type_of_plan='free', user= request.user)
+                sol.save()
+                return redirect('/perfil')
+            elif planSolicitad == 'normal':
+                if request.user.plan == 'free':
+                    sol= UserSolicitud(type_of_solicitud='alta', type_of_plan='normal', user= request.user)
+                    sol.save()
+                else:
+                    sol= UserSolicitud(type_of_solicitud='cambio', type_of_plan='normal', user= request.user)
+                    sol.save()
+                return redirect('/perfil')    
+            else:
+                if request.user.plan == 'free':
+                    sol= UserSolicitud(type_of_solicitud='alta', type_of_plan='premium', user= request.user)
+                    sol.save()
+                else: 
+                    sol= UserSolicitud(type_of_solicitud='cambio', type_of_plan='premium', user= request.user)
+                    sol.save()
+                return redirect('/perfil') 
+    form= UserSolicitudForm()
+    context['solicitud'] = form
     return render(request,"bookflix/solicitar_cambio.html", context)
 
 def leer_libro(request,isbn):

@@ -612,7 +612,7 @@ class UpDownTrailer(models.Model):
 
 class UserSolicitud(models.Model):
 
-    #tipo de solicitud tres valores: alta, baja cambio
+    #tipo de solicitud tres valores: alta, baja, cambio
     type_of_solicitud = models.CharField("tipo de solicitud",  max_length=6)
     #Type_of_plan tres valores: free, normal, premium
     type_of_plan = models.CharField("tipo de plan", max_length=7)
