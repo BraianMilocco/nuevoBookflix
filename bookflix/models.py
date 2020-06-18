@@ -2,7 +2,7 @@ from django.db import models
 from django.core.exceptions import FieldError, ValidationError
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.base_user import BaseUserManager
-
+from datetime import datetime
 from django.utils import timezone
 from creditcards.models import CardNumberField, CardExpiryField, SecurityCodeField
 
@@ -323,6 +323,7 @@ class Trailer(models.Model):
         return self.title
 
 
+    
 
 def numerolegal(value):
     if value == 0:
@@ -333,31 +334,10 @@ def numerolegal(value):
         return value
 
 "-------Chapter-------"
-class Chapter(models.Model):
-    aux=0
-
-    def libroLleno(value):
-    
-        try:
-            b= BookByChapter.objects.get(isbn= value)
-            c= Chapter.objects.filter(book= value).count()
-            if c == b.cant_chapter: 
-                raise ValidationError('El libro no puede contener mas capítulos')
-            else:
-                self.aux= b.cant_chapter
-                return value
-        except BookByChapter.DoesNotExist:
-            return value
-    
-    def verificar_numero(value):
-        if value > self.aux:
-            raise ValidationError('Este Libro puede tener hasta el capítulo: ' + str(self.aux))
-        else:
-            return value
-    
-    book= models.ForeignKey(BookByChapter, on_delete=models.CASCADE, verbose_name="libro", validators=[libroLleno])
+class Chapter(models.Model):    
+    book= models.ForeignKey(BookByChapter, on_delete=models.CASCADE, verbose_name="libro",) # validators=[libroLleno])
     title= models.CharField(("Titulo del capítulo"), max_length=50, help_text="Ingrese el nombre del capítulo, en caso de no tenerlo, su numero de cap, esta información se mostrará al usuario")
-    number = models.IntegerField(("numero de capitulo"), validators=[numerolegal, verificar_numero], help_text="este dato es solo para ordenar las busquedas internas, sepa que si un libro tiene dos capitulos y aquí pone 10 (en vez de 1) , no afectara al libro, pero en el orden se mostrara al final")
+    number = models.IntegerField(("numero de capitulo"), validators=[numerolegal], help_text="este dato es solo para ordenar las busquedas internas, sepa que si un libro tiene dos capitulos y aquí pone 10 (en vez de 1) , no afectara al libro, pero en el orden se mostrara al final")
     description = models.TextField(("Descripción del capítulo"), blank=True, null=True)
     pdf = models.FileField(upload_to='pdf')
     active = models.BooleanField(("Activado"), default=False)
@@ -367,11 +347,20 @@ class Chapter(models.Model):
         verbose_name = "Capítulo"
         verbose_name_plural = "Capítulos"
 
+    def clean(self):
+        b= BookByChapter.objects.get(isbn=self.book_id)
+        b2= Chapter.objects.exclude(id= self.id).filter(book=self.book).count()
+        if self.number > b.cant_chapter:
+            raise ValidationError('no puede usar este numero para el capitulo')
+        if b2 == b.cant_chapter:
+            raise ValidationError('El libro no puede contener mas capítulos')
+        if Chapter.objects.filter(book= self.book, number=self.number).exists():
+            raise ValidationError('Ese numero de capítulo ya fue usado por ese capítulo')
 
     def publish(self):
-
         self.save()
-    
+        
+
     def __str__(self):
        
         return ' Libro: %s . Capitulo titulado: %s y es el capitulo numero: %s' % (self.book, self.title, self.number)
@@ -528,7 +517,7 @@ class LikeCommentBookByChapter(models.Model):
         self.save()
 
 def esCorrecto(value):
-    if value <= timezone.now():
+    if datetime.now().date() >= value :
         raise ValidationError('La fecha no puede ser anterior a hoy. ni hoy')
     else:
         return value
@@ -540,10 +529,19 @@ class UpDownBook(models.Model):
     up_premium= models.DateField("pasar a premium",default= timezone.now(), validators=[esCorrecto])
     expiration_premium= models.DateField("expiracion premium", default= timezone.now(), validators=[esCorrecto])   
 
+    def clean(self):
+        if (self.up_normal > self.expiration_normal):
+            raise ValidationError('La fecha de baja no puede ser inferior a la de subida para normal o premium')
+        if (self.up_premium > self.expiration_premium):
+            raise ValidationError('La fecha de baja no puede ser inferior a la de subida para premium o normal')
+
     class Meta:
         verbose_name = "Subir-Bajar-Libro"
         verbose_name_plural = "Subir-Bajar-Libro"
 
+    def __str__(self):
+        return self.book
+    
 class UpDownBookByChapter(models.Model):
     book = models.ForeignKey(BookByChapter, verbose_name=("libro"), on_delete=models.CASCADE)
     up_normal= models.DateField("pasar a normal", default= timezone.now(), validators=[esCorrecto])
@@ -555,13 +553,31 @@ class UpDownBookByChapter(models.Model):
         verbose_name = "Subir-Bajar-LibroPorCapitulo"
         verbose_name_plural = "Subir-Bajar-LibroPorCapitulo"
 
+    def clean(self):
+        if (self.up_normal > self.expiration_normal):
+            raise ValidationError('La fecha de baja no puede ser inferior a la de subida para normal o premium')
+        if (self.up_premium > self.expiration_premium):
+            raise ValidationError('La fecha de baja no puede ser inferior a la de subida para premium o normal')
+
+    def __str__(self):
+        return self.book
+    
 class UpDownChapter(models.Model):
     chapter = models.ForeignKey(Chapter, verbose_name=("Capitulo"), on_delete=models.CASCADE)
     up= models.DateField("DarDeAlta", default= timezone.now(), validators=[esCorrecto])
     expirationl= models.DateField("DarDeBaja", default= timezone.now(), validators=[esCorrecto])
+    
+    def clean(self):
+        if (self.up > self.expirationl):
+            raise ValidationError('La fecha de baja no puede ser inferior a la de subida')
+    
     class Meta:
         verbose_name = "Subir-Bajar-Capitulo"
         verbose_name_plural = "Subir-Bajar-Capitulos"
+
+    def __str__(self):
+        return self.chapter
+    
 
 class UpDownBillboard(models.Model):
     Billboard = models.ForeignKey(Billboard, verbose_name=("Publicacion"), on_delete=models.CASCADE)
@@ -571,6 +587,13 @@ class UpDownBillboard(models.Model):
         verbose_name = "Subir-Bajar-Publicacion"
         verbose_name_plural = "Subir-Bajar-Publicaciones"
 
+    def clean(self):
+        if (self.up > self.expirationl):
+            raise ValidationError('La fecha de baja no puede ser inferior a la de subida')    
+
+    def __str__(self):
+        return self.Billboard
+    
 class UpDownTrailer(models.Model):
     trailer = models.ForeignKey(Trailer, verbose_name=("Publicacion"), on_delete=models.CASCADE)
     up= models.DateField("DarDeAlta", default= timezone.now(), validators=[esCorrecto])
@@ -578,44 +601,25 @@ class UpDownTrailer(models.Model):
     class Meta:
         verbose_name = "Subir-Bajar-Trailer"
         verbose_name_plural = "Subir-Bajar-Trailer"
+    
+    def clean(self):
+        if (self.up > self.expirationl):
+            raise ValidationError('La fecha de baja no puede ser inferior a la de subida')
 
+    def __str__(self):
+        return self.trailer
+    
 
 class UserSolicitud(models.Model):
-    pass
-    "Valores para los diferentes tipos de cuenta"
-    alta='1' 
-    cambio='2'
-    baja='4'
-    AC_CHOICES= (
-        (alta, 'alta'),
-        (cambio, 'cambio'),
-        (baja, 'baja')
-    )
-    free = 'f'
-    normal = 'n'
-    premium = 'p'
-    TY_CHOICES= (
-        (free, 'free'),
-        (normal, 'normal'),
-        (premium, 'premium')
-    )
-    "Valores del modelo"    
-    """Si se pide una baja, se debe llenar con la fecha en que termina el plan.
-        Si se pude el cambio, apenas empieza el dia de que termine el tiempo pagado del usuario,
-        se debería cambiar el usuario al plan nuevo """
 
-    """en caso de que el usuario quiera pagar tiempo hay que revisar que no tenga una solicitud de
-      cambio de plan, en ese caso se debe generar una solicitud de alta con el plan nuevo y el tiempo"""  
-
-    "tipo de solicitud que se hace"
-    type_of_solicitud = models.CharField("tipo de solicitud", max_length=2, choices=AC_CHOICES, default=alta)
-    "tipo de plan al que se quiere cambiar, en caso de que sea baja, por defecto es free"
-    type_of_plan = models.CharField("tipo de plan", max_length=2, choices=TY_CHOICES, default=free)
+    #tipo de solicitud tres valores: alta, baja cambio
+    type_of_solicitud = models.CharField("tipo de solicitud",  max_length=6)
+    #Type_of_plan tres valores: free, normal, premium
+    type_of_plan = models.CharField("tipo de plan", max_length=7)
     user = models.ForeignKey(Account, on_delete=models.CASCADE, verbose_name="usuario")
     date_of_solicitud = models.DateTimeField("fecha de solicitud",default=timezone.now)
-    "fecha limite para atender la solicitud, si es un alta es un dia despues de la fecha de creacion"
-    "si es un cambio o baja es cuando se termina el tiempo comprado por el usuario"
-    date_limit_to_attend = models.DateTimeField("fecha limite",blank=True, null=True)
+    #Esta tendrá tres valores 0 sin tocar, 1 aceptada, 2 rechazada
+    is_accepted= models.IntegerField(default=0)
 
     def publish(self):
         self.save()

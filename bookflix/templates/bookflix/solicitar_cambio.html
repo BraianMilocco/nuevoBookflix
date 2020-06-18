@@ -1,13 +1,45 @@
 <html>
     <body>
-        {% include "bookflix/barra.html" %}
-        <h1>Funcionalidad en desarrollo we</h1>
-        <label>
-            <input type="checkbox" id="cbox1" value="first_checkbox"> Comprar cuenta normal
-        </label>
-        <br>
-        <input type="checkbox" id="cbox2" value="second_checkbox"> 
-        <label for="cbox2">Comprar cuenta premium
-        </label>   
+
+
+        <form name="formulario" method="post">
+            <p> Seleccione el plan que quiere </p>
+            <select name="planes">
+            {%if request.user.plan == 'free' %}
+                <option value="normal">Normal</option>
+                <option value="premium" selected>Premium</option>
+            {%elif request.user.plan == 'normal' %}
+                <option value="free">Free</option>
+                <option value="premium" selected>Premium</option>
+            {%elif request.user.plan == 'premium'%}
+                <option value="free">Free</option>
+                <option value="normal" selected>normal</option>
+            {%endif%}
+            </select>
+        </form>
+        <button type="submit">Seleccionar Cambio</button> 
+        <button href="/perfil"> Volver al Perfil</button> 
+        <p></p>
+        <p>Precios </p>
+        <p> Free: $000 al mes (pero no podes leer nada)</p>
+        <p> Normal: $XXX al mes (y podes leer pero no todo)</p>
+        <p> Premium: $YYY al mes (lee lo que quieras)</p>
+
+        <p style=color:blue>Su plan actual es {{ request.user.plan }}</p>
     </body>
+
+
+    <form method="POST"> {% csrf_token %}
+
+        {% for field in solicitud %}
+            <p>
+                {{field.label_tag}}
+                {{field}}
+            </p>
+        {% endfor %}
+        
+        <p></p>
+        <button type="submit">Registrar</button>
+    </form>
+
 </html>

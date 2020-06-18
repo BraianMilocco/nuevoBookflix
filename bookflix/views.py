@@ -7,7 +7,7 @@ from django.contrib.auth import logout as do_logout
 from django.shortcuts import redirect
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_protect
-from .forms import RegistrationForm, RegistroTarjeta, CrearPerfil, MailChange, MailConfirmacion, RecuperarCuenta
+from .forms import  RegistrationForm, RegistroTarjeta, CrearPerfil, MailChange, MailConfirmacion, RecuperarCuenta
 from .models import *
 from django.contrib.auth.forms import UserCreationForm
 from django import shortcuts
@@ -299,7 +299,8 @@ def crear_perfil(request):
     return render(request, 'bookflix/crear_perfil.html', context)
 
 def solicitar_cambio(request):
-     return render(request,"bookflix/solicitar_cambio.html")
+
+    return render(request,"bookflix/solicitar_cambio.html", context)
 
 def leer_libro(request,isbn):
      libro = Book.objects.get(isbn=isbn)

@@ -3,6 +3,14 @@ from django.contrib.auth.admin import UserAdmin
 from django import forms
 
 from  .models import *
+from .forms import ChapForm
+
+
+class ChapterAdmin(admin.ModelAdmin):
+    form = ChapForm
+    list_display = ('book', 'title', 'number', 'description', 'pdf', 'active')
+
+
 
 class AccountAdmin(UserAdmin): 
     list_display= ('email', 'username', 'date_joined', 'plan')
@@ -57,7 +65,9 @@ admin.site.register(UpDownBillboard)
 admin.site.register(UpDownTrailer)
 admin.site.register(Book)
 admin.site.register(BookByChapter)
-admin.site.register(Chapter)
+#admin.site.register(Chapter)
+admin.site.register(Chapter, ChapterAdmin)
+
 admin.site.register(Billboard)
 #admin.site.register(CounterStates)
 admin.site.register(ConfirmationMail)

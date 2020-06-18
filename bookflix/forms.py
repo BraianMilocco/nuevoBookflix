@@ -1,5 +1,5 @@
 from django import forms
-from .models import Account, CreditCards, Profile, ConfirmationMail
+from .models import Account, CreditCards, Profile, ConfirmationMail, Chapter, BookByChapter, UserSolicitud
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.forms import UserCreationForm
 from django.forms import ModelForm
@@ -7,6 +7,18 @@ from django.forms import ValidationError
 from datetime import datetime, timedelta
 from creditcards.forms import CardNumberField, CardExpiryField, SecurityCodeField
 
+"""class UserSolicitudForm(ModelForm):
+    class Meta: 
+        model = UserSolicitud
+        fields = ('type_of_plan',)
+        typePlan_CHOICES = (   
+                ('free', 'free'), #First one is the value of select option and second is the displayed value in option
+                ('normal', 'normal'),
+                ('premium', 'premium'),
+                )
+        widgets = {
+            'type_of_plan':forms.ChoiceField(choices=typePlan_CHOICES,)
+        }"""
 
 class MailConfirmacion(forms.Form):
     codigoV = forms.CharField(label='codigo Validacion')
@@ -43,6 +55,8 @@ class MailChange(ModelForm):
     class Meta: 
         model = Account
         fields = ('email',)
+    
+
 
 
     def clean_email(self):
@@ -57,3 +71,21 @@ class MailChange(ModelForm):
 class RecuperarCuenta(forms.Form):
     email= forms.EmailField()
     
+
+
+class ChapForm(ModelForm):
+    class Meta:
+        model = Chapter
+        exclude = ['id', ]
+
+    def clean(self):
+        n = self.cleaned_data['number']
+        b = self.cleaned_data['book']
+        try:
+            book= BookByChapter.objects.get(isbn= b)
+            if n > book.cant_chapter:
+                raise forms.ValidationError("Product offer price cannot be greater than Product MRP.")
+            else:
+                return self.cleaned_data
+        except BookByChapter.DoesNotExist:
+            return self.cleaned_data
