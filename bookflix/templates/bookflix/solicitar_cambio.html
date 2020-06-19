@@ -1,5 +1,6 @@
 <html>
     <body>
+        {% include "bookflix/barra.html" %}
         <p></p>
         <p>Precios </p>
         <p> Free: $000 al mes (pero no podes leer nada)</p>
@@ -15,10 +16,12 @@
         {{ solicitud }} 
 
        
-    <input type="submit" value="Confirmar">    
+    <input type="submit" value="/publicaciones/">  
+    {# <a href="/publicaciones/{{libro.author}}">{{libro.title}}</a>  #}
     
-        <p></p>
+    
         
     </form>
     <a href="/perfil">volver</a>  
+    
 </html>

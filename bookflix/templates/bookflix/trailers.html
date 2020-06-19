@@ -1,0 +1,29 @@
+<html>
+    <body>
+        {% include "bookflix/barra.html" %}
+        <h1>Solicitudes</h1>
+
+        <ul id="Solicitudes">
+
+            {% if trailers %}
+            {% for trailer in trailers %}
+               <li style="display:inline-block; margin: 20px;">
+                    <div>
+                        <h3> {{trailer.title}} </h3>
+                        <h3> {{trailer.book}}</h3> 
+                        
+                        <iframe   width="460" height="250" src={{trailer.video}} frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> 
+                        <p> {{trailer.description}}</p>
+                    </div>
+                    <br>
+                </li>
+            {% endfor %}
+            {% else %}
+            <p>No hay solicitudes de alta disponibles</p>
+            {% endif %}
+        
+        </ul>
+        <a href="/simuladorTemporal"> actualizar libros</a>
+
+    </body>
+</html>
