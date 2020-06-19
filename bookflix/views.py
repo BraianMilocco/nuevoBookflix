@@ -348,6 +348,10 @@ def perfil_seleccionado(request,id_perfil):
     return redirect("/") 
 
 
+def trailers(request):
+    trailers = Trailer.objects.filter(mostrar_en_home=True)
+    return render(request,"bookflix/trailers.html",{"trailers":trailers})
+
 #EScribir views arriba de esta, de acá para abajo nada
 
 #Funciones de automatizacion, escribir cualquier otra view antes que esta
@@ -458,3 +462,6 @@ def simuladorTemporal(request):
     except UserSolicitud.DoesNotExist: pass
     return render(request, "bookflix/simuladorTemporal.html", context)
     #return redirect('/solicitudes')
+
+
+   
