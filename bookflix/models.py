@@ -540,7 +540,8 @@ class UpDownBook(models.Model):
         verbose_name_plural = "Subir-Bajar-Libro"
 
     def __str__(self):
-        return self.book
+        #boo= Book.objects.get(isbn=self.book)
+        return str(self.book)
     
 class UpDownBookByChapter(models.Model):
     book = models.ForeignKey(BookByChapter, verbose_name=("libro"), on_delete=models.CASCADE)
@@ -560,7 +561,8 @@ class UpDownBookByChapter(models.Model):
             raise ValidationError('La fecha de baja no puede ser inferior a la de subida para premium o normal')
 
     def __str__(self):
-        return self.book
+        str(self.book)
+        return boo.title
     
 class UpDownChapter(models.Model):
     chapter = models.ForeignKey(Chapter, verbose_name=("Capitulo"), on_delete=models.CASCADE)
@@ -576,7 +578,7 @@ class UpDownChapter(models.Model):
         verbose_name_plural = "Subir-Bajar-Capitulos"
 
     def __str__(self):
-        return self.chapter
+        return str(self.chapter)
     
 
 class UpDownBillboard(models.Model):
@@ -592,7 +594,7 @@ class UpDownBillboard(models.Model):
             raise ValidationError('La fecha de baja no puede ser inferior a la de subida')    
 
     def __str__(self):
-        return self.Billboard
+        return str(self.Billboard)
     
 class UpDownTrailer(models.Model):
     trailer = models.ForeignKey(Trailer, verbose_name=("Publicacion"), on_delete=models.CASCADE)
@@ -607,7 +609,7 @@ class UpDownTrailer(models.Model):
             raise ValidationError('La fecha de baja no puede ser inferior a la de subida')
 
     def __str__(self):
-        return self.trailer
+        return str(self.trailer)
     
 
 class UserSolicitud(models.Model):

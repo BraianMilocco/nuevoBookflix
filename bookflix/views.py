@@ -347,3 +347,114 @@ def perfil_seleccionado(request,id_perfil):
     #request.session['perfil_actual']= perfil_actual.name
     return redirect("/") 
 
+
+#EScribir views arriba de esta, de acá para abajo nada
+
+#Funciones de automatizacion, escribir cualquier otra view antes que esta
+
+from .funcionesAutomatizacion import *
+
+def simuladorTemporal(request):
+    context={}
+   #Libros
+    try:
+        Lib= UpDownBook.objects.filter(up_normal =timezone.now()).values('book')
+        li= Book.objects.filter(isbn__in=Lib)
+        cambioNormal(li, True)
+        
+    except UpDownBook.DoesNotExist:
+        pass
+    try:
+        Lib= UpDownBook.objects.filter(expiration_normal=timezone.now().date()).values('book')         
+        li= Book.objects.filter(isbn__in=Lib)
+        cambioNormal(li, False)
+    except UpDownBook.DoesNotExist:
+        pass
+    try:
+        Lib= UpDownBook.objects.filter(up_premium =timezone.now()).values('book')
+        li= Book.objects.filter(isbn__in=Lib)
+        cambioPremium(li, True)
+    except UpDownBook.DoesNotExist:
+        pass
+    try:
+        Lib= UpDownBook.objects.filter(expiration_premium=timezone.now().date()).values('book')         
+        li= Book.objects.filter(isbn__in=Lib)
+        cambioPremium(li,False)
+    except UpDownBook.DoesNotExist:
+        pass
+
+    #LibrosPorCapitulo
+    try:
+        Lib= UpDownBookByChapter.objects.filter(up_normal =timezone.now()).values('book')
+        li= BookByChapter.objects.filter(isbn__in=Lib)
+        cambioNormal(li, True)
+    except UpDownBookByChapter.DoesNotExist:
+        pass
+    try:
+        Lib= UpDownBookByChapter.objects.filter(expiration_normal=timezone.now().date()).values('book')         
+        li= BookByChapter.objects.filter(isbn__in=Lib)
+        cambioNormal(li, False)
+    except UpDownBookByChapter.DoesNotExist:
+        pass
+    try:
+        Lib= UpDownBookByChapter.objects.filter(up_premium =timezone.now()).values('book')
+        li= BookByChapter.objects.filter(isbn__in=Lib)
+        cambioPremium(li, True)
+    except UpDownBookByChapter.DoesNotExist:
+        pass
+    try:
+        Lib= UpDownBookByChapter.objects.filter(expiration_premium=timezone.now().date()).values('book')         
+        li= BookByChapter.objects.filter(isbn__in=Lib)
+        cambioPremium(li,False)
+    except UpDownBookByChapter.DoesNotExist:
+        pass
+    
+    #Capitulos
+
+    try:
+        cha= UpDownChapter.objects.filter(up =timezone.now()).values('chapter')
+        c= Chapter.objects.filter(id__in=cha)
+        cambioOtros(c, True )
+    except Chapter.DoesNotExist: 
+        pass
+    try:
+        cha= UpDownChapter.objects.filter(expirationl =timezone.now()).values('chapter')
+        c= Chapter.objects.filter(id__in=cha)
+        cambioOtros(c, False )
+    except Chapter.DoesNotExist: pass
+
+    #Novedades
+
+    try:
+        cha= UpDownBillboard.objects.filter(up =timezone.now()).values('Billboard')
+        c= Billboard.objects.filter(id__in=cha)
+        cambioBilTra(c, True )
+    except Billboard.DoesNotExist: pass
+    try:
+        cha= UpDownBillboard.objects.filter(expirationl =timezone.now()).values('Billboard')
+        c= Billboard.objects.filter(id__in=cha)
+        cambioBilTra(c, False )
+    except Billboard.DoesNotExist: pass
+
+    #Trailer
+
+    try:
+        cha= UpDownTrailer.objects.filter(up =timezone.now()).values('trailer')
+        c= Trailer.objects.filter(id__in=cha)
+        cambioBilTra(c, True )
+    except Trailer.DoesNotExist: pass
+    try:
+        cha= UpDownTrailer.objects.filter(expirationl =timezone.now()).values('trailer')
+        c= Trailer.objects.filter(id__in=cha)
+        cambioBilTra(c, False )
+    except Trailer.DoesNotExist: pass
+
+    #Bajas usuarios
+    try:
+        sol= UserSolicitud.objects.filter(type_of_solicitud='baja').values('user')
+        ac= Account.objects.filter(id__in= sol)
+        darDeBajaUsuarios(ac)
+        context['libros']= ac
+    except UserSolicitud.DoesNotExist: pass
+    return render(request, "bookflix/simuladorTemporal.html", context)
+    #return redirect('/solicitudes')

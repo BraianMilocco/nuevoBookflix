@@ -25,7 +25,7 @@ urlpatterns = [
     path('leer_libro/<isbn>/', leer_libro, name='leerlibro'),
     path('libro_capitulo/', libro_capitulo, name='libro_capitulo'), 
     path("perfil_seleccionado/<id_perfil>/", perfil_seleccionado, name="perfil_seleccionado"),  
-
+    path("simuladorTemporal/", simuladorTemporal, name="simuladorTemporal"),
 ] 
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
