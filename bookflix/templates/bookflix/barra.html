@@ -46,8 +46,10 @@
             <li><a href="/select_perfil">Perfiles</a></li>
             {% if request.user.is_admin %}
                <li><a href="/solicitudes">Solicitudes</a></li>
+               <li><a href="/historial">Historial</a></li>
             {% else %}
                <li><a href="/solicitar_cambio">Solicitar Cambio</a></li>
+               <li><a href="/historial">Historial</a></li>
             {% endif %}
          </ul>
       {% else %}
