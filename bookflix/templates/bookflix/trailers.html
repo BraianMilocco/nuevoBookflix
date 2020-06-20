@@ -2,20 +2,15 @@
     <body>
         {% include "bookflix/barra.html" %}
         <h1>Trailers</h1>
-
-        <ul id="Solicitudes">
-
             {% if trailers %}
             {% for trailer in trailers %}
                <li style="display:inline-block; margin: 20px;">
                     <div>
                         <h3> {{trailer.title}} </h3>
                         <br>
-                        {% if trailers.book == False %}
-                            <p>hola!</p>
-                            <a href="/leer_libro/{{trailer.libro_por_capitulo.isbn}}">{{trailer.libro_por_capitulo}}a</a> 
+                        {% if trailer.book == null %}
+                            <a href="/leer_libro_por_capitulo/{{trailer.libro_por_capitulo.isbn}}">{{trailer.libro_por_capitulo}}</a> 
                         {% else %}
-                            <p>libro entero</p>
                             <a href="/leer_libro/{{trailer.book.isbn}}">{{trailer.book}}</a>     
                         {% endif %}
                         <br>
@@ -28,8 +23,5 @@
             {% else %}
             <p>No hay solicitudes de alta disponibles</p>
             {% endif %}
-        
-        </ul>
-
     </body>
 </html>

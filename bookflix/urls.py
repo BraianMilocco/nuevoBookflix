@@ -30,6 +30,7 @@ urlpatterns = [
     path("trailers/", trailers, name="trailers"),
     path("aceptarSolicitud/<idSol>/<num>/", aceptarSolicitud, name="aceptarSolicitud"),
     path("buscar/",buscar, name="buscar"),
+    path("historial/", historial, name="historial"), 
 ] 
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

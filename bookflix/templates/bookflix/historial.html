@@ -1,0 +1,36 @@
+<html>
+    <body>
+        {% include "bookflix/barra.html" %}
+        <h1>Historial</h1>
+            {% if historial_libros %}
+            {% for estado in historial_libros %}
+               <li style="display:inline-block; margin: 20px;">
+                    <div>
+                        <h3>El perfil {{estado.profile}} añadio el libro {{estado.book}} a {{estado.state}}</h3>
+                        <br>
+                        <img style="max-width:275px; max-height:275px;" src="{{estado.book.image.url}}"  alt="fondo" > 
+                    </div>
+                    <br>
+                </li>
+            {% endfor %}
+
+
+            {% if historial_libros_cap %}
+            {% for estado in historial_libros_cap %}
+               <li style="display:inline-block; margin: 20px;">
+                    <div>
+                        <h3>El perfil {{estado.profile}} añadio el libro {{estado.book}} a {{estado.state}}</h3>
+                        <br>
+                        <img style="max-width:275px; max-height:275px;" src="{{estado.book.image.url}}"  alt="fondo" > 
+                    </div>
+                    <br>
+                </li>
+            {% endfor %}
+            {% endif %}
+
+
+            {% else %}
+            <p>No hay solicitudes de alta disponibles</p>
+            {% endif %}
+    </body>
+</html>

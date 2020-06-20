@@ -2,6 +2,43 @@
 <html>
     <body>
         {% include "bookflix/barra.html" %}
-        <embed style="width:900px; height:700px;" frameborder="0" id='pdf' src="{% static 'cmd.pdf' %}"></embed>
+        <div>
+            <div style="display: inline; margin: auto;">
+                <img style="max-width:275px; max-height:275px;" src="{{libro.image.url}}"  alt="fondo" > 
+                <button style="position: absolute;margin-left: 10;">Agregar a futuras lecturas</button>
+                
+                <button onclick="enviarPost( 'publicacion')" style="position: absolute;margin-top: 40;margin-left:10;">Leer Libro</button>
+                 
+
+                
+
+
+
+                {# <embed style="width:300px; height:250px;" frameborder="0" id='pdf' src="{% static 'pdf/cmd.pdf' %}"></embed> #}                    {# % static 'pdf/cmd.pdf' % #}
+
+                <input id="submit" type="button" value="Click" href="/"/>           
+            </div>  
+                    <br>
+                    <!-- -->
+                    <br> 
+                    <p> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </p>
+                    <br>
+                    <p> Género(s): {%for genero in libro.genders.all %}
+                        | {{genero.name}} |
+
+                    {% endfor %}
+                    </p>
+                    <br>
+                    <p> Capítulo(s): {%for capitulo in libro.cant_chapter.all %}  {# acá sería otro tipo de for #}
+                        | cap en proceso |                                          {# acá buscaría por el número de capítulo y lo traigo de la base #}
+
+                    {% endfor %}
+                    </p>
+        </div>
+        <p>-----------</p>
+        <object data="{{libro.pdf.url}}" type="application/x-pdf" title="{{libro.title}}" width="500" height="720">
+            <a href="{{libro.pdf.url}}">Leer Libro</a> 
+        </object>
+
     </body>
 </html>

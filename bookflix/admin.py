@@ -57,6 +57,7 @@ admin.site.register(Profile)
 admin.site.register(UserSolicitud)
 
 admin.site.register(StateOfBook)
+admin.site.register(StateOfBookByChapter)
 
 admin.site.register(UpDownBook)
 admin.site.register(UpDownBookByChapter)

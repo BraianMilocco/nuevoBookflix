@@ -238,7 +238,8 @@ class Book(models.Model):
     mostrar_en_home= models.BooleanField(default=False)
     on_normal = models.BooleanField("ver en normal", default=False)
     on_premium = models.BooleanField("ver en premium",default=False)
-    pdf = models.FileField(upload_to='pdf', blank=True, null=True)
+    # pdf = models.FileField(upload_to='pdf', blank=True, null=True)   # cambiarlo para que guarde solo url?
+    pdf = models.FileField(upload_to='pdf', blank=True, null=True)   #por si en un futuro hacemos que se guarde en la base de datos
     
     def publish(self):
     
@@ -394,9 +395,9 @@ class StateOfBookByChapter(models.Model):
     def publish(self):
         self.save()
 
-    def __str__(self):
-        b=BookByChapter.objects.get(isbn=self.book)
-        return 'el libro %c se encuentra en el estado: %c' % (b.title, self.state)        
+#    def __str__(self):
+#        b=BookByChapter.objects.get(isbn=self.book)
+#        return 'el libro %c se encuentra en el estado: %c' % (b.title, self.state)        
 
 class StateOfBook(models.Model):
 
@@ -422,9 +423,9 @@ class StateOfBook(models.Model):
     def publish(self):
         self.save()
 
-    def __str__(self):
-        b=Book.objects.get(isbn=self.book)
-        return 'el libro %c se encuentra en el estado: %c' % (b.title, self.state)            
+#    def __str__(self):
+#        b=Book.objects.get(isbn=self.book)
+#        return 'el libro %c se encuentra en el estado: %c' % (b.title, self.state)         #esta funcion me causaba problemas al intentar referenciar un self.book que por lo visto todavía no existia/estaba guardado   
 
 #Comment
 class CommentBook(models.Model):

@@ -118,7 +118,9 @@ def welcome(request):
     publicacion=Billboard.objects.filter(mostrar_en_home=True)
     libros = Book.objects.filter(mostrar_en_home=True)
     trailers = Trailer.objects.filter(mostrar_en_home=True)
-    return render(request, "bookflix/welcome.html",{'publicaciones':publicacion,"trailers":trailers, "libros":libros}) 
+    historial_libros = StateOfBookByChapter.objects.filter(state="reading")
+    historial_libros_cap = StateOfBookByChapter.objects.filter(state="reading")
+    return render(request, "bookflix/welcome.html",{'publicaciones':publicacion,"trailers":trailers, "libros":libros, "historial_libros":historial_libros, "historial_libros_cap":historial_libros_cap}) 
 
 def barra(request):
     return render(request,"bookflix/barra.html", perfil)
@@ -340,7 +342,16 @@ def leer_libro_por_capitulo(request,isbn):
 
 def libro_capitulo(request):
 
-    return render(request,"bookflix/libro_capitulo.html") 
+    return render(request,"bookflix/libro_capitulo.html")
+
+
+
+def historial(request):
+     historial_libros = StateOfBook.objects.filter(state="finished")
+     historial_libros_cap = StateOfBookByChapter.objects.filter(state="finished")
+     #historial = historial_libros_cap |= historial_libros
+     return render(request,"bookflix/historial.html",{"historial_libros":historial_libros,"historial_libros_cap":historial_libros_cap }) 
+
 
 
 def perfil_seleccionado(request,id_perfil):
