@@ -7,7 +7,7 @@ from django.contrib.auth import logout as do_logout
 from django.shortcuts import redirect
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_protect
-from .forms import UserSolicitudForm, RegistrationForm, RegistroTarjeta, CrearPerfil, MailChange, MailConfirmacion, RecuperarCuenta
+from .forms import UserSolicitudForm, RegistrationForm, RegistroTarjeta, CrearPerfil, MailChange, MailConfirmacion, RecuperarCuenta, busquedaOtrosForm
 from .models import *
 from django.contrib.auth.forms import UserCreationForm
 from django import shortcuts
@@ -23,6 +23,7 @@ from django.conf import settings
 from django.utils.crypto import get_random_string
 
 from django.core import serializers
+
 
 
 #codigo de mail
