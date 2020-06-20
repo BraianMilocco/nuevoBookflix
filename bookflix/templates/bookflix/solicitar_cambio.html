@@ -1,4 +1,7 @@
 <html>
+    {% if request.session.tiene %}
+        <p>Usted ya tiene una solicitud pendiente</p>
+    {% else %}
     <body>
         {% include "bookflix/barra.html" %}
         <p></p>
@@ -22,6 +25,7 @@
     
         
     </form>
+    {%endif%}
     <a href="/perfil">volver</a>  
     
 </html>

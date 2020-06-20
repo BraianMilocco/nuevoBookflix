@@ -24,6 +24,7 @@ from django.utils.crypto import get_random_string
 
 from django.core import serializers
 
+
 #codigo de mail
 #do_login(request, user)
 #                send_mail('Subject here', 'Here is the message.', settings.EMAIL_HOST_USER,
@@ -108,8 +109,8 @@ def confirmarCuenta(request):
     return render(request, "bookflix/confirmacion.html", context)
 
 
-def buscarPorAutor(request, autor):                       #mmmm me parece que va a tener que estar en el template
-    libros = Book.object.filter(Author=autor)
+def buscarPorIsbs(request, isbn):                       #mmmm me parece que va a tener que estar en el template
+    libros = Book.object.filter(isbn=isbn)
     return render(request, welcome, {"libros":libros}) 
 
 def welcome(request):
@@ -331,6 +332,10 @@ def leer_libro(request,isbn):
      libro = Book.objects.get(isbn=isbn)
      return render(request,"bookflix/leer_libro.html",{"libro":libro}) 
 
+def leer_libro_por_capitulo(request,isbn):
+     libro = BookByChapter.objects.get(isbn=isbn)
+     return render(request,"bookflix/leer_libro.html",{"libro":libro}) 
+
 
 def libro_capitulo(request):
 
@@ -351,6 +356,81 @@ def perfil_seleccionado(request,id_perfil):
 def trailers(request):
     trailers = Trailer.objects.filter(mostrar_en_home=True)
     return render(request,"bookflix/trailers.html",{"trailers":trailers})
+
+
+def aceptarSolicitud(request,idSol,num):
+    try:
+        sol= UserSolicitud.objects.get(id=idSol)
+        
+        if num == '1':
+            userSol= UserSolicitud.objects.filter(id=idSol).values('user')
+            us= Account.objects.get(id__in=userSol)
+            sol.is_accepted= num
+            sol.save()
+            us.plan= sol.type_of_plan
+            us.time_pay=30
+            us.date_start_plan= timezone.now()
+            us.save()
+        else:
+            sol.is_accepted=num
+            sol.save()
+    except UserSolicitud.DoesNotExist:
+        pass
+    return redirect('/solicitudes')   
+
+
+
+def buscar(request):
+    context={}
+    libros= Book.objects.all()
+    librosCap= BookByChapter.objects.all()
+    context['libros']= libros
+    context['librosCap']= librosCap
+    request.session['el']= False
+    request.session['elc']=False
+    request.session.modified = True
+    if request.POST:
+        form= busquedaOtrosForm(request.POST)
+        if form.is_valid():
+            
+            if not (form.cleaned_data['isbn'] is None):    
+                try:
+                    l= Book.objects.get(isbn=form.cleaned_data['isbn'])
+                    request.session['el']= True
+                except Book.DoesNotExist:
+                    try:
+                        lc= BookByChapter.objects.get(isbn=form.cleaned_data['isbn'])
+                        request.session['elc']=True
+                    except BookByChapter.DoesNotExist:
+                        pass
+                request.session.modified = True
+            else:
+                #l = buscarLibros(libros, form, request, 'el')
+                #lc = buscarLibros(librosCap, form, request, 'elc')
+                l= libros
+                lc= librosCap
+                if not (form.cleaned_data['titulo'] is None):
+                    try:
+                        l= Book.objects.filter(title= form.cleaned_data['titulo'])
+                        request.session['el']= True
+                    except l.DoesNotExist:
+                        try:
+                            lc= lc.objects.filter(title= form.cleaned_data['titulo'])
+                            request.session['elc'].modified=True
+                        except lc.DoesNotExist:
+                            pass
+                request.session.modified = True        
+
+        if request.session['el']:
+           context['libros']= l
+        elif request.session['elc']:
+            context['librosCap']= lc
+    form= busquedaOtrosForm()
+    context['form']= form
+    return render(request, "bookflix/buscar.html", context)
+
+
+
 
 #EScribir views arriba de esta, de acá para abajo nada
 

@@ -1,0 +1,41 @@
+<p>Como buscar:</p>
+<p> 1. escriba en los campos</p>
+<form method="post">
+    {% csrf_token %}
+
+    {{form.isbn.label_tag}}
+    {{form.isbn}}
+    <p></p>
+    {{form.titulo.label_tag}}
+    {{form.titulo}}
+    <p></p>
+    {{form.genero.label_tag}}
+    {{form.genero}}
+    <p></p>
+    {{form.autor.label_tag}}
+    {{form.autor}}
+    <P></P>
+    {{form.editorial.label_tag}}
+    {{form.editorial}}
+    <p></p>
+    <button type="submit">Save changes</button>
+  </form>
+
+  {%if request.session.el%}
+    {{ libros.title}}
+
+  {%elif request.session.elc%}
+    {{ librosCap.title}}
+  {%else%}
+    {% if libros%}
+        {%for libro in libros%}
+            <p> {{ libro.title}}</p>
+        {%endfor %}
+    {%endif%}
+    {% if librosCap%}
+        {%for libro in librosCap%}
+            <p> {{ libro.title}}</p>
+        {%endfor %}
+    {%endif%}
+
+  {%endif%}

@@ -15,13 +15,15 @@
                         </p>
                     </div>
                 </li>
+                <a href="/aceptarSolicitud/{{solicitud.id}}/1"> | Aceptar   </a>
+                <a>    | |    </a>
+                <a href="/aceptarSolicitud/{{solicitud.id}}/2">   Denegar | </a>
             {% endfor %}
             {% else %}
             <p>No hay solicitudes de alta disponibles</p>
             {% endif %}
         
         </ul>
-        <a href="/simuladorTemporal"> actualizar libros</a>
 
     </body>
 </html>

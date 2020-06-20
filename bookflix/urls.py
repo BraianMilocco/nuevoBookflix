@@ -27,6 +27,8 @@ urlpatterns = [
     path("perfil_seleccionado/<id_perfil>/", perfil_seleccionado, name="perfil_seleccionado"),  
     path("simuladorTemporal/", simuladorTemporal, name="simuladorTemporal"),
     path("trailers/", trailers, name="trailers"),
+    path("aceptarSolicitud/<idSol>/<num>/", aceptarSolicitud, name="aceptarSolicitud"),
+    path("buscar/",buscar, name="buscar"),
 ] 
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

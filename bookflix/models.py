@@ -310,7 +310,8 @@ class Trailer(models.Model):
     mostrar_en_home= models.BooleanField(default=False)
     author = models.ForeignKey(Account, on_delete=models.CASCADE,verbose_name="autor")
     video=  models.URLField(  max_length=255, blank=True, null=True)
-    book = models.ForeignKey(Book, on_delete=models.CASCADE, verbose_name="libro")
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, verbose_name="libro",blank=True, null=True)
+    libro_por_capitulo = models.ForeignKey(BookByChapter, on_delete=models.CASCADE, verbose_name="libro por capitulo",blank=True, null=True)
 
     def publish(self):
         self.save()
