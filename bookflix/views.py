@@ -7,7 +7,7 @@ from django.contrib.auth import logout as do_logout
 from django.shortcuts import redirect
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_protect
-from .forms import UserSolicitudForm, RegistrationForm, RegistroTarjeta, CrearPerfil, MailChange, MailConfirmacion, RecuperarCuenta, busquedaOtrosForm
+from .formsu import UserSolicitudForm, RegistrationForm, RegistroTarjeta, CrearPerfil, MailChange, MailConfirmacion, RecuperarCuenta, busquedaOtrosForm
 from .models import *
 from django.contrib.auth.forms import UserCreationForm
 from django import shortcuts
@@ -152,7 +152,9 @@ def select_perfil(request):
 
 def solicitudes(request):
     solicitudes = UserSolicitud.objects.filter(type_of_solicitud='alta', is_accepted=0)
-    return render(request,"bookflix/solicitudes.html",{"solicitudes":solicitudes})
+    usuarios= UserSolicitud.objects.filter(type_of_solicitud='alta', is_accepted=0).values('user')
+    tarjetas= CreditCards.objects.filter(user__in= usuarios)
+    return render(request,"bookflix/solicitudes.html",{"solicitudes":solicitudes, "tarjetas":tarjetas})
             
 def login_propio(request):
     # Creamos el formulario de autenticación vacío
@@ -298,6 +300,14 @@ def crear_perfil(request):
 
 def solicitar_cambio(request):
     context= { }
+    request.session["solicitud"]="1"
+    request.session.modified = True
+    try:
+        cambio_plan =  UserSolicitud.objects.get(is_accepted=0, user=request.user)
+        request.session["solicitud"]="0"
+        request.session.modified = True
+    except UserSolicitud.DoesNotExist: 
+        pass
     request.session['ErrorSolicitudCambio']= "Su plan es: " + request.user.plan + ". Si selecciona el mismo no tendrá efecto" 
     request.session.modified = True
     if request.POST:   
@@ -392,54 +402,54 @@ def aceptarSolicitud(request,idSol,num):
 
 
 
-def buscar(request):
-    context={}
-    libros= Book.objects.all()
-    librosCap= BookByChapter.objects.all()
-    context['libros']= libros
-    context['librosCap']= librosCap
-    request.session['el']= False
-    request.session['elc']=False
-    request.session.modified = True
-    if request.POST:
-        form= busquedaOtrosForm(request.POST)
-        if form.is_valid():
+# def buscar(request):
+#     context={}
+#     libros= Book.objects.all()
+#     librosCap= BookByChapter.objects.all()
+#     context['libros']= libros
+#     context['librosCap']= librosCap
+#     request.session['el']= False
+#     request.session['elc']=False
+#     request.session.modified = True
+#     if request.POST:
+#         form= busquedaOtrosForm(request.POST)
+#         if form.is_valid():
             
-            if not (form.cleaned_data['isbn'] is None):    
-                try:
-                    l= Book.objects.get(isbn=form.cleaned_data['isbn'])
-                    request.session['el']= True
-                except Book.DoesNotExist:
-                    try:
-                        lc= BookByChapter.objects.get(isbn=form.cleaned_data['isbn'])
-                        request.session['elc']=True
-                    except BookByChapter.DoesNotExist:
-                        pass
-                request.session.modified = True
-            else:
-                #l = buscarLibros(libros, form, request, 'el')
-                #lc = buscarLibros(librosCap, form, request, 'elc')
-                l= libros
-                lc= librosCap
-                if not (form.cleaned_data['titulo'] is None):
-                    try:
-                        l= Book.objects.filter(title= form.cleaned_data['titulo'])
-                        request.session['el']= True
-                    except l.DoesNotExist:
-                        try:
-                            lc= lc.objects.filter(title= form.cleaned_data['titulo'])
-                            request.session['elc'].modified=True
-                        except lc.DoesNotExist:
-                            pass
-                request.session.modified = True        
+#             if not (form.cleaned_data['isbn'] is None):    
+#                 try:
+#                     l= Book.objects.get(isbn=form.cleaned_data['isbn'])
+#                     request.session['el']= True
+#                 except Book.DoesNotExist:
+#                     try:
+#                         lc= BookByChapter.objects.get(isbn=form.cleaned_data['isbn'])
+#                         request.session['elc']=True
+#                     except BookByChapter.DoesNotExist:
+#                         pass
+#                 request.session.modified = True
+#             else:
+#                 #l = buscarLibros(libros, form, request, 'el')
+#                 #lc = buscarLibros(librosCap, form, request, 'elc')
+#                 l= libros
+#                 lc= librosCap
+#                 if not (form.cleaned_data['titulo'] is None):
+#                     try:
+#                         l= Book.objects.filter(title= form.cleaned_data['titulo'])
+#                         request.session['el']= True
+#                     except l.DoesNotExist:
+#                         try:
+#                             lc= lc.objects.filter(title= form.cleaned_data['titulo'])
+#                             request.session['elc'].modified=True
+#                         except lc.DoesNotExist:
+#                             pass
+#                 request.session.modified = True        
 
-        if request.session['el']:
-           context['libros']= l
-        elif request.session['elc']:
-            context['librosCap']= lc
-    form= busquedaOtrosForm()
-    context['form']= form
-    return render(request, "bookflix/buscar.html", context)
+#         if request.session['el']:
+#            context['libros']= l
+#         elif request.session['elc']:
+#             context['librosCap']= lc
+#     form= busquedaOtrosForm()
+#     context['form']= form
+#     return render(request, "bookflix/buscar.html", context)
 
 
 
