@@ -119,7 +119,7 @@ def welcome(request):
     libros = Book.objects.filter(mostrar_en_home=True)
     trailers = Trailer.objects.filter(mostrar_en_home=True)
     historial_libros = StateOfBookByChapter.objects.filter(state="reading")
-    historial_libros_cap = StateOfBookByChapter.objects.filter(state="reading")
+    historial_libros_cap = StateOfBook.objects.filter(state="reading")
     return render(request, "bookflix/welcome.html",{'publicaciones':publicacion,"trailers":trailers, "libros":libros, "historial_libros":historial_libros, "historial_libros_cap":historial_libros_cap}) 
 
 def barra(request):
