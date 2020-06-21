@@ -26,6 +26,7 @@ from django.core import serializers
 
 
 
+
 #codigo de mail
 #do_login(request, user)
 #                send_mail('Subject here', 'Here is the message.', settings.EMAIL_HOST_USER,
