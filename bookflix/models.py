@@ -566,7 +566,7 @@ class UpDownBookByChapter(models.Model):
 
     def __str__(self):
         str(self.book)
-        return boo.title
+        return book.title
     
 class UpDownChapter(models.Model):
     chapter = models.ForeignKey(Chapter, verbose_name=("Capitulo"), on_delete=models.CASCADE)
