@@ -24,6 +24,8 @@ from django.utils.crypto import get_random_string
 
 from django.core import serializers
 
+from random import randint, uniform
+
 
 
 
@@ -118,10 +120,11 @@ def buscarPorIsbs(request, isbn):                       #mmmm me parece que va a
 def welcome(request):
     publicacion=Billboard.objects.filter(mostrar_en_home=True)
     libros = Book.objects.filter(mostrar_en_home=True)
+    libros_cap = BookByChapter.objects.filter(mostrar_en_home=True)
     trailers = Trailer.objects.filter(mostrar_en_home=True)
-    historial_libros = StateOfBookByChapter.objects.filter(state="reading")
+    historial_libros = StateOfBookByChapter.objects.filter(state="reading") #, profile=request.session.nombrePerfil
     historial_libros_cap = StateOfBook.objects.filter(state="reading")
-    return render(request, "bookflix/welcome.html",{'publicaciones':publicacion,"trailers":trailers, "libros":libros, "historial_libros":historial_libros, "historial_libros_cap":historial_libros_cap}) 
+    return render(request, "bookflix/welcome.html",{'publicaciones':publicacion,"trailers":trailers, "libros":libros, "historial_libros":historial_libros, "historial_libros_cap":historial_libros_cap, "libros_cap":libros_cap}) 
 
 def barra(request):
     return render(request,"bookflix/barra.html", perfil)
@@ -184,10 +187,19 @@ def login_propio(request):
                 
             
     # Si llegamos al final renderizamos el formulario
-    publicacion=Billboard.objects.filter(mostrar_en_home=True)
+    publicaciones=len(Billboard.objects.all())
+    publicacion=Billboard.objects.filter(id=randint(1,publicaciones+1))
+    while not publicacion:
+        publicacion=Billboard.objects.filter(id=randint(1,publicaciones+1))
+
+    trailers=len(Trailer.objects.all())
+    trailer=Trailer.objects.filter(id=randint(1,(trailers+1)))
+    while not trailer:
+        trailer=Trailer.objects.filter(id=randint(1,(trailers+1)))
+
     libros = Book.objects.filter(mostrar_en_home=True)
 
-    return render(request, "bookflix/login.html", {'form': form, 'publicaciones':publicacion, "libros":libros,})
+    return render(request, "bookflix/login.html", {'form': form, 'publicaciones':publicacion, "libros":libros,"trailers":trailer})
 
 def logout(request):
     # Finalizamos la sesión
@@ -299,6 +311,8 @@ def crear_perfil(request):
     context["profile_creation_form"]=form
     return render(request, 'bookflix/crear_perfil.html', context)
 
+
+
 def solicitar_cambio(request):
     context= { }
     request.session["solicitud"]="1"
@@ -343,17 +357,60 @@ def solicitar_cambio(request):
     return render(request,"bookflix/solicitar_cambio.html", context)
 
 def leer_libro(request,isbn):
+     request.session["lectura_otro_perfil"] = False
+     if request.user.plan == 'normal':
+        try:
+            perfil = Profile.objects.exclude(id=request.session["perfil_ayuda"]).get(account=request.user)
+            try: 
+                state = StateOfBook.objects.get(state="reading", profile=perfil, book=isbn)
+                request.session["lectura_otro_perfil"] = True
+            except StateOfBook.DoesNotExist:
+                pass
+        except Profile.DoesNotExist:
+            pass    
+        try:
+            estado_propio = StateOfBook.objects.get(state="reading", profile=request.session["perfil_ayuda"])
+            comenzado = True
+        except StateOfBook.DoesNotExist:
+            comenzado = False
      libro = Book.objects.get(isbn=isbn)
-     return render(request,"bookflix/leer_libro.html",{"libro":libro}) 
+
+     return render(request,"bookflix/leer_libro.html",{"libro":libro, "comenzado":comenzado}) 
 
 def leer_libro_por_capitulo(request,isbn):
      libro = BookByChapter.objects.get(isbn=isbn)
-     return render(request,"bookflix/leer_libro.html",{"libro":libro}) 
+     cap_actual = 1
+     capitulos=[]
+     for i in range (0,libro.cant_chapter): 
+        try: 
+            Chapter.objects.get(book=libro, number=cap_actual) 
+            capitulos.append(Chapter.objects.get(book=libro, number=cap_actual))
+            cap_actual = cap_actual + 1
+        except Chapter.DoesNotExist: 
+            pass
+        #capitulos = Chapter.objects.filter(book=libro)
+     return render(request,"bookflix/libro_capitulo.html",{"libro":libro, "capitulos":capitulos}) 
 
 
 def libro_capitulo(request):
 
     return render(request,"bookflix/libro_capitulo.html")
+
+def libro_por_leer(request,isbn):
+    libro = Book.objects.get(isbn=isbn)
+    perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+    variable = StateOfBook(state="reading",book=libro, profile=perfil)
+    variable.save()
+    return render(request,"bookflix/leer_libro.html",{"libro":libro}) 
+
+
+def libro_cap_por_leer(request,isbn):
+    libro = Book.object.get(isbn=isbn)
+    perfil = Profile.object.get(id=request.session["perfil_ayuda"])
+    variable = StateOfBook(state="reading",book=libro, profile=perfil)
+    return render(request,"bookflix/libro_por_leer.html", {"libro":libro} )
+
+
 
 
 
@@ -361,7 +418,8 @@ def historial(request):
      historial_libros = StateOfBook.objects.filter(state="finished")
      historial_libros_cap = StateOfBookByChapter.objects.filter(state="finished")
      #historial = historial_libros_cap |= historial_libros
-     return render(request,"bookflix/historial.html",{"historial_libros":historial_libros,"historial_libros_cap":historial_libros_cap }) 
+     sesion = request.session
+     return render(request,"bookflix/historial.html",{"historial_libros":historial_libros,"historial_libros_cap":historial_libros_cap, "sesion":sesion }) 
 
 
 
@@ -369,16 +427,28 @@ def perfil_seleccionado(request,id_perfil):
     perfil_actual = Profile.objects.get(id=id_perfil)
     perfil_actual.is_active_now = True 
     perfil_actual.save()
+    request.session["perfil_ayuda"] = id_perfil
+
     request.session['nombrePerfil']= perfil_actual.name
     perfil_actual = serializers.serialize("json", Profile.objects.all())
     request.session['perfil_actual']= perfil_actual
     #request.session['perfil_actual']= perfil_actual.name
+
+    request.session.modified = True
     return redirect("/") 
 
 
 def trailers(request):
     trailers = Trailer.objects.filter(mostrar_en_home=True)
     return render(request,"bookflix/trailers.html",{"trailers":trailers})
+
+
+class Counter:
+       count = 0
+
+       def increment(self):
+           self.count += 1
+           return ''
 
 
 def aceptarSolicitud(request,idSol,num):

@@ -29,7 +29,7 @@ class Author(models.Model):
         return self.name 
 
     def __str__(self):
-        return "%c %c" % (self.name, self.last_name)
+        return "%s %s" % (self.name, self.last_name)
 
     class Meta:
         verbose_name = "Autor"
@@ -358,7 +358,7 @@ class Chapter(models.Model):
             raise ValidationError('no puede usar este numero para el capitulo')
         if b2 == b.cant_chapter:
             raise ValidationError('El libro no puede contener mas capítulos')
-        if Chapter.objects.filter(book= self.book, number=self.number).exists():
+        if Chapter.objects.exclude(id=self.id).filter(book= self.book, number=self.number).exists():
             raise ValidationError('Ese numero de capítulo ya fue usado por ese capítulo')
 
     def publish(self):
@@ -395,9 +395,9 @@ class StateOfBookByChapter(models.Model):
     def publish(self):
         self.save()
 
-#    def __str__(self):
-#        b=BookByChapter.objects.get(isbn=self.book)
-#        return 'el libro %c se encuentra en el estado: %c' % (b.title, self.state)        
+    def __str__(self):
+        #b=BookByChapter.objects.get(isbn=self.book)
+        return 'el libro %s se encuentra en el estado: %s' % (self.book, self.state)        
 
 class StateOfBook(models.Model):
 
@@ -424,7 +424,7 @@ class StateOfBook(models.Model):
         self.save()
 
     def __str__(self):
-        return 'el libro %c se encuentra en el estado: %c' % (self.book, self.state)         #esta funcion me causaba problemas al intentar referenciar un self.book que por lo visto todavía no existia/estaba guardado   
+        return 'el libro %s se encuentra en el estado: %s' % (self.book, self.state)          
 
 #Comment
 class CommentBook(models.Model):
