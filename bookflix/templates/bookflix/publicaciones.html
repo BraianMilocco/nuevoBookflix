@@ -39,7 +39,12 @@
 
     {% if publicaciones %}
     {% for publicacion in publicaciones %}
-    <li> <a href="/publicacion/{{publicacion.title}}">{{publicacion.title}}</a> </li> 
+        <li style="display: inline-block;"> 
+            <a href="/publicacion/{{publicacion.title}}">{{publicacion.title}}</a> 
+            <br>
+            <iframe   width="460" height="250" src={{publicacion.video}} frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> 
+            <br>
+        </li>
     {% endfor %}
     {% else %}
     <p>No hay publicaciones disponibles</p>

@@ -2,8 +2,9 @@
 <html>
     <body>
         {% include "bookflix/barra.html" %}
-        <div>
-            <div style="display: inline; margin: auto;">
+        <div style= "margin: auto; margin: 50px;">
+            <div style="display: inline;">
+                <h2>{{libro.title}}</h2>
                 <img style="max-width:275px; max-height:275px;" src="{{libro.image.url}}"  alt="fondo" > 
                 {# <button style="position: absolute;margin-left: 10;">Agregar a futuras lecturas</button> #}
                 
@@ -20,7 +21,7 @@
             </div>  
                     <br>
                     <!-- -->
-                    
+                    <p> {{libro.description}} </p>
                     <p> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </p>
                     
                     <p> Género(s): {%for genero in libro.genders.all %}
@@ -29,10 +30,26 @@
                     {% endfor %}
                     </p>
                     <P>Puntuación: 4,5</P>
+
+                    {% if request.session.lectura_otro_perfil == False %}
+
+                    {% if comenzado == False %}
+                        <a href="/libro_por_leer/{{libro.isbn}}">Empezar Libro</a>
+                    {% else %}
+
+
+        
+
+                    <object data="{{libro.pdf.url}}" type="application/x-pdf" title="{{libro.title}}" width="500" height="720">
+                        <a href="{{libro.pdf.url}}">Leer Libro</a> 
+                    </object>
+                    {% endif %}
+                    {% else %}
+                        <p>Suba el plan</p>
+
+                    {% endif %}
         </div>
-        <object data="{{libro.pdf.url}}" type="application/x-pdf" title="{{libro.title}}" width="500" height="720">
-            <a href="{{libro.pdf.url}}">Leer Libro</a> 
-        </object>
+    
 
     </body>
 </html>

@@ -40,10 +40,36 @@ button{
 <hr>
 
 <ul id="publicaciones">
-    <p>publicaciones: </p>
+    <h3>Publicaciones: </h3>
     {% if publicaciones %}
     {% for publicacion in publicaciones %}
-    <li> <a href="/publicacion/{{publicacion.title}}">{{publicacion.title}}</a> </li> 
+        <li style="display: inline-block;margin-left: 1%;border: 10px;">
+            <div>
+                <a href="/publicacion/{{publicacion.title}}">{{publicacion.title}}</a> <br>
+                <iframe   width="460" height="250" src={{publicacion.video}} frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> 
+            </div>
+        </li> 
+
+    {% endfor %}
+    {% else %}
+    <p>No hay publicaciones disponibles</p>
+    {% endif %}
+
+</ul>
+
+
+
+<ul id="Trailers">
+    <h3>Trailers: </h3>
+    {% if trailers %}
+    {% for trailer in trailers %}
+        <li style="display: inline-block;margin-left: 1%;border: 10px;">
+            <div>
+                <a href="/publicacion/{{publicacion.title}}">{{trailer.title}}</a> <br>
+                <iframe   width="460" height="250" src={{trailer.video}} frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> 
+            </div>
+        </li> 
+
     {% endfor %}
     {% else %}
     <p>No hay publicaciones disponibles</p>
@@ -52,17 +78,23 @@ button{
 </ul>
 
 <ul id="libros">
-    <p>Libros: </p>
+    <h3>Libros: </h3>
     {% if libros %}
     {% for libro in libros %}
-       <li>
+       <li style="display: inline-block;margin-left: 1%;border: 10px;">
             <div>
-                <a href="/libro/{{libro.author}}">{{libro.title}}</a>
+                <a  href="/libro/{{libro.author}}">{{libro.title}}</a> <br>
+                
+                <!---->
+                <img style="max-width:275px; max-height:275px;" src="{{libro.image.url}}"  alt="Portada" > <br>
+
                 <p>Autor: {{libro.author}}</p> 
-                <img src="" alt="Portada">
-                <!---->>
-                <img  src="{{libro.image.url}}"  alt="fondo" >
-                <p>La url de la imagen es: {{libro.image}} </p>
+                
+                <p> Género(s): {%for genero in libro.genders.all %}
+                    | {{genero.name}} |
+
+                {% endfor %}
+                </p>
             </div>
         </li>
     {% endfor %}
