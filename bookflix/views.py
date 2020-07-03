@@ -7,7 +7,7 @@ from django.contrib.auth import logout as do_logout
 from django.shortcuts import redirect
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_protect
-from .forms import UserSolicitudForm, RegistrationForm, RegistroTarjeta, CrearPerfil, MailChange, MailConfirmacion, RecuperarCuenta, busquedaOtrosForm
+#from .forms import UserSolicitudForm, RegistrationForm, RegistroTarjeta, CrearPerfil, MailChange, MailConfirmacion, RecuperarCuenta, busquedaOtrosForm
 from .models import *
 from django.contrib.auth.forms import UserCreationForm
 from django import shortcuts
@@ -24,6 +24,7 @@ from django.utils.crypto import get_random_string
 
 from django.core import serializers
 
+from .formsu import *
 
 
 #codigo de mail
@@ -332,12 +333,16 @@ def solicitar_cambio(request):
     return render(request,"bookflix/solicitar_cambio.html", context)
 
 def leer_libro(request,isbn):
-     libro = Book.objects.get(isbn=isbn)
-     return render(request,"bookflix/leer_libro.html",{"libro":libro}) 
+
+    request.session['puedeLeer']=False
+    if request.user.plan= 
+
+    libro = Book.objects.get(isbn=isbn)
+    return render(request,"bookflix/leer_libro.html",{"libro":libro}) 
 
 def leer_libro_por_capitulo(request,isbn):
-     libro = BookByChapter.objects.get(isbn=isbn)
-     return render(request,"bookflix/leer_libro.html",{"libro":libro}) 
+    libro = BookByChapter.objects.get(isbn=isbn)
+    return render(request,"bookflix/leer_libro.html",{"libro":libro}) 
 
 
 def libro_capitulo(request):
@@ -392,56 +397,6 @@ def aceptarSolicitud(request,idSol,num):
 
 
 
-def buscar(request):
-    context={}
-    libros= Book.objects.all()
-    librosCap= BookByChapter.objects.all()
-    context['libros']= libros
-    context['librosCap']= librosCap
-    request.session['el']= False
-    request.session['elc']=False
-    request.session.modified = True
-    if request.POST:
-        form= busquedaOtrosForm(request.POST)
-        if form.is_valid():
-            
-            if not (form.cleaned_data['isbn'] is None):    
-                try:
-                    l= Book.objects.get(isbn=form.cleaned_data['isbn'])
-                    request.session['el']= True
-                except Book.DoesNotExist:
-                    try:
-                        lc= BookByChapter.objects.get(isbn=form.cleaned_data['isbn'])
-                        request.session['elc']=True
-                    except BookByChapter.DoesNotExist:
-                        pass
-                request.session.modified = True
-            else:
-                #l = buscarLibros(libros, form, request, 'el')
-                #lc = buscarLibros(librosCap, form, request, 'elc')
-                l= libros
-                lc= librosCap
-                if not (form.cleaned_data['titulo'] is None):
-                    try:
-                        l= Book.objects.filter(title= form.cleaned_data['titulo'])
-                        request.session['el']= True
-                    except l.DoesNotExist:
-                        try:
-                            lc= lc.objects.filter(title= form.cleaned_data['titulo'])
-                            request.session['elc'].modified=True
-                        except lc.DoesNotExist:
-                            pass
-                request.session.modified = True        
-
-        if request.session['el']:
-           context['libros']= l
-        elif request.session['elc']:
-            context['librosCap']= lc
-    form= busquedaOtrosForm()
-    context['form']= form
-    return render(request, "bookflix/buscar.html", context)
-
-
 
 
 #EScribir views arriba de esta, de acá para abajo nada
@@ -449,6 +404,8 @@ def buscar(request):
 #Funciones de automatizacion, escribir cualquier otra view antes que esta
 
 from .funcionesAutomatizacion import *
+import datetime
+from django.utils import timezone
 
 def simuladorTemporal(request):
     context={}
@@ -546,14 +503,41 @@ def simuladorTemporal(request):
     except Trailer.DoesNotExist: pass
 
     #Bajas usuarios
-    try:
-        sol= UserSolicitud.objects.filter(type_of_solicitud='baja').values('user')
-        ac= Account.objects.filter(id__in= sol)
-        darDeBajaUsuarios(ac)
-        context['libros']= ac
+    try: 
+        aList=UserSolicitud.objects.filter(type_of_solicitud='baja', is_accepted=0)
+        sol2=UserSolicitud.objects.filter(type_of_solicitud='baja', is_accepted=0).values('user')
+        cuenta= Account.objects.filter(id__in=sol2)
+ 
+        for i in cuenta:
+            if timezone.now().date() == (i.date_start_plan + datetime.timedelta(days=i.time_pay)):
+                aList=UserSolicitud.objects.get(type_of_solicitud='baja', is_accepted=0, user=i)
+                i.plan = 'free'
+                i.time_pay = 0
+                i.save()
+                aList.is_accepted=1
+                aList.save()
     except UserSolicitud.DoesNotExist: pass
+
+    #cambiar Usuarios
+    try: 
+        aList=UserSolicitud.objects.filter(type_of_solicitud='cambio', is_accepted=0 )
+        sol2=UserSolicitud.objects.filter(type_of_solicitud='cambio', is_accepted=0 ) .values('user')
+        cuenta= Account.objects.filter(id__in=sol2)
+ 
+        for i in cuenta:
+            if timezone.now().date() == (i.date_start_plan + datetime.timedelta(days=i.time_pay)):
+                aList=UserSolicitud.objects.get(type_of_solicitud='cambio', is_accepted=0, user=i)
+                i.plan = aList.type_of_plan
+                i.date_start_plan= timezone.now()
+                i.time_pay = 30
+                i.save()
+                aList.is_accepted=1
+                aList.save()
+        
+    except UserSolicitud.DoesNotExist: pass
+    
+
     return render(request, "bookflix/simuladorTemporal.html", context)
     #return redirect('/solicitudes')
 
 
-   

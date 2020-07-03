@@ -88,32 +88,3 @@ class ChapForm(ModelForm):
             return self.cleaned_data
 
 
-class busquedaOtrosForm(forms.Form):
-    def createDict(anQueryss):
-        dict= [("seleccione", "seleccione"),]
-
-        for i in anQueryss:
-            dict.append((i, i))
-        return dict
-    
-    aut= Author.objects.all()
-    edi= Editorial.objects.all()
-    gen= Gender.objects.all()
-
-    ChAut=createDict(aut)
-    chEdi=createDict(edi)
-    chGen=createDict(gen)
-    
-    isbn= forms.CharField(label="Buscar Por ISBN", max_length=16, required=False,)
-    titulo= forms.CharField( max_length= 70, required=False)
-    genero= forms.ChoiceField(choices=chGen, required=False)
-    autor= forms.ChoiceField( choices=ChAut, required=False)
-    editorial=forms.ChoiceField( choices=chEdi, required=False)
-
-    def clean(self):
-        cleaned_data = self.cleaned_data
-
-        if not cleaned_data['isbn'].isalnum():
-            raise ValidationError('Ese no es un isbn valido')
-        else:
-            return cleaned_data

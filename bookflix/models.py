@@ -29,7 +29,7 @@ class Author(models.Model):
         return self.name 
 
     def __str__(self):
-        return self.name
+        return "%s %s" % (self.name, self.last_name)
 
     class Meta:
         verbose_name = "Autor"
@@ -358,7 +358,7 @@ class Chapter(models.Model):
             raise ValidationError('no puede usar este numero para el capitulo')
         if b2 == b.cant_chapter:
             raise ValidationError('El libro no puede contener mas capítulos')
-        if Chapter.objects.filter(book= self.book, number=self.number).exists():
+        if Chapter.objects.exclude(id=self.id).filter(book= self.book, number=self.number).exists():
             raise ValidationError('Ese numero de capítulo ya fue usado por ese capítulo')
 
     def publish(self):
@@ -534,9 +534,9 @@ class UpDownBook(models.Model):
     expiration_premium= models.DateField("expiracion premium", default= timezone.now(), validators=[esCorrecto])   
 
     def clean(self):
-        if (self.up_normal > self.expiration_normal):
+        if (self.up_normal >= self.expiration_normal):
             raise ValidationError('La fecha de baja no puede ser inferior a la de subida para normal o premium')
-        if (self.up_premium > self.expiration_premium):
+        if (self.up_premium >= self.expiration_premium):
             raise ValidationError('La fecha de baja no puede ser inferior a la de subida para premium o normal')
 
     class Meta:
@@ -559,9 +559,9 @@ class UpDownBookByChapter(models.Model):
         verbose_name_plural = "Subir-Bajar-LibroPorCapitulo"
 
     def clean(self):
-        if (self.up_normal > self.expiration_normal):
+        if (self.up_normal <= self.expiration_normal):
             raise ValidationError('La fecha de baja no puede ser inferior a la de subida para normal o premium')
-        if (self.up_premium > self.expiration_premium):
+        if (self.up_premium <= self.expiration_premium):
             raise ValidationError('La fecha de baja no puede ser inferior a la de subida para premium o normal')
 
     def __str__(self):
@@ -574,7 +574,7 @@ class UpDownChapter(models.Model):
     expirationl= models.DateField("DarDeBaja", default= timezone.now(), validators=[esCorrecto])
     
     def clean(self):
-        if (self.up > self.expirationl):
+        if (self.up <= self.expirationl):
             raise ValidationError('La fecha de baja no puede ser inferior a la de subida')
     
     class Meta:
@@ -594,7 +594,7 @@ class UpDownBillboard(models.Model):
         verbose_name_plural = "Subir-Bajar-Publicaciones"
 
     def clean(self):
-        if (self.up > self.expirationl):
+        if (self.up <= self.expirationl):
             raise ValidationError('La fecha de baja no puede ser inferior a la de subida')    
 
     def __str__(self):
@@ -609,7 +609,7 @@ class UpDownTrailer(models.Model):
         verbose_name_plural = "Subir-Bajar-Trailer"
     
     def clean(self):
-        if (self.up > self.expirationl):
+        if (self.up <= self.expirationl):
             raise ValidationError('La fecha de baja no puede ser inferior a la de subida')
 
     def __str__(self):
