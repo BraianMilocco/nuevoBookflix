@@ -2,7 +2,7 @@ from django.db import models
 from django.core.exceptions import FieldError, ValidationError
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.base_user import BaseUserManager
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.utils import timezone
 from creditcards.models import CardNumberField, CardExpiryField, SecurityCodeField
 
@@ -156,6 +156,12 @@ class Account(AbstractBaseUser):
 
     def nombre(self):
         return self.username
+
+    def tiempo_restante(self):
+        tiempo_pagado = timedelta(days=self.time_pay)
+        fecha_limite = tiempo_pagado + self.date_start_plan
+        dias_restantes = fecha_limite - datetime.now().date()
+        return dias_restantes.days
 
     def has_perm (self, perm, obj=None):
         return self.is_admin
@@ -424,7 +430,141 @@ class StateOfBook(models.Model):
         self.save()
 
     def __str__(self):
-        return 'el libro %s se encuentra en el estado: %s' % (self.book, self.state)          
+        return 'el libro %s se encuentra en el estado: %s' % (self.book, self.state)        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# class StateOfBookGender(models.Model):
+
+#     reading='reading'
+#     future_reading='future_reading'
+#     finished='finished'
+#     AC_CHOICES= (
+#         (reading, 'leyendo'),
+#         (future_reading, 'futura lectura'),
+#         (finished, 'terminado')
+#     )
+
+#     date= models.DateField("fecha",default=timezone.now)
+#     state = models.CharField("estado", max_length=16, choices=AC_CHOICES, default=finished)
+#     book = models.ForeignKey(Book, on_delete=models.CASCADE, verbose_name="libro")
+#     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name="perfil")
+
+#     class Meta:
+#         unique_together= ('book', 'profile') 
+#         verbose_name = "Estado del libro"
+#         verbose_name_plural = "Estados del libro"
+         
+#     def publish(self):
+#         self.save()
+
+#     def __str__(self):
+#         return 'el libro %s se encuentra en el estado: %s' % (self.book, self.state)          
+
+
+
+
+
+
+
+
+
+# class StateOfEditorial(models.Model):
+
+#     reading='reading'
+#     future_reading='future_reading'
+#     finished='finished'
+#     AC_CHOICES= (
+#         (reading, 'leyendo'),
+#         (future_reading, 'futura lectura'),
+#         (finished, 'terminado')
+#     )
+
+#     date= models.DateField("fecha",default=timezone.now)
+#     state = models.CharField("estado", max_length=16, choices=AC_CHOICES, default=finished)
+#     book = models.ForeignKey(Book, on_delete=models.CASCADE, verbose_name="libro")
+#     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name="perfil")
+
+#     class Meta:
+#         unique_together= ('book', 'profile') 
+#         verbose_name = "Estado del libro"
+#         verbose_name_plural = "Estados del libro"
+         
+#     def publish(self):
+#         self.save()
+
+#     def __str__(self):
+#         return 'el libro %s se encuentra en el estado: %s' % (self.book, self.state)          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# class StateOfAuthor(models.Model):
+
+#     reading='reading'
+#     future_reading='future_reading'
+#     finished='finished'
+#     AC_CHOICES= (
+#         (reading, 'leyendo'),
+#         (future_reading, 'futura lectura'),
+#         (finished, 'terminado')
+#     )
+
+#     date= models.DateField("fecha",default=timezone.now)
+#     state = models.CharField("estado", max_length=16, choices=AC_CHOICES, default=finished)
+#     book = models.ForeignKey(Book, on_delete=models.CASCADE, verbose_name="libro")
+#     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name="perfil")
+
+#     class Meta:
+#         unique_together= ('book', 'profile') 
+#         verbose_name = "Estado del libro"
+#         verbose_name_plural = "Estados del libro"
+         
+#     def publish(self):
+#         self.save()
+
+#     def __str__(self):
+#         return 'el libro %s se encuentra en el estado: %s' % (self.book, self.state)          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #Comment
 class CommentBook(models.Model):

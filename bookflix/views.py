@@ -374,7 +374,6 @@ def leer_libro(request,isbn):
         except StateOfBook.DoesNotExist:
             comenzado = False
      libro = Book.objects.get(isbn=isbn)
-
      return render(request,"bookflix/leer_libro.html",{"libro":libro, "comenzado":comenzado}) 
 
 def leer_libro_por_capitulo(request,isbn):
@@ -471,6 +470,11 @@ def aceptarSolicitud(request,idSol,num):
         pass
     return redirect('/solicitudes')   
 
+
+def mas_leidos (request):
+    libros = StateOfBook.objects.filter(state="reading") #acá tengo que ordenarlos de mayor a menor
+    #autores = 
+    return render(request,'bookflix/mas_leidos.html', {"libros":libros})
 
 
 # def buscar(request):

@@ -1,0 +1,58 @@
+<html>
+    <style>
+        #publicaciones{
+            margin: 10;
+            border: 10px;
+            padding:70px;
+            list-style: none;
+            text-transform: uppercase;
+        }
+        #publicaciones li{
+            display: inline;
+            margin-left: 15%;
+            border: 10px;
+        }
+        #libros{
+            margin: 10 10 10 10;
+            border: 10px 10px 10px 10px;
+            padding:70px;
+            list-style: none;
+            text-transform: uppercase;
+        }
+        #libros li{
+            display: inline;
+            margin: 10px 10px 10px 10px;
+            border: 10px 10px 10px 10px ;
+        }
+        #libros div p{
+            display: inline;
+            margin-left: 1%;
+            border: 10px;
+        }
+
+    </style>
+<body>
+ 
+{% include "bookflix/barra.html" %}
+
+<ul id="libros">
+
+    {% if libros %}
+    {% for libro in libros %}
+        <li style="display: inline-block;"> 
+            <a href="/leer_libro/{{libro.book.isbn}}">{{libro.book.title}}</a> 
+            <br>
+            <img style="max-width:275px; max-height:275px;" src="{{libro.book.image.url}}"  alt="fondo" > 
+            <br>
+        </li>
+    {% endfor %}
+    {% else %}
+    <p>No hay libros disponibles</p>
+    {% endif %}
+
+</ul>
+ <hr>
+
+
+</body>
+</html>

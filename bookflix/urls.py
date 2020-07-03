@@ -16,7 +16,7 @@ urlpatterns = [
     path("cambiar_tarjeta/", cambiar_tarjeta, name="cambiar_tarjeta"),
     path("cambiar_email/", cambiar_email, name="cambiar_email"),
     path("publicacion/<titulo>/", publicacion, name="publicacion"),
-    path("publicaciones/", publicaciones, name="publicaiones"),
+    path("publicaciones/", publicaciones, name="publicaciones"),
     path('crear_perfil/', crear_perfil, name='crear_perfil'),
     path('confirmarCuenta/', confirmarCuenta, name='confirmarCuenta'),
     path('solicitudes/', solicitudes, name='solicitudes'),
@@ -32,6 +32,8 @@ urlpatterns = [
     #path("buscar/",buscar, name="buscar"),
     path("historial/", historial, name="historial"), 
     path("libro_por_leer/<isbn>/", libro_por_leer, name="libro_por_leer"), 
+    path("mas_leidos/", mas_leidos, name="mas_leidos"), 
+    
 ] 
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
