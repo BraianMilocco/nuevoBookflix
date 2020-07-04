@@ -75,16 +75,16 @@ class ChapForm(ModelForm):
         model = Chapter
         exclude = ['id', ]
 
-    def clean(self):
+    """def clean(self):
         n = self.cleaned_data['number']
         b = self.cleaned_data['book']
         try:
-            book= BookByChapter.objects.get(isbn= b)
+            book= BookByChapter.objects.get(id= b)
             if n > book.cant_chapter:
-                raise forms.ValidationError("Product offer price cannot be greater than Product MRP.")
+                raise forms.ValidationError("No puede tener ese cap")
             else:
                 return self.cleaned_data
         except BookByChapter.DoesNotExist:
             return self.cleaned_data
-
+"""
 
