@@ -2,7 +2,7 @@
 <form method="POST"> {% csrf_token %}
 
     {% if request.session.ErrorDePerfil == "1"%}
-        <p>recuerde que no pueden existir dos perfiles con en el mismo nombre en una cuenta</p>
+        <p>recuerde que no pueden existir dos perfiles con en el mismo nombre en una cuenta.</p>
     {% else %}
         <p style="color:Tomato;">NO puede existir dos perfiles con igual nombre en la cuenta</p>
     {% endif %}
@@ -14,5 +14,5 @@
         {{field}}
     
     {% endfor %}
-    <button type="submit">Registrar</button>
+    <button type="submit">Cambiar Nombre</button>
 </form>

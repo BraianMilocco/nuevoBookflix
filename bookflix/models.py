@@ -193,6 +193,26 @@ class CreditCards(models.Model):
         verbose_name = "Tarjeta"
         verbose_name_plural = "Tarjetas"
 
+
+#CreditCardsUsed
+class CreditCardsUsed(models.Model):
+    number = CardNumberField('numero')
+    date_expiration= CardExpiryField('fecha de vencimiento')
+    cod = SecurityCodeField('codigo de seguridad')
+    card_name = models.CharField("nombre de tarjeta",max_length=50)
+    bank = models.CharField(('banco'),max_length=50)
+    user = models.ForeignKey(Account, on_delete=models.CASCADE,verbose_name="usuario")
+
+    def publish(self):
+        self.save()
+
+    def __str__(self):
+        return self.card_name
+
+    class Meta:
+        verbose_name = "Tarjeta Usada"
+        verbose_name_plural = "Tarjetas Usadas"
+
 #Profile
 
 class Profile(models.Model):

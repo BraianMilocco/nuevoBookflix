@@ -63,6 +63,8 @@ def register_page(request):
 
             tarjeta= CreditCards(number=numT, cod=codT, date_expiration=dateT, card_name=cardName, bank=bankT, user=cuenta)
             tarjeta.save()
+            tarjeta_usada= CreditCardsUsed(number=numT, cod=codT, date_expiration=dateT, card_name=cardName, bank=bankT, user=cuenta)
+            tarjeta_usada.save()
             #enviar mail confirmacion
             codillo = randomCod(10)
             send_mail('Aquí tiene su codigo de confirmacion', codillo, settings.EMAIL_HOST_USER,[email])
@@ -238,7 +240,18 @@ def cambiar_tarjeta(request):
             bankT=form.cleaned_data.get("bank")
 
             tarjeta= CreditCards(number=numT, cod=codT, date_expiration=dateT, card_name=cardName, bank=bankT, user=request.user)
+            tarjeta_vieja = CreditCards.objects.get(user=request.user)
+            tarjeta_vieja.delete()
             tarjeta.save()
+
+            tarjeta_usada= CreditCardsUsed(number=numT, cod=codT, date_expiration=dateT, card_name=cardName, bank=bankT, user=request.user)
+            try:
+                tarjeta_usada_vieja = CreditCardsUsed.objects.get(number=tarjeta.number)
+                tarjeta_usada_vieja.delete()
+            except CreditCardsUsed.DoesNotExist:
+                pass
+            tarjeta_usada.save()
+
             return redirect('/perfil')      
         else:
             messages.error(request, 'error tarjeta')
@@ -310,6 +323,29 @@ def crear_perfil(request):
     form=CrearPerfil()
     context["profile_creation_form"]=form
     return render(request, 'bookflix/crear_perfil.html', context)
+
+
+def cambiar_nombre(request,nombre):
+    context={}
+    request.session['ErrorDePerfil'] = "1"
+    request.session.modified = True
+    perfil_anterior = Profile.objects.get(name= nombre, account=request.user)
+    if request.POST:
+        form= CrearPerfil(request.POST, instance= perfil_anterior)
+        if form.is_valid():
+            try:
+                p= Profile.objects.get(name= form.cleaned_data['name'], account=request.user)
+                request.session['ErrorDePerfil'] = "2"
+                request.session.modified = True
+            except Profile.DoesNotExist:
+                perfil_anterior= form.save(commit=False)
+                perfil_anterior.account = request.user
+                perfil_anterior.save()
+                return redirect ('/select_perfil')
+    
+    form=CrearPerfil()
+    context["profile_creation_form"]=form
+    return render(request, 'bookflix/cambiar_nombre.html', context)
 
 
 
