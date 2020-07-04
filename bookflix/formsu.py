@@ -88,3 +88,6 @@ class ChapForm(ModelForm):
             return self.cleaned_data
 """
 
+class ComentarioForm(forms.Form):
+    comentario= forms.CharField( max_length= 300, widget=forms.Textarea)
+    spoiler= forms.BooleanField(required=False)

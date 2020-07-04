@@ -49,5 +49,20 @@
 
         </div>
 
+        <div> 
+            <form method="POST"> {% csrf_token %}
+    
+                {% for field in comentario %}
+                    {{field.label_tag}}
+                    {{field}} 
+                {% endfor %}
+               
+            <input type="submit" value="comentario">  
+            
+            
+
+        </div>
+
+
     </body>
 </html>

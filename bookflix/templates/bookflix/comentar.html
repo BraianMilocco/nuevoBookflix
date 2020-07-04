@@ -1,0 +1,13 @@
+<form method="POST"> {% csrf_token %}
+    
+    {% for field in comentario %}
+        {{field.label_tag}}
+        {{field}} 
+    {% endfor %}
+   
+<input type="submit" value="comentar">  
+ </form>
+
+ {% if queES == 1%}
+ {%endif%}
+ <a href="/leer_libro/{{isbn}}" > volver </a>

@@ -1,0 +1,29 @@
+
+{%if editar == 'True' %}
+
+<form method="POST"> {% csrf_token %}
+    
+    {% for field in form %}
+        {{field.label_tag}}
+        {{field}} 
+    {% endfor %}
+   
+<input type="submit" value="comentar">  
+ </form>
+
+
+{% else %}
+
+<p>Comentario: </p>
+<p> {{comentario.description}}</p>
+<p>-------------------</p>
+<p> Autor: {{comentario.profile}} </p>
+
+
+{%endif%}
+
+{%if aux == '1' %}
+    <a href="/leer_libro/{{isbn}}"> volver a su libro</a>
+{%else%}
+    <a href="/libro_capitulo/{{isbn}}"> volver a su libro por capitulo</a>
+{%endif%}

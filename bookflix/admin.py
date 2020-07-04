@@ -49,13 +49,13 @@ admin.site.register(Account, AccountAdmin)
 admin.site.register(Author)
 admin.site.register(Gender)
 admin.site.register(Editorial)
-
+admin.site.register(CommentBook)
 
 admin.site.register(CreditCards)
-admin.site.register(CreditCardsUsed)
+#admin.site.register(CreditCardsUsed)
 
 admin.site.register(Profile)
-
+admin.site.register(DenunciarComentarioLibro)
 admin.site.register(UserSolicitud)
 
 admin.site.register(StateOfBook)

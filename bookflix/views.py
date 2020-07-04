@@ -395,7 +395,115 @@ def solicitar_cambio(request):
     context['solicitud'] = form
     return render(request,"bookflix/solicitar_cambio.html", context)
 
+def comentariosDenunciados(request):
+    context={}
+
+    deLibro= DenunciarComentarioLibro.objects.all()
+    deLibroPorCap= DenunciarComentarioLibroPorCap.objects.all()
+    context['comentarioLibro']= deLibro
+    context['comentarioLibroCap']= deLibroPorCap
+
+    return render(request, "bookflix/comentariosDenunciados.html", context)
+
+def denuncia(request, id, boole, n):
+    if n=='1':
+        denuncia= DenunciarComentarioLibro.objects.get(id=id)
+    else: 
+        denuncia= DenunciarComentarioLibroPorCap.objects.get(id=id)
+    
+    if boole == "True":
+        denuncia.comentario.is_a_spoiler= True
+        denuncia.comentario.save()
+    
+    denuncia.delete()
+    return redirect("/comentariosDenunciados")
+
+
+def denunciarComentario(request, id, isbn):
+    aux=0
+    try:
+        comentario= CommentBook.objects.get(id=id)
+        denu= DenunciarComentarioLibro(comentario= comentario)
+        denu.save()
+        aux= 1
+    except CommentBook.DoesNotExist():
+        try:
+            comentario= CommentBookByChapter.objects.get(id=id)
+            denu= DenunciarComentarioLibroPorCap(comentario= comentario)
+            denu.save()
+            aux= 2
+        except CommentBook.DoesNotExist(): pass
+    if aux==1: return redirect("/leer_libro/"+str(isbn))
+    else: redirect("/libro_capitulo/"+ str(isbn))
+
+def verComentario(request, id):
+    aux= 0
+    context={}
+    try:
+        comentario= CommentBook.objects.get(id=id)
+        ayuda= comentario.publication
+        aux=1
+    except CommentBook.DoesNotExist():
+        try:
+            comentario= CommentBookByChapter.objects.get(id=id)
+            ayuda= comentario.publication
+            aux= 2
+        except CommentBookByChapter.DoesNotExist(): pass
+    if aux==1: libro= Book.objects.get(id= ayuda.id)
+    else: libro= BookByChapter.objects.get(id= ayuda.id)
+    puedeEditar= 'False'
+    if str(request.session["perfil_ayuda"]) == str(comentario.profile.id):
+        puedeEditar= 'True'
+    if request.POST:
+        form= ComentarioForm(request.POST)
+        if form.is_valid():
+            spoi= form.cleaned_data['spoiler']
+            texto= form.cleaned_data['comentario']
+            comentario.description= texto
+            comentario.is_a_spoiler= spoi
+            comentario.save()
+            if aux == 1: return redirect("/leer_libro/"+str(libro.isbn))
+            else: return redirect("/libro_capitulo/"+ str(libro.isbn))
+    context['form']= ComentarioForm(initial={'spoiler': comentario.is_a_spoiler, 'comentario': comentario.description})
+    context['editar']= puedeEditar
+    context['comentario']= comentario
+    context['aux']= str(aux)
+    context['isbn']= libro.isbn
+    return render(request, "bookflix/vercomentario.html", context)
+
+def escribirComentario(request, isbn):
+    aux= 0
+    try:
+        libro= Book.objects.get(isbn=isbn)
+        aux= 1
+    except Book.DoesNotExist():
+        try:
+            libro= Book.objects.get(isbn=isbn)
+            aux= 2 
+        except: pass
+    context={}
+    if request.POST:
+        form= ComentarioForm(request.POST)
+        if form.is_valid():
+            spoi= form.cleaned_data['spoiler']
+            texto= form.cleaned_data['comentario']
+            perfil= Profile.objects.get( id= request.session["perfil_ayuda"])
+            if aux == 1:
+                coment= CommentBook( is_a_spoiler=spoi , description=texto, profile=perfil, publication= libro )
+                coment.save()
+                return redirect("/leer_libro/"+str(isbn))
+            else:
+                coment= CommentBookByChapter( is_a_spoiler=spoi , description=texto, profile=perfil, publication= libro )
+                coment.save()
+                return redirect("/libro_capitulo/"+ str(isbn))
+    form= ComentarioForm(initial={'spoiler': False})
+    context["comentario"] = form 
+    context["queEs"]= aux
+    context["isbn"]= isbn
+    return render(request, "bookflix/comentar.html", context)
+    
 def leer_libro(request,isbn):
+     context={}
      libro= Book.objects.get(isbn = isbn)  #Aca recupero el libro por el isbn para no cambiar el template
      request.session["lectura_otro_perfil"] = False
      if request.user.plan == 'normal':
@@ -411,10 +519,20 @@ def leer_libro(request,isbn):
         try:
             estado_propio = StateOfBook.objects.get(state="reading", profile=request.session["perfil_ayuda"])
             comenzado = True
+            context['comenzado']= comenzado
         except StateOfBook.DoesNotExist:
             comenzado = False
+            context['comenzado']= comenzado
+
+
      libro = Book.objects.get(isbn=isbn)
-     return render(request,"bookflix/leer_libro.html",{"libro":libro, "comenzado":comenzado}) 
+     comentarios= CommentBook.objects.filter(publication = libro)
+     context['libro']= libro
+     context['comentarios']= comentarios
+     return render(request,"bookflix/leer_libro.html",context) 
+
+
+
 
 def leer_libro_por_capitulo(request,isbn):
      libro = BookByChapter.objects.get(isbn=isbn)
@@ -427,8 +545,9 @@ def leer_libro_por_capitulo(request,isbn):
             cap_actual = cap_actual + 1
         except Chapter.DoesNotExist: 
             pass
+
         #capitulos = Chapter.objects.filter(book=libro)
-     return render(request,"bookflix/libro_capitulo.html",{"libro":libro, "capitulos":capitulos}) 
+     return render(request,"bookflix/libro_capitulo.html",{"libro":libro, "capitulos":capitulos,}) 
 
 
 def libro_capitulo(request):

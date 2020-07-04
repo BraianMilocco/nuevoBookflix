@@ -50,6 +50,26 @@
                     {% endif %}
         </div>
     
+        <a href="/comentar/{{libro.isbn}}"> comentar</a>
+        <br>
+        <div> 
+
+
+        </div>
+
+        {% for coment in comentarios%}
+            
+            {% if coment.is_a_spoiler %}
+                <p> <a href="/verComentario/{{coment.id}}"> ver</a> : El comentario no se muestra dado su grado de Spoilisidad, si quiere leerlo ente arriba</p>
+            {%else %}
+
+                <p> <a href="/verComentario/{{coment.id}}"> ver</a>: {{coment.description |slice:":80" }} (...) </p>
+                <a href="/denunciarComentario/{{coment.id}}/{{libro.isbn}}"> denunciar comentario</a>
+            {% endif%}
+        
+
+        {%endfor%}
+
 
     </body>
 </html>
