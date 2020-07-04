@@ -1,6 +1,6 @@
 {%for coment in comentarioLibro %}
     <p>Comentario: {{coment.comentario.description}}</p>
-    <p>Libro del comentario:  <a href="/leer_libro/{{coment.comentario.publication.isbn}}"> {{coment.publication}} </a></p>
+    <p>Libro del comentario:  <a href="/leer_libro/{{coment.comentario.publication.isbn}}"> {{coment.comentario.publication}} </a></p>
 
     <p> 
         <a href="/denuncia/{{coment.id}}/True/1">Aceptar</a>     |      <a href="/denuncia/{{coment.id}}/False/1">Rechazar</a>
@@ -10,7 +10,7 @@
 
 {%for coment in comentarioLibroCap %}
     <p>{{coment.description}}</p>
-    <p>Libro del comentario:  <a href="/libro_capitulo/{{coment.publication.isbn}}"> {{coment.publication}} </a></p>
+    <p>Libro del comentario:  <a href="/libro_capitulo/{{coment.comentario.publication}}"> {{coment.comentario.publication}} </a></p>
 
     <p> 
         <a href="/denuncia/{{coment.id}}/True/2">Aceptar</a>     |      <a href="/denuncia/{{coment.id}}/False/2">Rechazar</a>
