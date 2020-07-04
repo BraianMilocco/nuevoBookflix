@@ -1,3 +1,5 @@
+#Mirar lineas 365 y 367 porque hice cambios de como manejarnos en las views ahora que cambio el modelo de libro
+
 from django.shortcuts import render
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserCreationForm
@@ -7,7 +9,8 @@ from django.contrib.auth import logout as do_logout
 from django.shortcuts import redirect
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_protect
-from .formsu import UserSolicitudForm, RegistrationForm, RegistroTarjeta, CrearPerfil, MailChange, MailConfirmacion, RecuperarCuenta, busquedaOtrosForm
+#from .formsu import UserSolicitudForm, RegistrationForm, RegistroTarjeta, CrearPerfil, MailChange, MailConfirmacion, RecuperarCuenta, 
+from .formsu import *
 from .models import *
 from django.contrib.auth.forms import UserCreationForm
 from django import shortcuts
@@ -238,7 +241,7 @@ def cambiar_tarjeta(request):
             dateT= form.cleaned_data.get("date_expiration")
             cardName= form.cleaned_data.get("card_name")
             bankT=form.cleaned_data.get("bank")
-
+            t= CreditCards.objects.get(user= request.user).delete()
             tarjeta= CreditCards(number=numT, cod=codT, date_expiration=dateT, card_name=cardName, bank=bankT, user=request.user)
             tarjeta_vieja = CreditCards.objects.get(user=request.user)
             tarjeta_vieja.delete()
@@ -393,15 +396,16 @@ def solicitar_cambio(request):
     return render(request,"bookflix/solicitar_cambio.html", context)
 
 def leer_libro(request,isbn):
+     libro= Book.objects.get(isbn = isbn)  #Aca recupero el libro por el isbn para no cambiar el template
      request.session["lectura_otro_perfil"] = False
      if request.user.plan == 'normal':
         try:
-            perfil = Profile.objects.exclude(id=request.session["perfil_ayuda"]).get(account=request.user)
+            perfil = Profile.objects.exclude(id=request.session["perfil_ayuda"]).get(account=request.user) #aca agrego el isbn al objeto
             try: 
-                state = StateOfBook.objects.get(state="reading", profile=perfil, book=isbn)
+                state = StateOfBook.objects.get(state="reading", profile=perfil, book= libro.id)
                 request.session["lectura_otro_perfil"] = True
             except StateOfBook.DoesNotExist:
-                pass
+                pass 
         except Profile.DoesNotExist:
             pass    
         try:
@@ -440,9 +444,9 @@ def libro_por_leer(request,isbn):
 
 
 def libro_cap_por_leer(request,isbn):
-    libro = Book.object.get(isbn=isbn)
+    libro = BookByChapter.object.get(isbn=isbn)
     perfil = Profile.object.get(id=request.session["perfil_ayuda"])
-    variable = StateOfBook(state="reading",book=libro, profile=perfil)
+    variable = StateOfBookByChapter(state="reading",book=libro, profile=perfil)
     return render(request,"bookflix/libro_por_leer.html", {"libro":libro} )
 
 
@@ -513,55 +517,6 @@ def mas_leidos (request):
     return render(request,'bookflix/mas_leidos.html', {"libros":libros})
 
 
-# def buscar(request):
-#     context={}
-#     libros= Book.objects.all()
-#     librosCap= BookByChapter.objects.all()
-#     context['libros']= libros
-#     context['librosCap']= librosCap
-#     request.session['el']= False
-#     request.session['elc']=False
-#     request.session.modified = True
-#     if request.POST:
-#         form= busquedaOtrosForm(request.POST)
-#         if form.is_valid():
-            
-#             if not (form.cleaned_data['isbn'] is None):    
-#                 try:
-#                     l= Book.objects.get(isbn=form.cleaned_data['isbn'])
-#                     request.session['el']= True
-#                 except Book.DoesNotExist:
-#                     try:
-#                         lc= BookByChapter.objects.get(isbn=form.cleaned_data['isbn'])
-#                         request.session['elc']=True
-#                     except BookByChapter.DoesNotExist:
-#                         pass
-#                 request.session.modified = True
-#             else:
-#                 #l = buscarLibros(libros, form, request, 'el')
-#                 #lc = buscarLibros(librosCap, form, request, 'elc')
-#                 l= libros
-#                 lc= librosCap
-#                 if not (form.cleaned_data['titulo'] is None):
-#                     try:
-#                         l= Book.objects.filter(title= form.cleaned_data['titulo'])
-#                         request.session['el']= True
-#                     except l.DoesNotExist:
-#                         try:
-#                             lc= lc.objects.filter(title= form.cleaned_data['titulo'])
-#                             request.session['elc'].modified=True
-#                         except lc.DoesNotExist:
-#                             pass
-#                 request.session.modified = True        
-
-#         if request.session['el']:
-#            context['libros']= l
-#         elif request.session['elc']:
-#             context['librosCap']= lc
-#     form= busquedaOtrosForm()
-#     context['form']= form
-#     return render(request, "bookflix/buscar.html", context)
-
 
 
 
@@ -576,26 +531,26 @@ def simuladorTemporal(request):
    #Libros
     try:
         Lib= UpDownBook.objects.filter(up_normal =timezone.now()).values('book')
-        li= Book.objects.filter(isbn__in=Lib)
+        li= Book.objects.filter(id__in=Lib)
         cambioNormal(li, True)
         
     except UpDownBook.DoesNotExist:
         pass
     try:
         Lib= UpDownBook.objects.filter(expiration_normal=timezone.now().date()).values('book')         
-        li= Book.objects.filter(isbn__in=Lib)
+        li= Book.objects.filter(id__in=Lib)
         cambioNormal(li, False)
     except UpDownBook.DoesNotExist:
         pass
     try:
         Lib= UpDownBook.objects.filter(up_premium =timezone.now()).values('book')
-        li= Book.objects.filter(isbn__in=Lib)
+        li= Book.objects.filter(id__in=Lib)
         cambioPremium(li, True)
     except UpDownBook.DoesNotExist:
         pass
     try:
         Lib= UpDownBook.objects.filter(expiration_premium=timezone.now().date()).values('book')         
-        li= Book.objects.filter(isbn__in=Lib)
+        li= Book.objects.filter(id__in=Lib)
         cambioPremium(li,False)
     except UpDownBook.DoesNotExist:
         pass
@@ -603,25 +558,25 @@ def simuladorTemporal(request):
     #LibrosPorCapitulo
     try:
         Lib= UpDownBookByChapter.objects.filter(up_normal =timezone.now()).values('book')
-        li= BookByChapter.objects.filter(isbn__in=Lib)
+        li= BookByChapter.objects.filter(id__in=Lib)
         cambioNormal(li, True)
     except UpDownBookByChapter.DoesNotExist:
         pass
     try:
         Lib= UpDownBookByChapter.objects.filter(expiration_normal=timezone.now().date()).values('book')         
-        li= BookByChapter.objects.filter(isbn__in=Lib)
+        li= BookByChapter.objects.filter(id__in=Lib)
         cambioNormal(li, False)
     except UpDownBookByChapter.DoesNotExist:
         pass
     try:
         Lib= UpDownBookByChapter.objects.filter(up_premium =timezone.now()).values('book')
-        li= BookByChapter.objects.filter(isbn__in=Lib)
+        li= BookByChapter.objects.filter(id__in=Lib)
         cambioPremium(li, True)
     except UpDownBookByChapter.DoesNotExist:
         pass
     try:
         Lib= UpDownBookByChapter.objects.filter(expiration_premium=timezone.now().date()).values('book')         
-        li= BookByChapter.objects.filter(isbn__in=Lib)
+        li= BookByChapter.objects.filter(id__in=Lib)
         cambioPremium(li,False)
     except UpDownBookByChapter.DoesNotExist:
         pass
@@ -673,8 +628,8 @@ def simuladorTemporal(request):
         darDeBajaUsuarios(ac)
         context['libros']= ac
     except UserSolicitud.DoesNotExist: pass
-    return render(request, "bookflix/simuladorTemporal.html", context)
-    #return redirect('/solicitudes')
+    #return render(request, "bookflix/simuladorTemporal.html", context)
+    return redirect('/solicitudes')
 
 
    

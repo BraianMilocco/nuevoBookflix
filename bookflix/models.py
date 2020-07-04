@@ -252,9 +252,10 @@ def validateIsbnB(value):
         return value
 
 
+
 "-------Book-------"
 class Book(models.Model):
-    isbn = models.CharField( max_length=16,primary_key=True, validators =[validateIsbnB, validateIsbnNum],)
+    isbn = models.CharField( max_length=16, unique=True, validators =[validateIsbnB, validateIsbnNum],)
     title = models.CharField(('titulo'), max_length=50)
     description = models.TextField(('descripcion'), blank=True, null=True)
     image= models.ImageField("imagen", upload_to='portadas_libros', height_field=None, width_field=None, max_length=None, )
@@ -278,6 +279,8 @@ class Book(models.Model):
     def __str__(self):
         return self.title
 
+
+
 def validateIsbn(value):
 
     try:
@@ -285,10 +288,11 @@ def validateIsbn(value):
         raise ValidationError('isbn en uso por un libro')
     except Book.DoesNotExist:
         return value
+
  
 "-------BookByChapter-------"
 class BookByChapter(models.Model):
-    isbn = models.CharField( max_length=16, primary_key=True, validators =[validateIsbn, validateIsbnNum], )
+    isbn = models.CharField( max_length=16, unique=True, validators =[validateIsbn, validateIsbnNum], )
     title = models.CharField(('titulo'), max_length=50)
     cant_chapter = models.IntegerField('Cantidad de capitulos', default = 1)
     description = models.TextField(('descripcion'), blank=True, null=True)
@@ -304,7 +308,8 @@ class BookByChapter(models.Model):
        
         self.save()
 
-
+    def id(self):
+        return self.id
     class Meta:
         verbose_name = "Libro por capítulo"
         verbose_name_plural = "Libro por capítulos"
@@ -315,6 +320,7 @@ class BookByChapter(models.Model):
 
 "-------Billboard-------"
 class Billboard(models.Model):
+
     title = models.CharField("titulo", max_length=50 )
     description = models.TextField("descripcion",blank=True, null=True)
     mostrar_en_home= models.BooleanField(default=False)
@@ -352,7 +358,11 @@ class Trailer(models.Model):
     def __str__(self):
         return self.title
 
-
+    def clean(self):
+        if (self.book is None) and (self.libro_por_capitulo is None):
+            raise ValidationError("Debe adjuntar un libro o libro por capitulo")
+        if not (self.book is None) and  not (self.libro_por_capitulo is None):
+            raise ValidationError("Debe adjuntar UN libro O UN libro por capitulo")
     
 
 def numerolegal(value):
@@ -378,9 +388,9 @@ class Chapter(models.Model):
         verbose_name_plural = "Capítulos"
 
     def clean(self):
-        b= BookByChapter.objects.get(isbn=self.book_id)
+        b= BookByChapter.objects.get(id = self.book.id)
         b2= Chapter.objects.exclude(id= self.id).filter(book=self.book).count()
-        if self.number > b.cant_chapter:
+        if int(self.number) > int(b.cant_chapter):
             raise ValidationError('no puede usar este numero para el capitulo')
         if b2 == b.cant_chapter:
             raise ValidationError('El libro no puede contener mas capítulos')
