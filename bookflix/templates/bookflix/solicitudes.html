@@ -2,17 +2,23 @@
     <body>
         {% include "bookflix/barra.html" %}
         <h1>Solicitudes</h1>
-
+        <div style="display: inline-flex;">
+        <div>
         <ul id="Solicitudes">
-
             {% if solicitudes %}
             {% for solicitud in solicitudes %}
+              {{ loop.index }}
                <li>
                     <div>
-                        <p> {{solicitud.user}} </p>
+                        {# <p>{{ forloop.counter0 }}</p> #}
+                        <p>Usuario: {{solicitud.user}} </p>
+                        <p>Plan actual del usuario: {{solicitud.user.plan}} </p>
                         <p>tipo de solicitud = {{solicitud.type_of_solicitud}}</p>
+                        <p>Plan = {{solicitud.type_of_plan}}</p>
+                        <p>Tarjeta del usuario⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀= </p>
+                        <p>Codigo⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀= </p>
+                        <p>Fecha de expiracion ⠀⠀⠀⠀⠀⠀⠀⠀⠀=</p>
                         <br> 
-                        </p>
                     </div>
                 </li>
                 <a href="/aceptarSolicitud/{{solicitud.id}}/1"> | Aceptar   </a>
@@ -22,8 +28,23 @@
             {% else %}
             <p>No hay solicitudes de alta disponibles</p>
             {% endif %}
+            
         
         </ul>
+        </div>
+        <div>
+
+        {% if tarjetas %}
+            {% for tarjeta in tarjetas %}
+                <div style="margin: 150px 190px 214px 0 ;">
+                <p style="margin: 163px 190px 15px 0 ;"> {{tarjeta.number}} </p>
+                <p style="margin: 0px 0px 19px 0 ;"> {{tarjeta.cod}} </p>
+                <p style="margin: 0px 0px 18px 0 ;"> {{tarjeta.date_expiration}} </p>
+                </div>
+            {% endfor %}
+        {% endif %}
+        </div>
+        </div>
         <a href="/simuladorTemporal"> aplicar funciones</a>
     </body>
 </html>

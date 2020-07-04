@@ -16,21 +16,24 @@ urlpatterns = [
     path("cambiar_tarjeta/", cambiar_tarjeta, name="cambiar_tarjeta"),
     path("cambiar_email/", cambiar_email, name="cambiar_email"),
     path("publicacion/<titulo>/", publicacion, name="publicacion"),
-    path("publicaciones/", publicaciones, name="publicaiones"),
+    path("publicaciones/", publicaciones, name="publicaciones"),
     path('crear_perfil/', crear_perfil, name='crear_perfil'),
     path('confirmarCuenta/', confirmarCuenta, name='confirmarCuenta'),
     path('solicitudes/', solicitudes, name='solicitudes'),
     path('solicitar_cambio/', solicitar_cambio, name='solicitar_cambio'),
     path('recuperarCuenta/', recuperarCuenta, name='recuperarCuenta'),
     path('leer_libro/<isbn>/', leer_libro, name='leerlibro'),
-    path('leer_libro_por_capitulo/<isbn>/', leer_libro_por_capitulo, name='leer_libro_por_capitulo'),
+    path('libro_capitulo/<isbn>/', leer_libro_por_capitulo, name='libro_capitulo'),
     path('libro_capitulo/', libro_capitulo, name='libro_capitulo'), 
     path("perfil_seleccionado/<id_perfil>/", perfil_seleccionado, name="perfil_seleccionado"),  
     path("simuladorTemporal/", simuladorTemporal, name="simuladorTemporal"),
     path("trailers/", trailers, name="trailers"),
     path("aceptarSolicitud/<idSol>/<num>/", aceptarSolicitud, name="aceptarSolicitud"),
-   # path("buscar/",buscar, name="buscar"),
+    #path("buscar/",buscar, name="buscar"),
     path("historial/", historial, name="historial"), 
+    path("libro_por_leer/<isbn>/", libro_por_leer, name="libro_por_leer"), 
+    path("mas_leidos/", mas_leidos, name="mas_leidos"), 
+    
 ] 
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

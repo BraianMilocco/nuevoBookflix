@@ -35,19 +35,19 @@
  
 {% include "bookflix/barra.html" %}
 
-<ul id="publicaciones">
+<ul id="libros">
 
-    {% if publicaciones %}
-    {% for publicacion in publicaciones %}
+    {% if libros %}
+    {% for libro in libros %}
         <li style="display: inline-block;"> 
-            <a href="/publicacion/{{publicacion.title}}">{{publicacion.title}}</a> 
+            <a href="/leer_libro/{{libro.book.isbn}}">{{libro.book.title}}</a> 
             <br>
-            <iframe   width="460" height="250" src={{publicacion.video}} frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> 
+            <img style="max-width:275px; max-height:275px;" src="{{libro.book.image.url}}"  alt="fondo" > 
             <br>
         </li>
     {% endfor %}
     {% else %}
-    <p>No hay publicaciones disponibles</p>
+    <p>No hay libros disponibles</p>
     {% endif %}
 
 </ul>

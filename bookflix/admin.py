@@ -3,8 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from django import forms
 
 from  .models import *
-#from .formsu import ChapForm
-from .formsu import *
+from .formsu import ChapForm
 
 
 class ChapterAdmin(admin.ModelAdmin):

@@ -1,9 +1,9 @@
 <html>
-    {% if request.session.tiene %}
+    {% include "bookflix/barra.html" %}
+    {% if request.session.solicitud == "0" %}
         <p>Usted ya tiene una solicitud pendiente</p>
     {% else %}
     <body>
-        {% include "bookflix/barra.html" %}
         <p></p>
         <p>Precios </p>
         <p> Free: $000 al mes (pero no podes leer nada)</p>
@@ -19,8 +19,8 @@
         {{ solicitud }} 
 
        
-    <input type="submit" value="/publicaciones/">  
-    {# <a href="/publicaciones/{{libro.author}}">{{libro.title}}</a>  #}
+    <input type="submit" value="SolicitarCambio">  
+    
     
     
         
