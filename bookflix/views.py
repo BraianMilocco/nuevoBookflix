@@ -525,12 +525,24 @@ def leer_libro(request,isbn):
         except StateOfBook.DoesNotExist:
             comenzado = False
             context['comenzado']= comenzado
+            context['terminado']= True
+
+            ##
+            state = StateOfBook.objects.get(state="finished", profile=perfil, book= libro.id)
+            context['terminado']= True
+
+     try:
+        estado = StateOfBook.objects.get(state="finished", profile=request.session["perfil_ayuda"])
+        context['terminado']= True
+     except:
+         context['terminado']= False
 
 
      libro = Book.objects.get(isbn=isbn)
      comentarios= CommentBook.objects.filter(publication = libro)
      context['libro']= libro
      context['comentarios']= comentarios
+     
      return render(request,"bookflix/leer_libro.html",context) 
 
 
