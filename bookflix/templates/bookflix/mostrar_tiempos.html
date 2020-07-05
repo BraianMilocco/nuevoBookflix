@@ -1,0 +1,57 @@
+<html>
+    <style>
+        #publicaciones{
+            margin: 10;
+            border: 10px;
+            padding:70px;
+            list-style: none;
+            text-transform: uppercase;
+        }
+        #publicaciones li{
+            display: ;
+            margin-left: 15%;
+            border: 10px;
+        }
+        #libros{
+            margin: 10 10 10 10;
+            border: 10px 10px 10px 10px;
+            padding:70px;
+            list-style: none;
+            text-transform: uppercase;
+        }
+        #libros li{
+            display: inline;
+            margin: 10px 10px 10px 10px;
+            border: 10px 10px 10px 10px ;
+        }
+        #libros div p{
+            display: inline;
+            margin-left: 1%;
+            border: 10px;
+        }
+
+    </style>
+<body>
+ 
+{% include "bookflix/barra.html" %}
+
+<ul id="publicaciones">
+
+    {% if cuentas %}
+    {% for cuenta in cuentas %}
+        <li style="display:;"> 
+            <a href="/admin/bookflix/account/{{cuenta.id}}/change/">{{cuenta.username}}</a>
+            <p>Días hasta vencimiento:{{cuenta.tiempo_restante}} </p>
+            <br>
+        </li>
+    {% endfor %}
+    {% else %}
+    <p>No hay cuentas con pagos realizados disponibles</p>
+    {% endif %}
+
+</ul>
+ <hr>
+
+
+</body>
+</html>

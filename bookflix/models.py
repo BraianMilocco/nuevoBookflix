@@ -147,6 +147,7 @@ class Account(AbstractBaseUser):
     date_start_plan = models.DateField(blank=True, null=True, auto_now=False, auto_now_add=False)
     time_pay = models.IntegerField(default=0)
     objects = MyAccountManager()
+    #tiempo = tiempo_restante()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']

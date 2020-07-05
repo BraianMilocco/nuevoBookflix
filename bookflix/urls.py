@@ -34,6 +34,7 @@ urlpatterns = [
     path("libro_por_leer/<isbn>/", libro_por_leer, name="libro_por_leer"), 
     path("mas_leidos/", mas_leidos, name="mas_leidos"), 
     path('cambiar_nombre/<nombre>', cambiar_nombre, name='cambiar_nombre'),
+    path('mostrar_tiempos/', mostrar_tiempos, name='mostrar_tiempos'),
 ] 
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
