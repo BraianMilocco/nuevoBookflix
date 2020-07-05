@@ -69,6 +69,17 @@ class RecuperarCuenta(forms.Form):
     email= forms.EmailField()
     
 
+class SolicitudFormAdmin(ModelForm):
+    class Meta:
+        model = UserSolicitud
+        exclude = ['id', ]
+
+class ComentarioForm(forms.Form):
+    comentario= forms.CharField( max_length= 300, widget=forms.Textarea)
+    spoiler= forms.BooleanField(required=False)
+
+
+
 
 class ChapForm(ModelForm):
     class Meta:
@@ -87,12 +98,3 @@ class ChapForm(ModelForm):
         except BookByChapter.DoesNotExist:
             return self.cleaned_data
 """
-
-class SolicitudFormAdmin(ModelForm):
-    class Meta:
-        model = UserSolicitud
-        exclude = ['id', ]
-
-class ComentarioForm(forms.Form):
-    comentario= forms.CharField( max_length= 300, widget=forms.Textarea)
-    spoiler= forms.BooleanField(required=False)
