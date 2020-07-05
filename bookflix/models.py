@@ -212,7 +212,7 @@ class CreditCardsUsed(models.Model):
 
     class Meta:
         verbose_name = "Tarjeta Usada"
-        verbose_name_plural = "Tarjetas Usadas"
+        verbose_name_plural = "Tarjetas Usadas" 
 
 #Profile
 
