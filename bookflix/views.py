@@ -640,8 +640,6 @@ def mas_leidos (request):
 def mostrar_tiempos(request):
     cuentas = Account.objects.exclude(time_pay= 0)
     cuentas = sorted(cuentas, key=lambda  Account : (Account.date_start_plan + timedelta(days=Account.time_pay)) - datetime.datetime.now().date())
-    #cuentas = sorted(cuentas, key=lambda  Account : Account.tiempo)
-    #cuentas.sort(key=lambda Account: Account.time_pay)
     return render (request,"bookflix/mostrar_tiempos.html",{"cuentas":cuentas})
 
 

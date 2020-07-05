@@ -40,6 +40,7 @@
     {% for cuenta in cuentas %}
         <li> 
             <a href="/admin/bookflix/account/{{cuenta.id}}/change/">{{cuenta.username}}</a>
+            <p>Plan:{{cuenta.plan}} </p>
             <p>Días hasta vencimiento:{{cuenta.tiempo_restante}} </p>
             <br>
         </li>
