@@ -1,9 +1,7 @@
 {% load static %}
 <html>
     <body>
-        {% include "bookflix/barra.html" %}
-
-        
+        {% include "bookflix/barra.html" %}        
         <div style= "margin: auto; margin: 100px;">
             <div style="display: inline; margin: auto;">
                 <h2>{{libro.title}}</h2>
@@ -15,7 +13,7 @@
 
                 {# <embed style="width:300px; height:250px;" frameborder="0" id='pdf' src="{% static 'pdf/cmd.pdf' %}"></embed> #}                    {# % static 'pdf/cmd.pdf' % #}
 
-                {# <input id="submit" type="button" value="Click" href="/"/>  #}         
+                {# <input id="submit" type="button" value="Click" href="/"/>      #}         
             </div>  
                     
                     <!-- -->
@@ -29,7 +27,8 @@
                     </p>
                     <P>Puntuación: {{puntaje}} pts</P>
                     
-
+                    
+                    
                     {% for capitulo in capitulos %}
                         <object data="{{capitulo.pdf.url}}" type="application/x-pdf" title="{{libro.title}}" width="500" height="720">
                             <a href="{{capitulo.pdf.url}}">{{capitulo.title}}</a> 
@@ -52,7 +51,6 @@
         <a href="/comentar/{{libro.isbn}}"> comentar</a>
         <br>
         <div> 
-
 
         </div>
         <p> Le has dado: {{puntajeMio.points}}pts</p>

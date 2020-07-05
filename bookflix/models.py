@@ -195,7 +195,10 @@ class CreditCards(models.Model):
         verbose_name_plural = "Tarjetas"
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 558d39da6a5d49f37caaec1c307832dae7667ccb
 #CreditCards
 class CreditCardsUsed(models.Model):
     number = CardNumberField('numero')
@@ -213,7 +216,11 @@ class CreditCardsUsed(models.Model):
 
     class Meta:
         verbose_name = "Tarjeta Usada"
+<<<<<<< HEAD
         verbose_name_plural = "Tarjetas Usadas"
+=======
+        verbose_name_plural = "Tarjetas Usadas" 
+>>>>>>> 558d39da6a5d49f37caaec1c307832dae7667ccb
 
 #Profile
 

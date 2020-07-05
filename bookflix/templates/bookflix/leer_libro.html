@@ -60,6 +60,10 @@
 
 
         </div>
+        {% if terminado %}
+            <a href="/comentar/{{libro.isbn}}"> comentar</a>
+            <br>
+        {% endif%}
 
         {% for coment in comentarios%}
             
