@@ -6,18 +6,13 @@
             <div style="display: inline;">
                 <h2>{{libro.title}}</h2>
                 <img style="max-width:275px; max-height:275px;" src="{{libro.image.url}}"  alt="fondo" > 
-                {# <button style="position: absolute;margin-left: 10;">Agregar a futuras lecturas</button> #}
+                { <button style="position: absolute;margin-left: 10;">Agregar a futuras lecturas</button> #}
                 
-                {# <button onclick="enviarPost( 'publicacion')" style="position: absolute;margin-top: 40;margin-left:10;">Leer Libro</button> #}
+                { <button onclick="enviarPost( 'publicacion')" style="position: absolute;margin-top: 40;margin-left:10;">Leer Libro</button> #}
                  
+                {#<embed style="width:300px; height:250px;" frameborder="0" id='pdf' src="{% static 'pdf/cmd.pdf' %}"></embed> #}                    {# % static 'pdf/cmd.pdf' % #}
 
-                
-
-
-
-                {# <embed style="width:300px; height:250px;" frameborder="0" id='pdf' src="{% static 'pdf/cmd.pdf' %}"></embed> #}                    {# % static 'pdf/cmd.pdf' % #}
-
-                {# <input id="submit" type="button" value="Click" href="/"/>      #}     
+                {#<input id="submit" type="button" value="Click" href="/"/>      #}     
             </div>  
                     <br>
                     <!-- -->
@@ -29,7 +24,7 @@
 
                     {% endfor %}
                     </p>
-                    <P>Puntuación: 4,5</P>
+                    <P>Puntuación: {{puntaje}}</P>
 
                     {% if request.session.lectura_otro_perfil == False %}
 
@@ -53,6 +48,15 @@
         <a href="/comentar/{{libro.isbn}}"> comentar</a>
         <br>
         <div> 
+        <p> Le has dado: {{puntajeMio.points}}pts</p>
+        <p> 
+            <a> Puntuar: </a> 
+            <a href="/puntuar/{{libro.isbn}}/completo/1"> 1pt </a> <a>-</a>
+            <a href="/puntuar/{{libro.isbn}}/completo/2"> 2pt </a> <a>-</a>
+            <a href="/puntuar/{{libro.isbn}}/completo/3"> 3pt </a> <a>-</a>
+            <a href="/puntuar/{{libro.isbn}}/completo/4"> 4pt </a> <a>-</a>
+            <a href="/puntuar/{{libro.isbn}}/completo/5"> 5pt </a> <a></a>
+            </p>
 
 
         </div>
@@ -60,10 +64,10 @@
         {% for coment in comentarios%}
             
             {% if coment.is_a_spoiler %}
-                <p> <a href="/verComentario/{{coment.id}}"> ver</a> : El comentario no se muestra dado su grado de Spoilisidad, si quiere leerlo ente arriba</p>
+                <p> <a href="/verComentario/{{coment.id}}/libro"> ver</a> : El comentario no se muestra dado su grado de Spoilisidad, si quiere leerlo ente arriba</p>
             {%else %}
 
-                <p> <a href="/verComentario/{{coment.id}}"> ver</a>: {{coment.description |slice:":80" }} (...) </p>
+                <p> <a href="/verComentario/{{coment.id}}/libro"> ver</a>: {{coment.description |slice:":80" }} (...) </p>
                 <a href="/denunciarComentario/{{coment.id}}/{{libro.isbn}}"> denunciar comentario</a>
             {% endif%}
         

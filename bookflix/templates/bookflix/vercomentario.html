@@ -1,5 +1,6 @@
+{% include "bookflix/barra.html" %}
 
-{%if editar == 'True' %}
+{%if editar == 'True' or user.is_admin%}
 
 <form method="POST"> {% csrf_token %}
     
@@ -10,7 +11,7 @@
    
 <input type="submit" value="comentar">  
  </form>
-
+<p> <a href="/borrarcomentario/{{comentario.id}}/{{isbn}}/{{aux}}"> borrar</a> </p>
 
 {% else %}
 
@@ -24,6 +25,8 @@
 
 {%if aux == '1' %}
     <a href="/leer_libro/{{isbn}}"> volver a su libro</a>
-{%else%}
+{%elif aux == '2' %}
     <a href="/libro_capitulo/{{isbn}}"> volver a su libro por capitulo</a>
+{%else%}
+    <a href="/vermiscomentarios/"> volver a su perfil</a>
 {%endif%}

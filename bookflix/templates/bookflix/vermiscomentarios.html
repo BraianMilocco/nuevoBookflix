@@ -1,0 +1,41 @@
+{% include "bookflix/barra.html" %}
+
+<p>Comentarios a Libros</p>
+
+{%for coment in deLibro%}
+    {%if not user.plan == 'free' and coment.publication.mostrar_en_home %}
+        {%if user.plan == 'normal' and coment.publication.on_normal%} 
+            <p> libro: <a href="/leer_libro/{{coment.publication.isbn}}"> {{coment.publication}}</a></p>
+            <p>comentario: {{coment.description}}</p>
+            <p><a href="/verComentario/{{coment.id}}/perfil"> ver</a></p>
+        {% elif coment.publication.on_normal or coment.publication.on_premium %}
+            <p> libro: <a href="/leer_libro/{{coment.publication.isbn}}"> {{coment.publication}}</a></p>
+            <p>comentario: {{coment.description}}</p>
+            <p><a href="/verComentario/{{coment.id}}/perfil"> ver</a></p>
+        {%endif%}
+    {%else%}
+        <p> libro: <a > {{coment.publication}}</a></p>
+        <p>comentario: {{coment.description}}</p>
+    {%endif%}
+    <p>---------------------- ----------------------</p>
+
+{%endfor%}
+
+<p>Comentarios a Libros por Capitulo</p>
+{%for coment in deLibroPorCap%}
+    {%if not user.plan == 'free' and coment.publication.mostrar_en_home %}
+        {%if user.plan == 'normal' and coment.publication.on_normal%} 
+            <p> libro: <a href="/libro_capitulo/{{coment.publication.isbn}}"> {{coment.publication}}</a></p>
+            <p>comentario: {{coment.description}}</p>
+            <p><a href="/verComentario/{{coment.id}}/perfil"> ver</a></p>
+        {% elif coment.publication.on_normal or coment.publication.on_premium %}
+            <p> libro: <a href="/libro_capitulo/{{coment.publication.isbn}}"> {{coment.publication}}</a></p>
+            <p>comentario: {{coment.description}}</p>
+            <p><a href="/verComentario/{{coment.id}}/perfil"> ver</a></p>
+        {%endif%}
+    {%else%}
+        <p> libro: <a > {{coment.publication}}</a></p>
+        <p>comentario: {{coment.description}}</p>
+    {%endif%}
+    <p>---------------------- ----------------------</p>
+{%endfor%}
