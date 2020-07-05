@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from django import forms
 
 from  .models import *
-from .formsu import ChapForm
+from .formsu import *
 
 
 class ChapterAdmin(admin.ModelAdmin):
@@ -11,6 +11,9 @@ class ChapterAdmin(admin.ModelAdmin):
     list_display = ('book', 'title', 'number', 'description', 'pdf', 'active')
 
 
+class SolicitudAdmin(admin.ModelAdmin):
+    form = SolicitudFormAdmin
+    list_display= ('type_of_solicitud', 'type_of_plan', 'user', 'date_of_solicitud', 'is_accepted')
 
 class AccountAdmin(UserAdmin): 
     list_display= ('email', 'username', 'date_joined', 'plan')
@@ -49,14 +52,14 @@ admin.site.register(Account, AccountAdmin)
 admin.site.register(Author)
 admin.site.register(Gender)
 admin.site.register(Editorial)
-
+admin.site.register(CommentBook)
 
 admin.site.register(CreditCards)
-admin.site.register(CreditCardsUsed)
+#admin.site.register(CreditCardsUsed)
 
 admin.site.register(Profile)
-
-admin.site.register(UserSolicitud)
+admin.site.register(DenunciarComentarioLibro)
+admin.site.register(UserSolicitud, SolicitudAdmin)
 
 admin.site.register(StateOfBook)
 admin.site.register(StateOfBookByChapter)

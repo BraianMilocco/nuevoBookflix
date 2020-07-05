@@ -194,26 +194,6 @@ class CreditCards(models.Model):
         verbose_name = "Tarjeta"
         verbose_name_plural = "Tarjetas"
 
-
-#CreditCardsUsed
-class CreditCardsUsed(models.Model):
-    number = CardNumberField('numero')
-    date_expiration= CardExpiryField('fecha de vencimiento')
-    cod = SecurityCodeField('codigo de seguridad')
-    card_name = models.CharField("nombre de tarjeta",max_length=50)
-    bank = models.CharField(('banco'),max_length=50)
-    user = models.ForeignKey(Account, on_delete=models.CASCADE,verbose_name="usuario")
-
-    def publish(self):
-        self.save()
-
-    def __str__(self):
-        return self.card_name
-
-    class Meta:
-        verbose_name = "Tarjeta Usada"
-        verbose_name_plural = "Tarjetas Usadas"
-
 #Profile
 
 class Profile(models.Model):
@@ -391,7 +371,7 @@ class Chapter(models.Model):
     def clean(self):
         b= BookByChapter.objects.get(id = self.book.id)
         b2= Chapter.objects.exclude(id= self.id).filter(book=self.book).count()
-        if int(self.number) > int(b.cant_chapter):
+        if self.number > int(b.cant_chapter):
             raise ValidationError('no puede usar este numero para el capitulo')
         if b2 == b.cant_chapter:
             raise ValidationError('El libro no puede contener mas capítulos')
@@ -603,7 +583,8 @@ class CommentBook(models.Model):
     is_a_spoiler = models.BooleanField("es espoiler",default=False)
     description = models.TextField("descripcion",)
     profile= models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name="perfil")
-    publication = models.ForeignKey(Book, on_delete=models.CASCADE, verbose_name="publicacion")    
+    publication = models.ForeignKey(Book, on_delete=models.CASCADE, verbose_name="publicacion")
+    #date = models.DateTimeField( default= datetime.now)   
 
 
     def publish(self):
