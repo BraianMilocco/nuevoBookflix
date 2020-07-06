@@ -50,6 +50,7 @@ urlpatterns = [
     path('borrarcomentario/<id>/<isbn>/<aux>', borrarcomentario, name="borrarcomentario"),
     path('puntuar/<isbn>/<tipo>/<puntos>', puntuar, name="puntuar"),
     path('misvotos/', misvotos, name="misvotos"),
+    path('estadisticas/', stats, name="stats"),
     path('estadisticas/<queEs>', estadisticas, name="estadisticas"),
     path('agregar_a_leyendo/<isbn>', agregar_a_leyendo, name="agregar_a_leyendo"),
     path('quitar_de_leyendo/<isbn>', quitar_de_leyendo, name="quitar_de_leyendo"),

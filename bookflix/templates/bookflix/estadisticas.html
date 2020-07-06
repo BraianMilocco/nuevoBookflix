@@ -1,15 +1,51 @@
+{% include "bookflix/barra.html" %}
 
-<p> funca?</p>
+<p><a href="/estadisticas"> Volver </a></p>
+{%if queEs == 'libro' %}
 
-{%for i in todos.items %}
-     <p> {{i}}</p> 
-{%endfor%}
+   <p> Libros Mas Leidos</p>
+   {%for i in libros%}
+      <p>Titulo: {{i.libro.title}}, cantidad de veces leido: {{i.cantidad}}    |
+         <a href="/admin/bookflix/book/{{i.libro.id}}/change"> editar</a>
+      </p>
+   {%endfor%}
+   <p>-------------------------------------------------------------------</p>
+   <p>Libros Por Capitulo Mas Leidos</p>
+   {%for i in librosCap %}
+      <p>Titulo: {{i.libro.title}}, cantidad de veces leido: {{i.cantidad}}    | 
+         <a href="/admin/bookflix/bookbychapter/{{i.libro.id}}/change"> editar</a>
+      </p>
+   {%endfor%}
 
-ll
+{% endif %}  
+{% if queEs == 'editorial' %}
+      <p> Editoriales mas leidas </p>
+      {%for i in editorial%}
+         <p>Editorial: {{i.editorial}}, sus libros se leyeron: {{i.cantidad}} veces    |
+            <a href="/admin/bookflix/editorial/{{i.editorial}}/change/">editar</a>
+         </p>
+      {%endfor%}
 
-{%for i in numeros %}
-   <p> {{i.titulo}} </p>
-   <p> {{i.cantidad}}</p> 
-{%endfor%}
+{% endif %}
 
-{{p}}
+{% if queEs == 'autor' %}
+      <p> Autor@s mas leid@s </p>
+
+      {%for i in author%}
+         <p> Nombre: {{i.apellido}} {{i.author}}, sus obras fueron leidas: {{i.cantidad}} veces    |
+            <a href="/admin/bookflix/author/{{i.id}}/change/"> editar</a>   </p>
+      {%endfor%}
+
+{% endif %}
+
+{% if queEs == 'genero' %}
+      <p> Géneros mas leidos </p>
+
+      {%for i in genero %}
+            <p> Género: {{i.genero}}, se leyeron {{i.cantidad}} veces libros con este Género    |
+               <a href="/admin/bookflix/gender/{{i.id}}/change/"> Editar</a>
+            </p>
+      {%endfor%}
+
+{% endif %}
+

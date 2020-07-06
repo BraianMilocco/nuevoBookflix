@@ -356,9 +356,6 @@ def cambiar_nombre(request,nombre):
     context["profile_creation_form"]=form
     return render(request, 'bookflix/cambiar_nombre.html', context)
 
-def estadisticas(request,queEs):
-    context={}
-    return render(request,"bookflix/estadisticas.html",context)
 
 
 def solicitar_cambio(request):
@@ -957,4 +954,115 @@ def simuladorTemporal(request):
     return redirect('/solicitudes')
 
 
-   
+#Estadisticas
+
+def estadisticas(request,queEs):
+    context={}
+    libro= StateOfBook.objects.filter(state="finished").values('book').annotate(terminado=Count('book'))
+    libroCap= StateOfBookByChapter.objects.filter(state="finished").values('book').annotate(terminado=Count('book'))
+
+    if queEs == 'libro':
+
+        libro2= sorted(libro, key = lambda user: user['terminado'])
+        libro2= libro2[::-1]    
+        libro4= sorted(libroCap, key = lambda user: user['terminado'])
+        libro4= libro4[::-1]    
+        libro3=[]
+        libro5=[]
+        for i in libro2:
+            l4= Book.objects.get(id= i['book'])
+            libro3.append({'libro':l4, 'cantidad': i['terminado']})
+        for i in libro4:
+            l4= BookByChapter.objects.get(id= i['book'])
+            libro5.append({'libro':l4, 'cantidad': i['terminado']})
+        context['libros']= libro3
+        context['librosCap']= libro5
+
+    elif queEs == 'editorial':
+
+        editorial= []  
+        AllEditorial= Editorial.objects.all()
+
+        for i in AllEditorial:
+            editorial.append({'editorial': i.name, 'cantidad': 0})
+        
+        for i in libro:
+            l4= Book.objects.get(id= i['book'])
+            
+            for edi in editorial:
+                if edi['editorial'] == l4.editorial.name:
+                    edi['cantidad'] = edi['cantidad'] + i['terminado']
+    
+        for i in libroCap:
+            l4= BookByChapter.objects.get(id= i['book'])
+            
+            for edi in editorial:
+                if edi['editorial'] == l4.editorial.name:
+                    edi['cantidad'] = edi['cantidad'] + i['terminado']
+
+        editorial= sorted(editorial, key = lambda user: user['cantidad'])
+        editorial= editorial[::-1]      
+        context['editorial']=editorial
+
+    elif queEs == 'autor':
+
+        author= []  
+        Allauthor= Author.objects.all()
+
+        for i in Allauthor:
+            author.append({'author': i.name,'apellido':i.last_name, 'id': i.id, 'cantidad': 0})
+        
+        for i in libro:
+            l4= Book.objects.get(id= i['book'])
+            
+            for edi in author:
+                if edi['id'] == l4.author.id:
+                    edi['cantidad'] = edi['cantidad'] + i['terminado']
+    
+        for i in libroCap:
+            l4= BookByChapter.objects.get(id= i['book'])
+            
+            for edi in author:
+                if edi['id'] == l4.author.id:
+                    edi['cantidad'] = edi['cantidad'] + i['terminado']
+
+        author= sorted(author, key = lambda user: user['cantidad'])
+        author= author[::-1]      
+        context['author']=author
+
+
+    elif queEs == 'genero':
+
+        generos= []  
+        AllGeneros= Gender.objects.all()
+
+        for i in AllGeneros:
+            generos.append({'genero': i.name, 'id': i.id, 'cantidad': 0})
+        
+        for i in libro:
+            l4= Book.objects.get(id= i['book'])
+
+
+            for ge in l4.genders.all():
+                for edi in generos:
+                    if edi['genero'] == ge.name:
+                        edi['cantidad'] = edi['cantidad'] + i['terminado']
+    
+        for i in libroCap:
+            l4= BookByChapter.objects.get(id= i['book'])
+            
+            for ge in l4.genders.all():
+                for edi in generos:
+                    if edi['genero'] == ge.name:
+                        edi['cantidad'] = edi['cantidad'] + i['terminado']
+
+        generos= sorted(generos, key = lambda user: user['cantidad'])
+        generos= generos[::-1]      
+        context['genero']=generos
+
+
+    context['queEs']= queEs
+    return render(request,'bookflix/estadisticas.html', context)
+
+def stats(request):
+    return render(request, 'bookflix/stats.html',)

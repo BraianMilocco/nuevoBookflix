@@ -41,14 +41,15 @@
             <li><a href="/perfil">Cuenta</a></li>     
             <li><a href="/ ">Home</a></li>
             <li><a href="/publicaciones">Noticias</a></li>
-            <li><a href="/logout">Cerrar Sesion</a></li>
             <li><a href="/trailers">Trailers</a></li>
             <li><a href="/select_perfil">Perfiles</a></li>
+            <li><a href="/logout">LogOut</a></li>
             {% if request.user.is_admin %}
                <li><a href="/solicitudes">Solicitudes</a></li>
                <li><a href="/historial">Historial</a></li>
-               <li><a href="/mostrar_tiempos">Vencimientos de cuentas</a></li>
-               <li><a href="/comentariosDenunciados/"> denunciasCom</a></li>
+               <li><a href="/mostrar_tiempos">Vencimientos</a></li>
+               <li><a href="/comentariosDenunciados/"> denuncias</a></li>
+               <li><a href="/estadisticas/"> estadisticas</a></li></li>
             {% else %}
                <li><a href="/solicitar_cambio">Solicitar Cambio</a></li>
                <li><a href="/historial">Historial</a></li>
