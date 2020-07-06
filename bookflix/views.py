@@ -683,8 +683,11 @@ def agregar_futuras_lecturas(request,isbn):
     perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
     libro = Book.objects.get(isbn=isbn)
     #variable = StateOfBook(state="future_reading",book=libro, profile=perfil)
-    variable = StateOfBook.objects.get(book=libro, profile=perfil)
-    variable.state= "future_reading"
+    try:
+        variable = StateOfBook.objects.get(book=libro, profile=perfil)
+        variable.state= "future_reading"
+    except StateOfBook.DoesNotExist:
+        variable = StateOfBook(book=libro,profile=perfil,state="future_reading")
     variable.save()
     return redirect(to="/leer_libro/"+ str(isbn))
 
@@ -700,7 +703,8 @@ def quitar_futuras_lecturas(request,isbn):
 
 def agregar_libro(request,isbn):
     perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
-    favorito = LibroFavorito(isbn=isbn,profile=perfil)
+    libro = Book.objects.get(isbn=isbn)
+    favorito = LibroFavorito(isbn=isbn,profile=perfil,book=libro)
     favorito.save()
     return redirect(to="/leer_libro/"+ str(isbn))
 
@@ -711,6 +715,28 @@ def quitar_libro(request,isbn):
     favorito.delete()
     return redirect(to="/leer_libro/"+ str(isbn))
 
+def listar_favoritos(request):
+    perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+    libros_favoritos = LibroFavorito.objects.filter(profile=perfil)
+    libros_por_capitulo_favoritos = LibroPorCapituloFavorito.objects.filter(profile=perfil)
+    return render(request,"bookflix/listar_favoritos.html", {"libros_favoritos":libros_favoritos, "libros_por_capitulo_favoritos":libros_por_capitulo_favoritos})
+
+def agregar_a_leyendo(request,isbn):
+    perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+    libro = Book.objects.get(isbn=isbn)
+    variable = StateOfBook.objects.get(book=libro, profile=perfil)
+    variable.state= "reading"
+    variable.save()
+    return redirect(to="/leer_libro/"+ str(isbn))
+
+
+def quitar_de_leyendo(request,isbn):
+    perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+    libro = Book.objects.get(isbn=isbn)
+    variable = StateOfBook.objects.get(book=libro, profile=perfil)
+    variable.state= "null"
+    variable.save()
+    return redirect(to="/leer_libro/"+ str(isbn))
 
 # def puntuar_libro(request,puntuacion,isbn):
 #     libro= Book.objects.get(isbn = isbn)

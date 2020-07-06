@@ -75,9 +75,27 @@
                         </div>
                         <br>
                     {% else %}
-                        <div>
-                            <a style="margin-top: 15px; margin-bottom: 15px;" href="/quitar_futuras_lecturas/{{libro.isbn}}">Quitar de futuras lecturas</a>
+                        <div style=" margin-bottom: 15px;">
+                            <a  href="/quitar_futuras_lecturas/{{libro.isbn}}">Quitar de futuras lecturas</a>
                         </div>
+                    {% endif %}
+
+
+
+                    {% if  not terminado == True or not comenzado == True %}
+                        {% if not comenzado == True %}
+                        <p>El valor de comenzado es:{{comenzado}}{{terminado}}</p>
+                            <div>
+                                <a style="margin-top:30px;margin-bottom: 30px;" href="/agregar_a_leyendo/{{libro.isbn}}"> Agregar a Leyendo</a>
+                            </div>
+                        {% else %}
+                        <p>El valor de comenzado es: {{comenzado}} {{terminado}}</p>
+                            <div>
+                                <a style="margin-top:30px;margin-bottom: 30px;" href="/quitar_de_leyendo/{{libro.isbn}}"> Quitar de Leyendo</a>
+                            </div>        
+                        {% endif %}
+                    {% else %}
+                    <p>El valor de comenzado es:{{comenzado}}</p>
                     {% endif %}
 
         </div>
@@ -102,6 +120,7 @@
 
         {%endfor%}
 
+    
 
     </body>
 </html>

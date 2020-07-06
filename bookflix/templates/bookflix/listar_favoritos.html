@@ -1,0 +1,77 @@
+<html>
+    <style>
+        #favoritos{
+            margin: 10;
+            border: 10px;
+            padding:70px;
+            list-style: none;
+            text-transform: uppercase;
+        }
+        #favoritos li{
+            display: inline;
+            margin-left: 15%;
+            border: 10px;
+        }
+        #libros{
+            margin: 10 10 10 10;
+            border: 10px 10px 10px 10px;
+            padding:70px;
+            list-style: none;
+            text-transform: uppercase;
+        }
+        #libros li{
+            display: inline;
+            margin: 10px 10px 10px 10px;
+            border: 10px 10px 10px 10px ;
+        }
+        #libros div p{
+            display: inline;
+            margin-left: 1%;
+            border: 10px;
+        }
+
+    </style>
+<body>
+ 
+{% include "bookflix/barra.html" %}
+
+<h2>Libros Favoritos</h2>
+
+<ul id="favoritos">
+
+    {% if libros_favoritos %}
+        {% for libro in libros_favoritos %}
+            <li style="display: inline-block;"> 
+                <a href="/leer_libro/{{libro.book.isbn}}">{{libro.book.title}}</a> 
+                <br>
+                <img style="max-width:275px; max-height:275px;" src="{{libro.book.image.url}}"  alt="fondo" >
+                <br>
+            </li>
+        {% endfor %}
+    {% else %}
+        <p>No hay libros agregados a favoritos</p>
+    {% endif %}
+
+</ul>
+ <hr>
+ <ul id="favoritos">
+
+    {% if libros_por_capitulo_favoritos %}
+        {% for libro in libros_por_capitulo_favoritos %}
+            
+            <li style="display: inline-block;"> 
+                <a href="/libro_capitulo/{{libro.book.isbn}}">{{libro.book.title}}</a> 
+                <br>
+                <img style="max-width:275px; max-height:275px;" src="{{libro.book.image.url}}"  alt="fondo" >
+                <br>
+            </li>
+        {% endfor %}
+    {% else %}
+        <p>No hay libros por capitulo agregados a favoritos</p>
+        {{libros_por_capitulo_favoritos}}
+    {% endif %}
+
+</ul>
+
+</body>
+</html>

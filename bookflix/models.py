@@ -357,7 +357,24 @@ class LibroFavorito(models.Model):
         return self.isbn
 
 
+"-------LibroPorCapituloFavorito-------"
+class LibroPorCapituloFavorito(models.Model):
+    isbn = models.CharField( max_length=16, unique=True, validators =[validateIsbn, validateIsbnNum],)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name="perfil",blank=True, null=True)
+    book = models.ForeignKey(BookByChapter, on_delete=models.CASCADE, verbose_name="libro",blank=True, null=True)
 
+    def publish(self):
+        self.save()
+
+    def id(self):
+        return self.id
+
+    class Meta:
+        verbose_name = "Libro por capitulo favorito"
+        verbose_name_plural = "Libros por capitulos favoritos"
+
+    def __str__(self):
+        return self.isbn
 
 
 # "-------PuntuacionDeLibro-------"

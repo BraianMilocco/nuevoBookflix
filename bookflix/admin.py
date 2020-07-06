@@ -74,6 +74,7 @@ admin.site.register(UpDownTrailer)
 admin.site.register(Book)
 admin.site.register(BookByChapter)
 admin.site.register(LibroFavorito)
+admin.site.register(LibroPorCapituloFavorito)
 
 #admin.site.register(PuntuacionDeLibro)
 
