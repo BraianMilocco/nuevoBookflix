@@ -56,6 +56,8 @@ admin.site.register(CommentBook)
 
 admin.site.register(CreditCards)
 admin.site.register(CreditCardsUsed)
+admin.site.register(Like)
+admin.site.register(LikeBookByChapter)
 
 admin.site.register(Profile)
 admin.site.register(DenunciarComentarioLibro)

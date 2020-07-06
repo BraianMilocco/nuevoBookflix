@@ -6,14 +6,13 @@
             <div style="display: inline;">
                 <h2>{{libro.title}}</h2>
                 <img style="max-width:275px; max-height:275px;" src="{{libro.image.url}}"  alt="fondo" > 
-                
                 {# <button style="position: absolute;margin-left: 10;">Agregar a futuras lecturas</button> #}
                 
                 {# <button onclick="enviarPost( 'publicacion')" style="position: absolute;margin-top: 40;margin-left:10;">Leer Libro</button> #}
                  
-                {# <embed style="width:300px; height:250px;" frameborder="0" id='pdf' src="{% static 'pdf/cmd.pdf' %}"></embed> #}                    {# % static 'pdf/cmd.pdf' % #}
+                {#<embed style="width:300px; height:250px;" frameborder="0" id='pdf' src="{% static 'pdf/cmd.pdf' %}"></embed> #}                    {# % static 'pdf/cmd.pdf' % #}
 
-                {# <input id="submit" type="button" value="Click" href="/"/>      #}     
+                {#<input id="submit" type="button" value="Click" href="/"/>      #}     
             </div>  
                     <br>
                     <!-- -->
@@ -25,17 +24,23 @@
 
                     {% endfor %}
                     </p>
-                    <P>Puntuación: 4,5</P>
                     
+                    <P>Puntuación: {{puntaje}}</P>
                     {% if terminado %}
-                    <div>
-                        Puntuar libro:{
-                        <a href="/puntuar_libro/1/{{libro.isbn}}">1</a> <a href="/puntuar_libro/2/{{libro.isbn}}">2</a> <a href="/puntuar_libro/3/{{libro.isbn}}">3</a> <a href="/puntuar_libro/4/{{libro.isbn}}">4</a> <a href="/puntuar_libro/5/{{libro.isbn}}">5</a>⠀}
+                    <div> 
+                        <p> Le has dado: {{puntajeMio.points}}pts</p>
+                        <p> 
+                        <a> Puntuar: </a> 
+                        <a href="/puntuar/{{libro.isbn}}/completo/1"> 1pt </a> <a>-</a>
+                        <a href="/puntuar/{{libro.isbn}}/completo/2"> 2pt </a> <a>-</a>
+                        <a href="/puntuar/{{libro.isbn}}/completo/3"> 3pt </a> <a>-</a>
+                        <a href="/puntuar/{{libro.isbn}}/completo/4"> 4pt </a> <a>-</a>
+                        <a href="/puntuar/{{libro.isbn}}/completo/5"> 5pt </a> <a></a>
+                        </p>
+            
+            
                     </div>
-                    <br>
-
-                    {% else %}
-                        Usted ya voto
+ 
                     {% endif %}
                     {% if agregar_favorito == True %}
 
@@ -51,22 +56,34 @@
 
                     {% if request.session.lectura_otro_perfil == False %}
 
-                    {% if comenzado == False %}
-                        <a href="/libro_por_leer/{{libro.isbn}}">Empezar Libro</a>
-                    {% else %}
-
-
-        
-
-                    <object data="{{libro.pdf.url}}" type="application/x-pdf" title="{{libro.title}}" width="500" height="720">
-                        <a href="{{libro.pdf.url}}">Leer Libro</a> 
-                    </object>
-                    {% endif %}
+                        {% if comenzado == False %}
+                            <a href="/libro_por_leer/{{libro.isbn}}">Empezar Libro</a>
+                        {% else %}
+                            <div style="margin-top: 15px; margin-bottom: 15px;">
+                                <object data="{{libro.pdf.url}}" type="application/x-pdf" title="{{libro.title}}" width="500" height="720">
+                                    <a href="{{libro.pdf.url}}">Ver Libro</a> 
+                                </object>
+                            </div>
+                        {% endif %}
                     {% else %}
                         <p>Suba el plan</p>
 
                     {% endif %}
+                    {% if agregar_futura_lectura == True %}        
+                        <div>    
+                            <a style="margin-top: 30px;" href="/agregar_futuras_lecturas/{{libro.isbn}}">Agregar a futuras lecturas</a>
+                        </div>
+                        <br>
+                    {% else %}
+                        <div>
+                            <a style="margin-top: 15px; margin-bottom: 15px;" href="/quitar_futuras_lecturas/{{libro.isbn}}">Quitar de futuras lecturas</a>
+                        </div>
+                    {% endif %}
+
         </div>
+    
+
+        
         {% if terminado %}
             <a href="/comentar/{{libro.isbn}}"> comentar</a>
             <br>
@@ -75,10 +92,10 @@
         {% for coment in comentarios%}
             
             {% if coment.is_a_spoiler %}
-                <p> <a href="/verComentario/{{coment.id}}"> ver</a> : El comentario no se muestra dado su grado de Spoilisidad, si quiere leerlo ente arriba</p>
+                <p> <a href="/verComentario/{{coment.id}}/libro"> ver</a> : El comentario no se muestra dado su grado de Spoilisidad, si quiere leerlo ente arriba</p>
             {%else %}
 
-                <p> <a href="/verComentario/{{coment.id}}"> ver</a>: {{coment.description |slice:":80" }} (...) </p>
+                <p> <a href="/verComentario/{{coment.id}}/libro"> ver</a>: {{coment.description |slice:":80" }} (...) </p>
                 <a href="/denunciarComentario/{{coment.id}}/{{libro.isbn}}"> denunciar comentario</a>
             {% endif%}
         

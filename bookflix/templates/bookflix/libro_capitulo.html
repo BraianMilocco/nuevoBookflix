@@ -25,7 +25,7 @@
 
                     {% endfor %}
                     </p>
-                    <P>Puntuación: 4,5</P>
+                    <P>Puntuación: {{puntaje}} pts</P>
                     
                     
                     
@@ -48,24 +48,35 @@
 
         </div>
 
+        <a href="/comentar/{{libro.isbn}}"> comentar</a>
+        <br>
         <div> 
-            {% if terminado %}
-                <a href="/comentar/{{libro.isbn}}"> comentar</a>
-                <br>
-             {% endif%}
-            <form method="POST"> {% csrf_token %}
-    
-                {% for field in comentario %}
-                    {{field.label_tag}}
-                    {{field}} 
-                {% endfor %}
-               
-            <input type="submit" value="comentario">  
-            
-            
 
         </div>
+        <p> Le has dado: {{puntajeMio.points}}pts</p>
+        <p> 
+            <a> Puntuar: </a> 
+            <a href="/puntuar/{{libro.isbn}}/incompleto/1"> 1pt </a> <a>-</a>
+            <a href="/puntuar/{{libro.isbn}}/incompleto/2"> 2pt </a> <a>-</a>
+            <a href="/puntuar/{{libro.isbn}}/incompleto/3"> 3pt </a> <a>-</a>
+            <a href="/puntuar/{{libro.isbn}}/incompleto/4"> 4pt </a> <a>-</a>
+            <a href="/puntuar/{{libro.isbn}}/incompleto/5"> 5pt </a> <a></a>
+            </p>
 
+
+
+        {% for coment in comentarios%}
+            
+            {% if coment.is_a_spoiler %}
+                <p> <a href="/verComentario/{{coment.id}}/libro"> ver</a> : El comentario no se muestra dado su grado de Spoilisidad, si quiere leerlo ente arriba</p>
+            {%else %}
+
+                <p> <a href="/verComentario/{{coment.id}}/libro"> ver</a>: {{coment.description |slice:":80" }} (...) </p>
+                <a href="/denunciarComentario/{{coment.id}}/{{libro.isbn}}"> denunciar comentario</a>
+            {% endif%}
+        
+
+        {%endfor%}
 
     </body>
 </html>

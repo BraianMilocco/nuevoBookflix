@@ -1,0 +1,36 @@
+{% include "bookflix/barra.html" %}
+
+
+{%for coment in deLibro%}
+    {%if not user.plan == 'free' and coment.book.mostrar_en_home %}
+        {%if user.plan == 'normal' and coment.book.on_normal%} 
+            <p> libro: <a href="/leer_libro/{{coment.publication.isbn}}"> {{coment.book}}</a></p>
+            <p>Puntaje: {{coment.points}}</p>
+        {% elif coment.book.on_normal or coment.book.on_premium %}
+            <p> libro: <a href="/leer_libro/{{coment.publication.isbn}}"> {{coment.book}}</a></p>
+            <p>Puntaje: {{coment.points}}</p>
+        {%endif%}
+    {%else%}
+        <p> libro: <a > {{coment.book}}</a></p>
+        <p> Puntaje: {{coment.points}}</p>
+    {%endif%}
+    <p>---------------------- ----------------------</p>
+
+{%endfor%}
+
+{%for coment in deLibro%}
+    {%if not user.plan == 'free' and coment.book.mostrar_en_home %}
+        {%if user.plan == 'normal' and coment.book.on_normal%} 
+            <p> libroPorCapitulo: <a href="/leer_libro/{{coment.publication.isbn}}"> {{coment.book}}</a></p>
+            <p>Puntaje: {{coment.points}}</p>
+        {% elif coment.book.on_normal or coment.book.on_premium %}
+            <p> libroPorCapitulo: <a href="/leer_libro/{{coment.publication.isbn}}"> {{coment.book}}</a></p>
+            <p>Puntaje: {{coment.points}}</p>
+        {%endif%}
+    {%else%}
+        <p> libroPorCapitulo: <a > {{coment.book}}</a></p>
+        <p> Puntaje: {{coment.points}}</p>
+    {%endif%}
+    <p>---------------------- ----------------------</p>
+
+{%endfor%}

@@ -195,7 +195,9 @@ class CreditCards(models.Model):
         verbose_name_plural = "Tarjetas"
 
 
+
 #CreditCardsUsed
+
 class CreditCardsUsed(models.Model):
     number = CardNumberField('numero')
     date_expiration= CardExpiryField('fecha de vencimiento')
@@ -212,7 +214,7 @@ class CreditCardsUsed(models.Model):
 
     class Meta:
         verbose_name = "Tarjeta Usada"
-        verbose_name_plural = "Tarjetas Usadas" 
+        verbose_name_plural = "Tarjetas Usadas"
 
 #Profile
 
@@ -481,7 +483,7 @@ class StateOfBookByChapter(models.Model):
     )
 
     date= models.DateField("fecha",default=timezone.now)
-    state = models.CharField("estado", max_length=16, choices=AC_CHOICES, default=finished)
+    state = models.CharField("estado", max_length=16, choices=AC_CHOICES, default=finished, blank=True, null=True)
     book = models.ForeignKey(BookByChapter, on_delete=models.CASCADE, verbose_name="libro")
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name="perfil")
 
@@ -509,7 +511,7 @@ class StateOfBook(models.Model):
     )
 
     date= models.DateField("fecha",default=timezone.now)
-    state = models.CharField("estado", max_length=16, choices=AC_CHOICES, default=finished)
+    state = models.CharField("estado", max_length=16, choices=AC_CHOICES, default=finished, blank=True, null=True)
     book = models.ForeignKey(Book, on_delete=models.CASCADE, verbose_name="libro")
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name="perfil")
 

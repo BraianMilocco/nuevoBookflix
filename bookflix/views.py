@@ -31,7 +31,8 @@ from random import randint, uniform
 import datetime
 from datetime import timedelta
 
-
+from django.db.models import Count
+from django.db.models import Sum
 
 
 #codigo de mail
@@ -168,6 +169,7 @@ def solicitudes(request):
     return render(request,"bookflix/solicitudes.html",{"solicitudes":solicitudes, "tarjetas":tarjetas})
             
 def login_propio(request):
+    context={}
     # Creamos el formulario de autenticación vacío
     form = AuthenticationForm()
     if request.method == "POST":
@@ -191,6 +193,8 @@ def login_propio(request):
                 request.session['emailConfirm']= user.email
                 request.session.modified = True
                 return redirect('/confirmarCuenta')
+    context['form']=form
+    return render(request, "bookflix/login.html", context)
                 
             
     # Si llegamos al final renderizamos el formulario
@@ -352,6 +356,9 @@ def cambiar_nombre(request,nombre):
     context["profile_creation_form"]=form
     return render(request, 'bookflix/cambiar_nombre.html', context)
 
+def estadisticas(request,queEs):
+    context={}
+    return render(request,"bookflix/estadisticas.html",context)
 
 
 def solicitar_cambio(request):
@@ -397,6 +404,7 @@ def solicitar_cambio(request):
     context['solicitud'] = form
     return render(request,"bookflix/solicitar_cambio.html", context)
 
+
 def comentariosDenunciados(request):
     context={}
 
@@ -406,6 +414,7 @@ def comentariosDenunciados(request):
     context['comentarioLibroCap']= deLibroPorCap
 
     return render(request, "bookflix/comentariosDenunciados.html", context)
+
 
 def denuncia(request, id, boole, n):
     if n=='1':
@@ -420,6 +429,14 @@ def denuncia(request, id, boole, n):
     denuncia.delete()
     return redirect("/comentariosDenunciados")
 
+def vermiscomentarios(request):
+    context={}
+    deLibro= CommentBook.objects.filter(profile= request.session["perfil_ayuda"])
+    deLibroPorCap= CommentBookByChapter.objects.filter(profile = request.session["perfil_ayuda"])
+    context["deLibro"]= deLibro
+    context["deLibroPorCap"]= deLibroPorCap
+    return render(request, "bookflix/vermiscomentarios.html", context)
+
 
 def denunciarComentario(request, id, isbn):
     aux=0
@@ -428,29 +445,29 @@ def denunciarComentario(request, id, isbn):
         denu= DenunciarComentarioLibro(comentario= comentario)
         denu.save()
         aux= 1
-    except CommentBook.DoesNotExist():
-        try:
-            comentario= CommentBookByChapter.objects.get(id=id)
-            denu= DenunciarComentarioLibroPorCap(comentario= comentario)
-            denu.save()
-            aux= 2
-        except CommentBook.DoesNotExist(): pass
+    except: pass
+    try:
+        comentario= CommentBookByChapter.objects.get(id=id)
+        denu= DenunciarComentarioLibroPorCap(comentario= comentario)
+        denu.save()
+        aux= 2
+    except: pass
     if aux==1: return redirect("/leer_libro/"+str(isbn))
-    else: redirect("/libro_capitulo/"+ str(isbn))
+    else: return redirect("/libro_capitulo/"+ str(isbn))
 
-def verComentario(request, id):
+def verComentario(request, id, deDonde):
     aux= 0
     context={}
     try:
         comentario= CommentBook.objects.get(id=id)
         ayuda= comentario.publication
         aux=1
-    except CommentBook.DoesNotExist():
-        try:
-            comentario= CommentBookByChapter.objects.get(id=id)
-            ayuda= comentario.publication
-            aux= 2
-        except CommentBookByChapter.DoesNotExist(): pass
+    except: pass
+    try:
+        comentario= CommentBookByChapter.objects.get(id=id)
+        ayuda= comentario.publication
+        aux= 2
+    except: pass
     if aux==1: libro= Book.objects.get(id= ayuda.id)
     else: libro= BookByChapter.objects.get(id= ayuda.id)
     puedeEditar= 'False'
@@ -464,8 +481,10 @@ def verComentario(request, id):
             comentario.description= texto
             comentario.is_a_spoiler= spoi
             comentario.save()
-            if aux == 1: return redirect("/leer_libro/"+str(libro.isbn))
+            if deDonde == 'perfil': return redirect("/vermiscomentarios")
+            elif aux == 1: return redirect("/leer_libro/"+str(libro.isbn))
             else: return redirect("/libro_capitulo/"+ str(libro.isbn))
+    if deDonde == 'perfil': aux= 3
     context['form']= ComentarioForm(initial={'spoiler': comentario.is_a_spoiler, 'comentario': comentario.description})
     context['editar']= puedeEditar
     context['comentario']= comentario
@@ -473,16 +492,66 @@ def verComentario(request, id):
     context['isbn']= libro.isbn
     return render(request, "bookflix/vercomentario.html", context)
 
+def puntuar(request, isbn, tipo, puntos):
+    perfil= Profile.objects.get(id= request.session['perfil_ayuda'])
+    points= puntos
+    if tipo == "completo":
+        libro= Book.objects.get(isbn=isbn)
+        try:
+            like= Like.objects.get(author=perfil, book=libro)
+            like.points= points
+            like.save()
+        except:
+            like=Like(points=points, book=libro, author=perfil)
+            like.save()
+        return redirect("/leer_libro/"+str(libro.isbn))
+    else:
+        libro= BookByChapter.objects.get(isbn=isbn)
+        try:
+            like= LikeBookByChapter.objects.get(author=perfil, book=libro)
+            like.points= points
+            like.save()
+        except :
+            like= LikeBookByChapter(points=points, book=libro, author=perfil)
+            like.save()
+        return redirect("/libro_capitulo/"+ str(libro.isbn))
+ 
+def misvotos(request):
+    context={}
+    perfil= Profile.objects.get(id= request.session['perfil_ayuda'])
+    deLibro= Like.objects.filter(author= perfil)
+    deLibroPorCap= LikeBookByChapter.objects.filter(author=perfil)
+    context['deLibro']=deLibro
+    context['deLibroPorCap']=deLibroPorCap
+    return render(request, "bookflix/misvotos.html", context)
+
+def borrarcomentario(request,id,isbn,aux):
+    aux2=0
+    try:
+        comentario= CommentBook.objects.get(id=id)
+        comentario.delete()
+        aux2= 1
+    except: pass
+    try:
+        comentario= CommentBookByChapter.objects.get(id=id)
+        comentario.delete()
+        aux2= 2
+    except: pass
+    if aux == '3': return redirect("/vermiscomentarios")
+    if aux2==1: return redirect("/leer_libro/"+str(isbn))
+    else: return redirect("/libro_capitulo/"+ str(isbn))
+
+
 def escribirComentario(request, isbn):
     aux= 0
     try:
         libro= Book.objects.get(isbn=isbn)
         aux= 1
-    except Book.DoesNotExist():
-        try:
-            libro= Book.objects.get(isbn=isbn)
-            aux= 2 
-        except: pass
+    except: pass
+    try:
+        libro= BookByChapter.objects.get(isbn=isbn)
+        aux= 2 
+    except: pass
     context={}
     if request.POST:
         form= ComentarioForm(request.POST)
@@ -504,6 +573,12 @@ def escribirComentario(request, isbn):
     context["isbn"]= isbn
     return render(request, "bookflix/comentar.html", context)
     
+def calcularPuntosDeLibro(likes, cantLikes):
+    aux= 0
+    for i in likes:
+        aux= aux + i.points
+    return (aux / cantLikes)
+
 def leer_libro(request,isbn):
      context={}
      libro= Book.objects.get(isbn = isbn)  #Aca recupero el libro por el isbn para no cambiar el template
@@ -539,7 +614,19 @@ def leer_libro(request,isbn):
 
 
      libro = Book.objects.get(isbn=isbn)
+     try: 
+        puntajeMio= Like.objects.get(book=libro, author= request.session['perfil_ayuda'])
+     except: 
+         puntajeMio= 0
+     try:
+         likes= Like.objects.filter(book= libro)
+         cantLikes= Like.objects.filter(book= libro).count()
+         puntaje= calcularPuntosDeLibro(likes, cantLikes)
+     except: puntaje= 0
+
      comentarios= CommentBook.objects.filter(publication = libro)
+     context['puntaje']= puntaje
+     context['puntajeMio']= puntajeMio
      context['libro']= libro
      context['comentarios']= comentarios
      
@@ -550,12 +637,17 @@ def leer_libro(request,isbn):
         context['agregar_favorito'] = False
      except LibroFavorito.DoesNotExist:
         context['agregar_favorito'] = True 
+     try: 
+        perfil = Profile.objects.get(id=request.session["perfil_ayuda"]) 
+        libro = Book.objects.get(isbn=isbn)
+        futura_lectura = StateOfBook.objects.get(state="future_reading", profile=perfil, book=libro)
+        context['agregar_futura_lectura'] = False
+     except StateOfBook.DoesNotExist:
+        context['agregar_futura_lectura'] = True    
      return render(request,"bookflix/leer_libro.html",context) 
 
-
-
-
 def leer_libro_por_capitulo(request,isbn):
+     context= {}
      libro = BookByChapter.objects.get(isbn=isbn)
      cap_actual = 1
      capitulos=[]
@@ -568,7 +660,43 @@ def leer_libro_por_capitulo(request,isbn):
             pass
 
         #capitulos = Chapter.objects.filter(book=libro)
-     return render(request,"bookflix/libro_capitulo.html",{"libro":libro, "capitulos":capitulos,}) 
+     try: 
+        puntajeMio= LikeBookByChapter.objects.get(book=libro, author= request.session['perfil_ayuda'])
+     except: 
+        puntajeMio= 0
+     try:
+        likes= LikeBookByChapter.objects.filter(book= libro)
+        cantLikes= LikeBookByChapter.objects.filter(book= libro).count()
+        puntaje= calcularPuntosDeLibro(likes, cantLikes)
+     except: puntaje= 0
+
+     comentarios= CommentBookByChapter.objects.filter(publication = libro)
+     context['capitulos']=capitulos
+     context['libro']= libro
+     context['comentarios']= comentarios
+     context['puntaje']= puntaje
+     context['puntajeMio']= puntajeMio
+     return render(request,"bookflix/libro_capitulo.html",context) 
+
+
+def agregar_futuras_lecturas(request,isbn):
+    perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+    libro = Book.objects.get(isbn=isbn)
+    #variable = StateOfBook(state="future_reading",book=libro, profile=perfil)
+    variable = StateOfBook.objects.get(book=libro, profile=perfil)
+    variable.state= "future_reading"
+    variable.save()
+    return redirect(to="/leer_libro/"+ str(isbn))
+
+def quitar_futuras_lecturas(request,isbn):
+    perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+    libro = Book.objects.get(isbn=isbn)
+    #variable = StateOfBook(state="future_reading",book=libro, profile=perfil)
+    variable = StateOfBook.objects.get(book=libro, profile=perfil)
+    variable.state= "null"
+    variable.save()
+    return redirect(to="/leer_libro/"+ str(isbn))
+
 
 def agregar_libro(request,isbn):
     perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
