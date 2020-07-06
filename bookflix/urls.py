@@ -40,11 +40,20 @@ urlpatterns = [
     path('denunciarComentario/<id>/<isbn>/', denunciarComentario, name="denunciarComentario"),
     path('comentariosDenunciados/', comentariosDenunciados, name="comentariosDenunciados"),
     path('denuncia/<id>/<boole>/<n>/', denuncia, name="denuncia"),
+    path('agregar_libro/<isbn>', agregar_libro, name='agregar_libro'),
+    path('quitar_libro/<isbn>', quitar_libro, name='quitar_libro'),
+    path('agregar_futuras_lecturas/<isbn>', agregar_futuras_lecturas, name='agregar_futuras_lecturas'),
+    path('quitar_futuras_lecturas/<isbn>', quitar_futuras_lecturas, name='quitar_futuras_lecturas'),
+    path('listar_favoritos/', listar_favoritos, name='listar_favoritos'),
+    #path('puntuar_libro/<puntuacion>/<isbn>', puntuar_libro, name='puntuar_libro'),
     path('vermiscomentarios/', vermiscomentarios, name="vermiscomentarios"),
     path('borrarcomentario/<id>/<isbn>/<aux>', borrarcomentario, name="borrarcomentario"),
     path('puntuar/<isbn>/<tipo>/<puntos>', puntuar, name="puntuar"),
     path('misvotos/', misvotos, name="misvotos"),
     path('estadisticas/<queEs>', estadisticas, name="estadisticas"),
+    path('agregar_a_leyendo/<isbn>', agregar_a_leyendo, name="agregar_a_leyendo"),
+    path('quitar_de_leyendo/<isbn>', quitar_de_leyendo, name="quitar_de_leyendo"),
+
 
 ] 
 
