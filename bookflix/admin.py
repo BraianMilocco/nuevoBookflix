@@ -71,6 +71,11 @@ admin.site.register(UpDownBillboard)
 admin.site.register(UpDownTrailer)
 admin.site.register(Book)
 admin.site.register(BookByChapter)
+admin.site.register(LibroFavorito)
+
+#admin.site.register(PuntuacionDeLibro)
+
+
 #admin.site.register(Chapter)
 admin.site.register(Chapter, ChapterAdmin)
 

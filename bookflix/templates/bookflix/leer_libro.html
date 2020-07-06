@@ -26,6 +26,28 @@
                     {% endfor %}
                     </p>
                     <P>Puntuación: 4,5</P>
+                    
+                    {% if terminado %}
+                    <div>
+                        Puntuar libro:{
+                        <a href="/puntuar_libro/1/{{libro.isbn}}">1</a> <a href="/puntuar_libro/2/{{libro.isbn}}">2</a> <a href="/puntuar_libro/3/{{libro.isbn}}">3</a> <a href="/puntuar_libro/4/{{libro.isbn}}">4</a> <a href="/puntuar_libro/5/{{libro.isbn}}">5</a>⠀}
+                    </div>
+                    <br>
+
+                    {% else %}
+                        Usted ya voto
+                    {% endif %}
+                    {% if agregar_favorito == True %}
+
+                        <div>
+                            <a style="margin-top:30px;margin-bottom: 30px;" href="/agregar_libro/{{libro.isbn}}"> Agregar a Favoritos</a>
+                        </div>
+
+                    {% else %}
+                    <div>
+                        <a style="margin-top:30px;margin-bottom: 30px;" href="/quitar_libro/{{libro.isbn}}"> Quitar de Favoritos</a>
+                    </div>
+                    {% endif %}
 
                     {% if request.session.lectura_otro_perfil == False %}
 

@@ -40,6 +40,11 @@ urlpatterns = [
     path('denunciarComentario/<id>/<isbn>/', denunciarComentario, name="denunciarComentario"),
     path('comentariosDenunciados/', comentariosDenunciados, name="comentariosDenunciados"),
     path('denuncia/<id>/<boole>/<n>/', denuncia, name="denuncia"),
+    path('agregar_libro/<isbn>', agregar_libro, name='agregar_libro'),
+    path('quitar_libro/<isbn>', quitar_libro, name='quitar_libro'),
+
+
+    #path('puntuar_libro/<puntuacion>/<isbn>', puntuar_libro, name='puntuar_libro'),
 ] 
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

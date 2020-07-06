@@ -35,22 +35,41 @@
 {% include "bookflix/barra.html" %}
 
 <ul id="publicaciones">
-
+    <h3>Cuentas con planes activos</h3>
     {% if cuentas %}
     {% for cuenta in cuentas %}
-        <li> 
-            <a href="/admin/bookflix/account/{{cuenta.id}}/change/">{{cuenta.username}}</a>
-            <p>Plan:{{cuenta.plan}} </p>
-            <p>Días hasta vencimiento:{{cuenta.tiempo_restante}} </p>
-            <br>
-        </li>
+        {% if not cuenta.plan == "free" %}
+            <li> 
+                <a href="/admin/bookflix/account/{{cuenta.id}}/change/">{{cuenta.username}}</a>
+                <p>Plan:{{cuenta.plan}} </p>
+                <p>Días hasta vencimiento:⠀{{cuenta.tiempo_restante}} </p>
+                <br>
+            </li>
+        {% endif %}
+    {% endfor %}
+    {% else %}
+    <p>No hay cuentas con pagos realizados disponibles</p>
+    {% endif %}
+
+<hr>
+    <h3>Cuentas vencidas y dadas de baja</h3>
+
+    {% if cuentas %}
+    {% for cuenta_vencida in cuentas %}
+        {% if cuenta_vencida.plan == "free" %}
+            <li style="margin-top: 30px;"> 
+                <a href="/admin/bookflix/account/{{cuenta_vencida.id}}/change/">{{cuenta_vencida.username}}</a>
+                <p>Días restantes/vencidos:⠀{{cuenta_vencida.tiempo_restante}} </p>
+                <br>
+            </li>
+        {% endif %}
     {% endfor %}
     {% else %}
     <p>No hay cuentas con pagos realizados disponibles</p>
     {% endif %}
 
 </ul>
- <hr>
+
 
 
 </body>

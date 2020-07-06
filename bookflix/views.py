@@ -543,6 +543,13 @@ def leer_libro(request,isbn):
      context['libro']= libro
      context['comentarios']= comentarios
      
+
+     try:
+        perfil = Profile.objects.get(id=request.session["perfil_ayuda"]) 
+        favorito = LibroFavorito.objects.get(isbn=isbn, profile=perfil)
+        context['agregar_favorito'] = False
+     except LibroFavorito.DoesNotExist:
+        context['agregar_favorito'] = True 
      return render(request,"bookflix/leer_libro.html",context) 
 
 
@@ -562,6 +569,34 @@ def leer_libro_por_capitulo(request,isbn):
 
         #capitulos = Chapter.objects.filter(book=libro)
      return render(request,"bookflix/libro_capitulo.html",{"libro":libro, "capitulos":capitulos,}) 
+
+def agregar_libro(request,isbn):
+    perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+    favorito = LibroFavorito(isbn=isbn,profile=perfil)
+    favorito.save()
+    return redirect(to="/leer_libro/"+ str(isbn))
+
+
+def quitar_libro(request,isbn):
+    perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+    favorito = LibroFavorito.objects.get(isbn=isbn, profile=perfil)
+    favorito.delete()
+    return redirect(to="/leer_libro/"+ str(isbn))
+
+
+# def puntuar_libro(request,puntuacion,isbn):
+#     libro= Book.objects.get(isbn = isbn)
+#     libro.veces_puntuado = libro.veces_puntuado + 1
+#     libro.puntuacion_acumulada = libro.puntuacion_acumulada + int(puntuacion)
+#     libro.puntuacion = libro.puntuacion_acumulada / libro.veces_puntuado
+#     libro.save()
+#     try:
+#         puntuacion = PuntuacionDeLibro.objects.get(profile=request.session["perfil_ayuda"], isbn=isbn)
+#     except:
+#         perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+#         puntuacion = PuntuacionDeLibro(isbn=isbn,title=libro.title,profile=perfil)
+#         puntuacion.save()
+#     return render(request,"bookflix/leer_libro.html")
 
 
 def libro_capitulo(request):
