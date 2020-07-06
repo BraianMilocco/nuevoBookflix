@@ -630,6 +630,20 @@ def leer_libro(request,isbn):
      context['libro']= libro
      context['comentarios']= comentarios
      
+
+     try:
+        perfil = Profile.objects.get(id=request.session["perfil_ayuda"]) 
+        favorito = LibroFavorito.objects.get(isbn=isbn, profile=perfil)
+        context['agregar_favorito'] = False
+     except LibroFavorito.DoesNotExist:
+        context['agregar_favorito'] = True 
+     try: 
+        perfil = Profile.objects.get(id=request.session["perfil_ayuda"]) 
+        libro = Book.objects.get(isbn=isbn)
+        futura_lectura = StateOfBook.objects.get(state="future_reading", profile=perfil, book=libro)
+        context['agregar_futura_lectura'] = False
+     except StateOfBook.DoesNotExist:
+        context['agregar_futura_lectura'] = True    
      return render(request,"bookflix/leer_libro.html",context) 
 
 def leer_libro_por_capitulo(request,isbn):
@@ -663,6 +677,80 @@ def leer_libro_por_capitulo(request,isbn):
      context['puntaje']= puntaje
      context['puntajeMio']= puntajeMio
      return render(request,"bookflix/libro_capitulo.html",context) 
+
+
+def agregar_futuras_lecturas(request,isbn):
+    perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+    libro = Book.objects.get(isbn=isbn)
+    #variable = StateOfBook(state="future_reading",book=libro, profile=perfil)
+    try:
+        variable = StateOfBook.objects.get(book=libro, profile=perfil)
+        variable.state= "future_reading"
+    except StateOfBook.DoesNotExist:
+        variable = StateOfBook(book=libro,profile=perfil,state="future_reading")
+    variable.save()
+    return redirect(to="/leer_libro/"+ str(isbn))
+
+def quitar_futuras_lecturas(request,isbn):
+    perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+    libro = Book.objects.get(isbn=isbn)
+    #variable = StateOfBook(state="future_reading",book=libro, profile=perfil)
+    variable = StateOfBook.objects.get(book=libro, profile=perfil)
+    variable.state= "null"
+    variable.save()
+    return redirect(to="/leer_libro/"+ str(isbn))
+
+
+def agregar_libro(request,isbn):
+    perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+    libro = Book.objects.get(isbn=isbn)
+    favorito = LibroFavorito(isbn=isbn,profile=perfil,book=libro)
+    favorito.save()
+    return redirect(to="/leer_libro/"+ str(isbn))
+
+
+def quitar_libro(request,isbn):
+    perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+    favorito = LibroFavorito.objects.get(isbn=isbn, profile=perfil)
+    favorito.delete()
+    return redirect(to="/leer_libro/"+ str(isbn))
+
+def listar_favoritos(request):
+    perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+    libros_favoritos = LibroFavorito.objects.filter(profile=perfil)
+    libros_por_capitulo_favoritos = LibroPorCapituloFavorito.objects.filter(profile=perfil)
+    return render(request,"bookflix/listar_favoritos.html", {"libros_favoritos":libros_favoritos, "libros_por_capitulo_favoritos":libros_por_capitulo_favoritos})
+
+def agregar_a_leyendo(request,isbn):
+    perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+    libro = Book.objects.get(isbn=isbn)
+    variable = StateOfBook.objects.get(book=libro, profile=perfil)
+    variable.state= "reading"
+    variable.save()
+    return redirect(to="/leer_libro/"+ str(isbn))
+
+
+def quitar_de_leyendo(request,isbn):
+    perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+    libro = Book.objects.get(isbn=isbn)
+    variable = StateOfBook.objects.get(book=libro, profile=perfil)
+    variable.state= "null"
+    variable.save()
+    return redirect(to="/leer_libro/"+ str(isbn))
+
+# def puntuar_libro(request,puntuacion,isbn):
+#     libro= Book.objects.get(isbn = isbn)
+#     libro.veces_puntuado = libro.veces_puntuado + 1
+#     libro.puntuacion_acumulada = libro.puntuacion_acumulada + int(puntuacion)
+#     libro.puntuacion = libro.puntuacion_acumulada / libro.veces_puntuado
+#     libro.save()
+#     try:
+#         puntuacion = PuntuacionDeLibro.objects.get(profile=request.session["perfil_ayuda"], isbn=isbn)
+#     except:
+#         perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+#         puntuacion = PuntuacionDeLibro(isbn=isbn,title=libro.title,profile=perfil)
+#         puntuacion.save()
+#     return render(request,"bookflix/leer_libro.html")
 
 
 def libro_capitulo(request):

@@ -55,14 +55,10 @@ admin.site.register(Editorial)
 admin.site.register(CommentBook)
 
 admin.site.register(CreditCards)
-<<<<<<< HEAD
-#admin.site.register(CreditCardsUsed)
+admin.site.register(CreditCardsUsed)
 admin.site.register(Like)
 admin.site.register(LikeBookByChapter)
-=======
-admin.site.register(CreditCardsUsed)
 
->>>>>>> 558d39da6a5d49f37caaec1c307832dae7667ccb
 admin.site.register(Profile)
 admin.site.register(DenunciarComentarioLibro)
 admin.site.register(UserSolicitud, SolicitudAdmin)
@@ -77,6 +73,12 @@ admin.site.register(UpDownBillboard)
 admin.site.register(UpDownTrailer)
 admin.site.register(Book)
 admin.site.register(BookByChapter)
+admin.site.register(LibroFavorito)
+admin.site.register(LibroPorCapituloFavorito)
+
+#admin.site.register(PuntuacionDeLibro)
+
+
 #admin.site.register(Chapter)
 admin.site.register(Chapter, ChapterAdmin)
 

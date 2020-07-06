@@ -195,11 +195,9 @@ class CreditCards(models.Model):
         verbose_name_plural = "Tarjetas"
 
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 558d39da6a5d49f37caaec1c307832dae7667ccb
-#CreditCards
+#CreditCardsUsed
+
 class CreditCardsUsed(models.Model):
     number = CardNumberField('numero')
     date_expiration= CardExpiryField('fecha de vencimiento')
@@ -216,11 +214,7 @@ class CreditCardsUsed(models.Model):
 
     class Meta:
         verbose_name = "Tarjeta Usada"
-<<<<<<< HEAD
         verbose_name_plural = "Tarjetas Usadas"
-=======
-        verbose_name_plural = "Tarjetas Usadas" 
->>>>>>> 558d39da6a5d49f37caaec1c307832dae7667ccb
 
 #Profile
 
@@ -276,7 +270,14 @@ class Book(models.Model):
     on_premium = models.BooleanField("ver en premium",default=False)
     # pdf = models.FileField(upload_to='pdf', blank=True, null=True)   # cambiarlo para que guarde solo url?
     pdf = models.FileField(upload_to='pdf', blank=True, null=True)   #por si en un futuro hacemos que se guarde en la base de datos
-    
+
+
+
+    # veces_puntuado = models.FloatField(default=0,blank=True, null=True)
+    # puntuacion = models.FloatField(default=0,blank=True, null=True)
+    # puntuacion_acumulada = models.FloatField(default=0,blank=True, null=True)
+
+
     def publish(self):
     
         self.save()
@@ -313,18 +314,89 @@ class BookByChapter(models.Model):
     on_normal = models.BooleanField("ver en normal", default=False)
     on_premium = models.BooleanField("ver en premium",default=False)
 
+
+
+
+    # veces_puntuado = models.IntegerField(default=0,blank=True, null=True)
+    # puntuacion = models.FloatField(default=0,blank=True, null=True)
+    # puntuacion_acumulada = models.FloatField(default=0,blank=True, null=True)
+
     def publish(self):
        
         self.save()
 
     def id(self):
         return self.id
+
     class Meta:
         verbose_name = "Libro por capítulo"
         verbose_name_plural = "Libro por capítulos"
 
     def __str__(self):
         return self.title
+
+
+
+"-------LibroFavorito-------"
+class LibroFavorito(models.Model):
+    isbn = models.CharField( max_length=16, unique=True, validators =[validateIsbnB, validateIsbnNum],)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name="perfil",blank=True, null=True)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, verbose_name="libro",blank=True, null=True)
+
+    def publish(self):
+        self.save()
+
+    def id(self):
+        return self.id
+
+    class Meta:
+        verbose_name = "Libro favorito"
+        verbose_name_plural = "Libros favoritos"
+
+    def __str__(self):
+        return self.isbn
+
+
+"-------LibroPorCapituloFavorito-------"
+class LibroPorCapituloFavorito(models.Model):
+    isbn = models.CharField( max_length=16, unique=True, validators =[validateIsbn, validateIsbnNum],)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name="perfil",blank=True, null=True)
+    book = models.ForeignKey(BookByChapter, on_delete=models.CASCADE, verbose_name="libro",blank=True, null=True)
+
+    def publish(self):
+        self.save()
+
+    def id(self):
+        return self.id
+
+    class Meta:
+        verbose_name = "Libro por capitulo favorito"
+        verbose_name_plural = "Libros por capitulos favoritos"
+
+    def __str__(self):
+        return self.isbn
+
+
+# "-------PuntuacionDeLibro-------"
+# class PuntuacionDeLibro(models.Model):
+#     isbn = models.CharField( max_length=16, validators =[validateIsbn, validateIsbnNum], )
+#     title = models.CharField(('titulo'), max_length=50)
+#     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name="perfil")
+
+
+    # def id(self):
+    #         return self.id
+
+    # def publish(self):
+        
+    #         self.save()
+
+    # def __str__(self):
+    #         return self.title
+
+    # class Meta:
+    #     verbose_name = "Puntuacion de libro"
+    #     verbose_name_plural = "Puntuaciones de libros"
 
 
 "-------Billboard-------"
@@ -428,7 +500,7 @@ class StateOfBookByChapter(models.Model):
     )
 
     date= models.DateField("fecha",default=timezone.now)
-    state = models.CharField("estado", max_length=16, choices=AC_CHOICES, default=finished)
+    state = models.CharField("estado", max_length=16, choices=AC_CHOICES, default=finished, blank=True, null=True)
     book = models.ForeignKey(BookByChapter, on_delete=models.CASCADE, verbose_name="libro")
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name="perfil")
 
@@ -456,7 +528,7 @@ class StateOfBook(models.Model):
     )
 
     date= models.DateField("fecha",default=timezone.now)
-    state = models.CharField("estado", max_length=16, choices=AC_CHOICES, default=finished)
+    state = models.CharField("estado", max_length=16, choices=AC_CHOICES, default=finished, blank=True, null=True)
     book = models.ForeignKey(Book, on_delete=models.CASCADE, verbose_name="libro")
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name="perfil")
 
