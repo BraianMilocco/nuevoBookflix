@@ -1155,7 +1155,10 @@ def buscar(request):
                     resultsCap = set(resultsCap) & set(buscar_por_tituloCap(palabra))
                 if buscar_por_editorialCap(palabra):
                     resultsCap = set(resultsCap) & set(buscar_por_editorialCap(palabra))
-
+            if len(results) == len(Book.objects.filter(mostrar_en_home =True) ):
+                results=[]
+            if len(resultsCap) == len(BookByChapter.objects.filter(mostrar_en_home =True) ):
+                resultsCap=[]
             context['libros']=results
             context['librosCap']= resultsCap 
     else:
