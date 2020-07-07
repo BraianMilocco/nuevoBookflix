@@ -35,6 +35,9 @@ from django.db.models import Count
 from django.db.models import Sum
 
 
+from .funcionesAutomatizacion import *
+
+
 #codigo de mail
 #do_login(request, user)
 #                send_mail('Subject here', 'Here is the message.', settings.EMAIL_HOST_USER,
@@ -126,13 +129,23 @@ def buscarPorIsbs(request, isbn):                       #mmmm me parece que va a
     return render(request, welcome, {"libros":libros}) 
 
 def welcome(request):
+    perfil= Profile.objects.get(id= request.session["perfil_ayuda"])
+    context={}
     publicacion=Billboard.objects.filter(mostrar_en_home=True)
     libros = Book.objects.filter(mostrar_en_home=True)
     libros_cap = BookByChapter.objects.filter(mostrar_en_home=True)
     trailers = Trailer.objects.filter(mostrar_en_home=True)
-    historial_libros = StateOfBookByChapter.objects.filter(state="reading") #, profile=request.session.nombrePerfil
-    historial_libros_cap = StateOfBook.objects.filter(state="reading")
-    return render(request, "bookflix/welcome.html",{'publicaciones':publicacion,"trailers":trailers, "libros":libros, "historial_libros":historial_libros, "historial_libros_cap":historial_libros_cap, "libros_cap":libros_cap}) 
+    historial_libros = StateOfBookByChapter.objects.filter(state="reading", profile=perfil) #, profile=request.session.nombrePerfil
+    historial_libros_cap = StateOfBook.objects.filter(state="reading", profile=perfil)
+    context['recomendacion']= recomendados(perfil)
+    #context['recomendacionCapitulo']= recomendadosCapitulo(perfil)
+    context['publicaciones']=publicacion
+    context['trailers']= trailers
+    context['libros']=libros
+    context['historial_libros']=historial_libros
+    context['historial_libros_cap']=historial_libros_cap
+    context['libros_cap']=libros_cap
+    return render(request, "bookflix/welcome.html",context) 
 
 def barra(request):
     return render(request,"bookflix/barra.html", perfil)
@@ -846,8 +859,6 @@ def mostrar_tiempos(request):
 
 #Funciones de automatizacion, escribir cualquier otra view antes que esta
 
-from .funcionesAutomatizacion import *
-
 def simuladorTemporal(request):
     context={}
    #Libros
@@ -1155,10 +1166,7 @@ def buscar(request):
                     resultsCap = set(resultsCap) & set(buscar_por_tituloCap(palabra))
                 if buscar_por_editorialCap(palabra):
                     resultsCap = set(resultsCap) & set(buscar_por_editorialCap(palabra))
-            if len(results) == len(Book.objects.filter(mostrar_en_home =True) ):
-                results=[]
-            if len(resultsCap) == len(BookByChapter.objects.filter(mostrar_en_home =True) ):
-                resultsCap=[]
+            
             context['libros']=results
             context['librosCap']= resultsCap 
     else:
