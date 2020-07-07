@@ -25,6 +25,21 @@
    background-color: #333333;
    color: #ffffff;
 }
+
+.td {
+  font-size: 15px;
+  line-height: 20px;
+  padding: 0 20px;
+  text-align: justify;
+  vertical-align: top;
+  width: 50%;
+
+}
+td.first {
+    border-right: 150px solid #907ea2 ;
+    margin-left: 40px;
+}
+
    </style>
 </head>
 
@@ -40,6 +55,7 @@
             <li style="padding: 2px 3px 2px 3px;color: #666;background-color: #eeeeee;border: 1px solid #ccc;text-decoration: none;border-radius: 10px 10px 10px 10px;margin-right: 30px;">Perfil Actual: {{request.session.nombrePerfil}}</li>
             <li><a href="/perfil">Cuenta</a></li>     
             <li><a href="/ ">Home</a></li>
+            <li><a href="/buscar ">Buscar</a></li>
             <li><a href="/publicaciones">Noticias</a></li>
             <li><a href="/trailers">Trailers</a></li>
             <li><a href="/select_perfil">Perfiles</a></li>

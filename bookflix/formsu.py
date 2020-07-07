@@ -79,6 +79,8 @@ class ComentarioForm(forms.Form):
     spoiler= forms.BooleanField(required=False)
 
 
+class BuscarForm(forms.Form):
+    buscar= forms.CharField(max_length=100)
 
 
 class ChapForm(ModelForm):
