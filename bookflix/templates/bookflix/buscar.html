@@ -1,41 +1,39 @@
-<p>Como buscar:</p>
-<p> 1. escriba en los campos</p>
+{% include "bookflix/barra.html" %}
+
 <form method="post">
     {% csrf_token %}
 
-    {{form.isbn.label_tag}}
-    {{form.isbn}}
-    <p></p>
-    {{form.titulo.label_tag}}
-    {{form.titulo}}
-    <p></p>
-    {{form.genero.label_tag}}
-    {{form.genero}}
-    <p></p>
-    {{form.autor.label_tag}}
-    {{form.autor}}
-    <P></P>
-    {{form.editorial.label_tag}}
-    {{form.editorial}}
-    <p></p>
-    <button type="submit">Save changes</button>
+{%for field in form%}
+  {{field.label_tag}}
+  {{field}}
+{%endfor%}
+    <button type="submit">Buscar</button>
   </form>
 
-  {%if request.session.el%}
-    {{ libros.title}}
+<table>
+    <tr>
+      <td class="first">
 
-  {%elif request.session.elc%}
-    {{ librosCap.title}}
-  {%else%}
-    {% if libros%}
-        {%for libro in libros%}
-            <p> {{ libro.title}}</p>
-        {%endfor %}
-    {%endif%}
-    {% if librosCap%}
-        {%for libro in librosCap%}
-            <p> {{ libro.title}}</p>
-        {%endfor %}
-    {%endif%}
+        <p>Libros:</p>
+          {% if libros%}
+            {%for libro in libros%}
+              <p> <a href="/leer_libro/{{libro.isbn}}"> {{ libro.title}} </a> <br> Autor: {{libro.author}}, editorial: {{libro.editorial}} <br>
+              generos: {%for gen in libro.genders.all%} {{gen.name}} , {% endfor%}
+              </p>
+            {%endfor %}
+          {%endif%}
+      </td>
+      <td>
 
-  {%endif%}
+        <p>Libros Por Capitulo:</p>
+          {% if librosCap%}
+            {%for libro in librosCap%}
+            <p> <a href="/libro_capitulo/{{libro.isbn}}"> {{ libro.title}} </a> <br> Autor: {{libro.author}}, editorial: {{libro.editorial}} <br>
+              generos: {%for gen in libro.genders.all%} {{gen.name}} , {% endfor%}
+              </p>
+            {%endfor %}
+          {%endif%}
+      </td>
+    </tr>
+</table>
+
