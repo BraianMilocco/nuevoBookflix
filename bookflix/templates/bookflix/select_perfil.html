@@ -23,7 +23,7 @@
             {% endif %}
         {% elif request.user.plan == "normal" %}
             {% if perfiles|length > 0 %}
-                Seleccione cual Perfil quiere utilizar de <b>{{request.user.username}}</b>
+                Seleccione cual Perfil quiere utilizar de su cuenta
                 {% for perfil in perfiles %} 
 
                     <p>
@@ -44,13 +44,14 @@
             {% endif %}
         {% elif request.user.plan == "premium" %}
             {% if perfiles|length > 0 %}
-                Seleccione cual Perfil quiere utilizar de Su cuenta premium <b>{{request.user.username}}</b>
+                <b>Seleccione cual Perfil quiere utilizar de su cuenta premium </b>
                 {% for perfil in perfiles %} 
 
                     <p>
                         {#<a style="margin: 10;" href="/">-{{ perfil.name }}</a>  #}
                         <a style="margin: 10;" href="/perfil_seleccionado/{{perfil.id}}">{{perfil.name}}</a>  
-                        <a style="font-size: 15px;" href="/cambiar_nombre/{{perfil.name}}">Cambiar Nombre</a>
+                        <a style="font-size: 15px; margin-left: 15px;" href="/cambiar_nombre/{{perfil.name}}">Cambiar Nombre</a>
+                        <a style="font-size: 12px; margin: 15px;" href="/borrar_perfil/{{perfil.name}}">Borrar Perfil</a>
                     </p>
 
                 {% endfor %}

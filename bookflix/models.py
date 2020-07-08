@@ -204,13 +204,12 @@ class CreditCardsUsed(models.Model):
     cod = SecurityCodeField('codigo de seguridad')
     card_name = models.CharField("nombre de tarjeta",max_length=50)
     bank = models.CharField(('banco'),max_length=50)
-    user = models.OneToOneField(Account, on_delete=models.CASCADE,verbose_name="usuario")
 
     def publish(self):
         self.save()
 
     def __str__(self):
-        return self.card_name
+        return str(self.number)
 
     class Meta:
         verbose_name = "Tarjeta Usada"
@@ -514,7 +513,7 @@ class StateOfBookByChapter(models.Model):
 
     def __str__(self):
         #b=BookByChapter.objects.get(isbn=self.book)
-        return 'el libro %s se encuentra en el estado: %s' % (self.book, self.state)        
+        return 'El libro %s del perfil: %s se encuentra en el estado: %s' % (self.book, self.profile.name, self.state)        
 
 class StateOfBook(models.Model):
 
@@ -541,7 +540,7 @@ class StateOfBook(models.Model):
         self.save()
 
     def __str__(self):
-        return 'el libro %s se encuentra en el estado: %s' % (self.book, self.state)        
+        return 'El libro %s del perfil: %s se encuentra en el estado: %s' % (self.book, self.profile.name, self.state)      
 
 
 

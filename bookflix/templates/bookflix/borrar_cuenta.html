@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% include "bookflix/barra.html" %}
+    {% csrf_token %}
+    <h3>¿Realmente quiere borrar su cuenta? Al equipo de bookflix no le parece una decisión muy inteligente</h3>
+    <p style="margin: 5px;">Si es así oprima borrar cuenta:</p>
+    <div style="margin: 15px;">
+        
+        <a href="/borrar_cuenta_definitivo/{{perfil}} ">Borrar cuenta</a>
+        <br>
+        <br>
+        <a href="/perfil/">Volver a la página anterior</a>
+    </div>
+</body>
+</html>
