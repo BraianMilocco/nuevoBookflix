@@ -675,7 +675,6 @@ def leer_libro_por_capitulo(request,isbn):
             cap_actual = cap_actual + 1
         except Chapter.DoesNotExist: 
             pass
-
         #capitulos = Chapter.objects.filter(book=libro)
      try: 
         puntajeMio= LikeBookByChapter.objects.get(book=libro, author= request.session['perfil_ayuda'])
@@ -693,6 +692,84 @@ def leer_libro_por_capitulo(request,isbn):
      context['comentarios']= comentarios
      context['puntaje']= puntaje
      context['puntajeMio']= puntajeMio
+
+
+
+     #desde acá empiezo a agregar funcionalidades del otro leer
+
+     
+     request.session["lectura_otro_perfil"] = False
+     if request.user.plan == 'normal':
+        try:
+            perfil = Profile.objects.exclude(id=request.session["perfil_ayuda"]).get(account=request.user) #aca agrego el isbn al objeto
+            try: 
+                state = StateOfBookByChapter.objects.get(state="reading", profile=perfil, book= libro.id)
+                request.session["lectura_otro_perfil"] = True
+            except StateOfBookByChapter.DoesNotExist:
+                pass 
+        except Profile.DoesNotExist:
+            pass    
+        try:
+            estado_propio = StateOfBookByChapter.objects.get(state="reading", profile=request.session["perfil_ayuda"])
+            comenzado = True
+            context['comenzado']= comenzado
+        except StateOfBookByChapter.DoesNotExist:
+            comenzado = False
+            context['comenzado']= comenzado
+            context['terminado']= True
+
+            ##
+            state = StateOfBookByChapter.objects.get(state="finished", profile=perfil, book= libro.id)
+            context['terminado']= True
+
+     try:
+        estado = StateOfBookByChapter.objects.get(state="finished", profile=request.session["perfil_ayuda"])
+        context['terminado']= True
+     except:
+         context['terminado']= False
+
+
+     libro = BookByChapter.objects.get(isbn=isbn)
+     try: 
+        puntajeMio= Like.objects.get(book=libro, author= request.session['perfil_ayuda'])
+     except: 
+         puntajeMio= 0
+     try:
+         likes= Like.objects.filter(book= libro)
+         cantLikes= Like.objects.filter(book= libro).count()
+         puntaje= calcularPuntosDeLibro(likes, cantLikes)
+     except: puntaje= 0
+
+     comentarios= CommentBookByChapter.objects.filter(publication = libro)
+     context['puntaje']= puntaje
+     context['puntajeMio']= puntajeMio
+     context['libro']= libro
+     context['comentarios']= comentarios
+     #Este try lo agregué para el Agregar y quitar de leyendo, reever en un futuro
+     try:
+        estado_propio = StateOfBookByChapter.objects.get(state="reading", profile=request.session["perfil_ayuda"])
+        comenzado = True
+        context['comenzado']= comenzado
+     except StateOfBookByChapter.DoesNotExist:
+        comenzado = False
+        context['comenzado']= comenzado
+     #Fin del try de leyendo
+     try:
+        perfil = Profile.objects.get(id=request.session["perfil_ayuda"]) 
+        favorito = LibroPorCapituloFavorito.objects.get(isbn=isbn, profile=perfil)
+        context['agregar_favorito'] = False
+     except LibroPorCapituloFavorito.DoesNotExist:
+        context['agregar_favorito'] = True 
+     try: 
+        perfil = Profile.objects.get(id=request.session["perfil_ayuda"]) 
+        libro = BookByChapter.objects.get(isbn=isbn)
+        futura_lectura = StateOfBookByChapter.objects.get(state="future_reading", profile=perfil, book=libro)
+        context['agregar_futura_lectura'] = False
+     except StateOfBookByChapter.DoesNotExist:
+        context['agregar_futura_lectura'] = True 
+
+
+
      return render(request,"bookflix/libro_capitulo.html",context) 
 
 
@@ -721,9 +798,16 @@ def quitar_futuras_lecturas(request,isbn):
 def agregar_libro_favoritos(request,isbn):
     perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
     libro = Book.objects.get(isbn=isbn)
-    favorito = LibroFavorito(isbn=isbn, profile=perfil)
+    favorito = LibroFavorito(isbn=isbn, profile=perfil, book=libro)
     favorito.save()
     return redirect(to="/leer_libro/"+ str(isbn))
+
+def agregar_libro_cap_favoritos(request,isbn):
+    perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+    libro = BookByChapter.objects.get(isbn=isbn)
+    favorito = LibroPorCapituloFavorito(isbn=isbn, profile=perfil, book=libro)
+    favorito.save()
+    return redirect(to="/libro_capitulo/"+ str(isbn))
 
 
 def quitar_libro(request,isbn):
@@ -731,6 +815,15 @@ def quitar_libro(request,isbn):
     favorito = LibroFavorito.objects.get(isbn=isbn, profile=perfil)
     favorito.delete()
     return redirect(to="/leer_libro/"+ str(isbn))
+
+
+def quitar_libro_cap(request,isbn):
+    perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+    favorito = LibroPorCapituloFavorito.objects.get(isbn=isbn, profile=perfil)
+    favorito.delete()
+    return redirect(to="/libro_capitulo/"+ str(isbn))
+
+
 
 def listar_favoritos(request):
     perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
@@ -740,7 +833,7 @@ def listar_favoritos(request):
 
 def agregar_a_leyendo(request,isbn):
     perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
-    libro = Book.objects.get(isbn=isbn)
+    libro = Bookb.objects.get(isbn=isbn)
     try:
         variable = StateOfBook.objects.get(book=libro, profile=perfil)
         variable.state= "reading"
@@ -748,6 +841,17 @@ def agregar_a_leyendo(request,isbn):
         variable = StateOfBook(state="reading",book=libro, profile=perfil)
     variable.save()
     return redirect(to="/leer_libro/"+ str(isbn))
+
+def agregar_a_leyendo_libro_cap(request,isbn):
+    perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+    libro = BookByChapter.objects.get(isbn=isbn)
+    try:
+        variable = StateOfBookByChapter.objects.get(book=libro, profile=perfil)
+        variable.state= "reading"
+    except StateOfBookByChapter.DoesNotExist:
+        variable = StateOfBookByChapter(state="reading",book=libro, profile=perfil)
+    variable.save()
+    return redirect(to="/libro_capitulo/"+ str(isbn))
 
 #libro por leer era el "agregar a leyendo" viejo
 def libro_por_leer(request,isbn):
@@ -768,6 +872,16 @@ def quitar_de_leyendo(request,isbn):
     variable.state= "null"
     variable.save()
     return redirect(to="/leer_libro/"+ str(isbn))
+
+
+def quitar_de_leyendo_libro_cap(request,isbn):
+    perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+    libro = BookByChapter.objects.get(isbn=isbn)
+    variable = StateOfBookByChapter.objects.get(book=libro, profile=perfil)
+    variable.state= "null"
+    variable.save()
+    return redirect(to="/libro_capitulo/"+ str(isbn))
+
 
 
 def terminar_libro(request,isbn):
