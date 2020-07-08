@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% include "bookflix/barra.html" %}
+    {% csrf_token %}
+    <h3>Realmente quiere borrar el perfil: {{perfil.name}} </h3>
+    <p style="margin: 5px;">Si es así oprima borrar perfil:</p>
+    <div style="margin: 15px;">
+        
+        <a href="/borrar_perfil_definitivo/{{perfil}} ">Borrar Perfil</a>
+        <br>
+        <br>
+        <a href="/select_perfil/">Volver a la página anterior</a>
+    </div>
+</body>
+</html>
+

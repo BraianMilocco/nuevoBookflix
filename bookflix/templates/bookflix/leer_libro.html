@@ -42,10 +42,35 @@
                     </div>
  
                     {% endif %}
+                   
+                
+                    {% if request.session.lectura_otro_perfil == False %}
+                        <a href="{{libro.pdf.url}}">Ver Libro</a>
+                        <br>
+                        {% if terminado == False  %}
+
+                            {% if comenzado == False  %}
+                                {#   <a href="/libro_por_leer/{{libro.isbn}}">Empezar libro</a>    acá estaba el "agregar a leyendo diferente" que creo que hizo brian, no se de donde salio, seguro se metio en un merge   #}
+                                <a href="/agregar_a_leyendo/{{libro.isbn}}">Agregar a Leyendo</a>
+                                <br>
+                            {% else %}
+                            
+                                    {# <object data="{{libro.pdf.url}}" type="application/x-pdf" title="{{libro.title}}" width="500" height="720"> #}
+                                    {#    <a href="{{libro.pdf.url}}">Ver Libro</a>                                                                #}
+                                    {#</object>                                                                                                    #}
+        
+                                <a href="/quitar_de_leyendo/{{libro.isbn}}">Quitar de leyendo</a>
+                                <br>
+                            {% endif %}
+
+                        {% endif %}  
+                        
+                        
+
                     {% if agregar_favorito == True %}
 
                         <div>
-                            <a style="margin-top:30px;margin-bottom: 30px;" href="/agregar_libro/{{libro.isbn}}"> Agregar a Favoritos</a>
+                            <a style="margin-top:30px;margin-bottom: 30px;" href="/agregar_libro_favoritos/{{libro.isbn}}"> Agregar a Favoritos</a>
                         </div>
 
                     {% else %}
@@ -53,49 +78,49 @@
                         <a style="margin-top:30px;margin-bottom: 30px;" href="/quitar_libro/{{libro.isbn}}"> Quitar de Favoritos</a>
                     </div>
                     {% endif %}
-
-                    {% if request.session.lectura_otro_perfil == False %}
-
-                        {% if comenzado == False %}
-                            <a href="/libro_por_leer/{{libro.isbn}}">Empezar Libro</a>
-                        {% else %}
-                            <div style="margin-top: 15px; margin-bottom: 15px;">
-                                <object data="{{libro.pdf.url}}" type="application/x-pdf" title="{{libro.title}}" width="500" height="720">
-                                    <a href="{{libro.pdf.url}}">Ver Libro</a> 
-                                </object>
-                            </div>
-                        {% endif %}
                     {% else %}
+
                         <p>Suba el plan</p>
 
                     {% endif %}
-                    {% if agregar_futura_lectura == True %}        
-                        <div>    
-                            <a style="margin-top: 30px;" href="/agregar_futuras_lecturas/{{libro.isbn}}">Agregar a futuras lecturas</a>
-                        </div>
-                        <br>
-                    {% else %}
-                        <div style=" margin-bottom: 15px;">
-                            <a  href="/quitar_futuras_lecturas/{{libro.isbn}}">Quitar de futuras lecturas</a>
-                        </div>
-                    {% endif %}
+                        {% if terminado == False  %}                
+                            {% if agregar_futura_lectura == True %}        
+                                   
+                                    <a style="margin-top: 30px;" href="/agregar_futuras_lecturas/{{libro.isbn}}">Agregar a futuras lecturas</a>
+                                
+                                    <br>
+                            {% else %}
+                                
+                                    <a  href="/quitar_futuras_lecturas/{{libro.isbn}}">Quitar de futuras lecturas</a>
+                                    <br>
+                            {% endif %}
+                        {% endif %}    
+                        
+                           
 
 
-
-                    {% if  not terminado == True or not comenzado == True %}
-                        {% if not comenzado == True %}
-                        <p>El valor de comenzado es:{{comenzado}}{{terminado}}</p>
-                            <div>
-                                <a style="margin-top:30px;margin-bottom: 30px;" href="/agregar_a_leyendo/{{libro.isbn}}"> Agregar a Leyendo</a>
-                            </div>
+                        {% if  not terminado == True or not comenzado == True %}
+                            {% if not comenzado == True %}
+                                {% if agregar_futura_lectura == True and terminado == True %}
+                                    
+                                        <a style="margin-top:30px;margin-bottom: 30px;" href="/agregar_a_leyendo/{{libro.isbn}}"> Quitar de terminado</a>
+                                        <br>
+                                    <p>El valor de comenzado es:{{comenzado}}</p>
+                                    <p>y el de terminado es:{{terminado}}</p>
+                                    <p>futuras lecturas:{{agregar_futura_lectura}}</p>
+                                {% else %}
+                                    
+                                        <a style="margin-top:30px;margin-bottom: 30px;" href="/terminar_libro/{{libro.isbn}}"> Terminar Libro</a>
+                                        <br>
+                                {% endif %}
+                            {% else %}
+                                
+                                    <a style="margin-top:30px;margin-bottom: 30px;" href="/terminar_libro/{{libro.isbn}}"> Terminar Libro</a>
+                                    <br>
+                                <p>El valor de comenzado es: {{comenzado}} y terminado: {{terminado}} y futuras lecturas:{{agregar_futura_lectura}} </p>    
+                            {% endif %}
                         {% else %}
-                        <p>El valor de comenzado es: {{comenzado}} {{terminado}}</p>
-                            <div>
-                                <a style="margin-top:30px;margin-bottom: 30px;" href="/quitar_de_leyendo/{{libro.isbn}}"> Quitar de Leyendo</a>
-                            </div>        
-                        {% endif %}
-                    {% else %}
-                    <p>El valor de comenzado es:{{comenzado}}</p>
+                        <p>El valor de comenzado es:{{comenzado}}</p>
                     {% endif %}
 
         </div>

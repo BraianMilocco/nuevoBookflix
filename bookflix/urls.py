@@ -40,7 +40,7 @@ urlpatterns = [
     path('denunciarComentario/<id>/<isbn>/', denunciarComentario, name="denunciarComentario"),
     path('comentariosDenunciados/', comentariosDenunciados, name="comentariosDenunciados"),
     path('denuncia/<id>/<boole>/<n>/', denuncia, name="denuncia"),
-    path('agregar_libro/<isbn>', agregar_libro, name='agregar_libro'),
+    path('agregar_libro_favoritos/<isbn>', agregar_libro_favoritos, name='agregar_libro_favoritos'),
     path('quitar_libro/<isbn>', quitar_libro, name='quitar_libro'),
     path('agregar_futuras_lecturas/<isbn>', agregar_futuras_lecturas, name='agregar_futuras_lecturas'),
     path('quitar_futuras_lecturas/<isbn>', quitar_futuras_lecturas, name='quitar_futuras_lecturas'),
@@ -54,6 +54,12 @@ urlpatterns = [
     path('estadisticas/<queEs>', estadisticas, name="estadisticas"),
     path('agregar_a_leyendo/<isbn>', agregar_a_leyendo, name="agregar_a_leyendo"),
     path('quitar_de_leyendo/<isbn>', quitar_de_leyendo, name="quitar_de_leyendo"),
+    path('terminar_libro/<isbn>', terminar_libro, name="terminar_libro"),
+    path('quitar_terminado/<isbn>', quitar_terminado, name="quitar_terminado"),
+    path('borrar_perfil/<perfil>', borrar_perfil, name="borrar_perfil"),
+    path('borrar_perfil_definitivo/<perfil>', borrar_perfil_definitivo, name="borrar_perfil_definitivo"),
+    path('borrar_cuenta/', borrar_cuenta, name="borrar_cuenta"),
+    path('borrar_cuenta_definitivo/', borrar_cuenta_definitivo, name="borrar_cuenta_definitivo"),
 
 
 ] 

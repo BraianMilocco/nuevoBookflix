@@ -72,7 +72,7 @@ def register_page(request):
 
             tarjeta= CreditCards(number=numT, cod=codT, date_expiration=dateT, card_name=cardName, bank=bankT, user=cuenta)
             tarjeta.save()
-            tarjeta_usada= CreditCardsUsed(number=numT, cod=codT, date_expiration=dateT, card_name=cardName, bank=bankT, user=cuenta)
+            tarjeta_usada= CreditCardsUsed(number=numT, cod=codT, date_expiration=dateT, card_name=cardName, bank=bankT)
             tarjeta_usada.save()
             #enviar mail confirmacion
             codillo = randomCod(10)
@@ -266,7 +266,7 @@ def cambiar_tarjeta(request):
             tarjeta_vieja.delete()
             tarjeta.save()
 
-            tarjeta_usada= CreditCardsUsed(number=numT, cod=codT, date_expiration=dateT, card_name=cardName, bank=bankT, user=request.user)
+            tarjeta_usada= CreditCardsUsed(number=numT, cod=codT, date_expiration=dateT, card_name=cardName, bank=bankT)
             try:
                 tarjeta_usada_vieja = CreditCardsUsed.objects.get(number=tarjeta.number)
                 tarjeta_usada_vieja.delete()
@@ -639,8 +639,15 @@ def leer_libro(request,isbn):
      context['puntajeMio']= puntajeMio
      context['libro']= libro
      context['comentarios']= comentarios
-     
-
+     #Este try lo agregué para el Agregar y quitar de leyendo, reever en un futuro
+     try:
+        estado_propio = StateOfBook.objects.get(state="reading", profile=request.session["perfil_ayuda"])
+        comenzado = True
+        context['comenzado']= comenzado
+     except StateOfBook.DoesNotExist:
+        comenzado = False
+        context['comenzado']= comenzado
+     #Fin del try de leyendo
      try:
         perfil = Profile.objects.get(id=request.session["perfil_ayuda"]) 
         favorito = LibroFavorito.objects.get(isbn=isbn, profile=perfil)
@@ -711,10 +718,10 @@ def quitar_futuras_lecturas(request,isbn):
     return redirect(to="/leer_libro/"+ str(isbn))
 
 
-def agregar_libro(request,isbn):
+def agregar_libro_favoritos(request,isbn):
     perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
     libro = Book.objects.get(isbn=isbn)
-    favorito = LibroFavorito(isbn=isbn,profile=perfil,book=libro)
+    favorito = LibroFavorito(isbn=isbn, profile=perfil)
     favorito.save()
     return redirect(to="/leer_libro/"+ str(isbn))
 
@@ -734,11 +741,25 @@ def listar_favoritos(request):
 def agregar_a_leyendo(request,isbn):
     perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
     libro = Book.objects.get(isbn=isbn)
-    variable = StateOfBook.objects.get(book=libro, profile=perfil)
-    variable.state= "reading"
+    try:
+        variable = StateOfBook.objects.get(book=libro, profile=perfil)
+        variable.state= "reading"
+    except StateOfBook.DoesNotExist:
+        variable = StateOfBook(state="reading",book=libro, profile=perfil)
     variable.save()
     return redirect(to="/leer_libro/"+ str(isbn))
 
+#libro por leer era el "agregar a leyendo" viejo
+def libro_por_leer(request,isbn):
+    libro = Book.objects.get(isbn=isbn)
+    perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+    try:
+        variable = StateOfBook.objects.get(book=libro, profile=perfil)
+    except Profile.DoesNotExist:
+        variable = StateOfBook(state="reading",book=libro, profile=perfil)
+    
+    variable.save()
+    return render(request,"bookflix/leer_libro.html",{"libro":libro}) 
 
 def quitar_de_leyendo(request,isbn):
     perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
@@ -747,6 +768,33 @@ def quitar_de_leyendo(request,isbn):
     variable.state= "null"
     variable.save()
     return redirect(to="/leer_libro/"+ str(isbn))
+
+
+def terminar_libro(request,isbn):
+    perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+    libro = Book.objects.get(isbn=isbn)
+    variable = StateOfBook.objects.get(book=libro, profile=perfil)
+    variable.state="finished"
+    variable.save()
+    return redirect(to="/leer_libro/"+ str(isbn))
+
+#Esta función se puede obviar porque agregar a leyendo hace lo mismo que se necesita, pero la dejo por si en un futuro alguien se marea
+def quitar_terminado(request,isbn):
+    perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+    libro = Book.objects.get(isbn=isbn)
+    variable = StateOfBook.objects.get(book=libro, profile=perfil)
+    variable.state= "reading"
+    variable.save()
+    return redirect(to="/leer_libro/"+ str(isbn))
+
+
+
+
+def libro_cap_por_leer(request,isbn):
+    libro = BookByChapter.object.get(isbn=isbn)
+    perfil = Profile.object.get(id=request.session["perfil_ayuda"])
+    variable = StateOfBookByChapter(state="reading",book=libro, profile=perfil)
+    return render(request,"bookflix/libro_por_leer.html", {"libro":libro} )
 
 # def puntuar_libro(request,puntuacion,isbn):
 #     libro= Book.objects.get(isbn = isbn)
@@ -767,19 +815,8 @@ def libro_capitulo(request):
 
     return render(request,"bookflix/libro_capitulo.html")
 
-def libro_por_leer(request,isbn):
-    libro = Book.objects.get(isbn=isbn)
-    perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
-    variable = StateOfBook(state="reading",book=libro, profile=perfil)
-    variable.save()
-    return render(request,"bookflix/leer_libro.html",{"libro":libro}) 
 
 
-def libro_cap_por_leer(request,isbn):
-    libro = BookByChapter.object.get(isbn=isbn)
-    perfil = Profile.object.get(id=request.session["perfil_ayuda"])
-    variable = StateOfBookByChapter(state="reading",book=libro, profile=perfil)
-    return render(request,"bookflix/libro_por_leer.html", {"libro":libro} )
 
 
 
@@ -807,6 +844,25 @@ def perfil_seleccionado(request,id_perfil):
 
     request.session.modified = True
     return redirect("/") 
+
+def borrar_perfil(request,perfil):
+    perfil_a_borrar = Profile.objects.get(account=request.user, name=perfil)
+    return render(request,"bookflix/borrar_perfil.html", {"perfil":perfil_a_borrar})
+
+
+def borrar_perfil_definitivo(request,perfil):
+    perfil_a_borrar = Profile.objects.get(account=request.user, name=perfil)
+    perfil_a_borrar.delete()
+    return redirect(to="/select_perfil")
+
+def borrar_cuenta(request):
+    return render(request,"bookflix/borrar_cuenta.html")
+
+
+def borrar_cuenta_definitivo(request):
+    cuenta = Account.objects.get(id=request.user.id)
+    cuenta.delete()
+    return redirect(to="/")
 
 
 def trailers(request):
