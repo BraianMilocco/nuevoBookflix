@@ -1312,33 +1312,46 @@ def buscar(request):
                 result = BookByChapter.objects.filter(title__icontains=query, mostrar_en_home=True)
                 return result
 
+            def buscar_por_isbn(query):
+                result = Book.objects.filter(isbn=query, mostrar_en_home=True)
+                return result
+
+            def buscar_por_isbnCap(query):
+                result = BookByChapter.objects.filter(isbn=query, mostrar_en_home=True)
+                return result
+
             palabra= form.cleaned_data['buscar']
             query= str(palabra).split(' ')
-            results = Book.objects.filter(mostrar_en_home = True)
-            resultsCap= BookByChapter.objects.filter(mostrar_en_home = True)
-
+            allBook = Book.objects.filter(mostrar_en_home = True)
+            AllBookCap= BookByChapter.objects.filter(mostrar_en_home = True)
+            results=set()
+            resultsCap=set()
             for palabra in query:
 
-                if buscar_por_autor(palabra):
-                    results = set(results) & set(buscar_por_autor(palabra))
-                if buscar_por_genero(palabra):
-                    results = set(results) & set(buscar_por_genero(palabra))
-                if buscar_por_titulo(palabra):
-                    results = set(results) & set(buscar_por_titulo(palabra))
-                if buscar_por_editorial(palabra):
-                    results = set(results) & set(buscar_por_editorial(palabra))
+                #if buscar_por_autor(palabra):
+                resultsAutor = set(allBook) & set(buscar_por_autor(palabra))
+                #if buscar_por_genero(palabra):
+                resultsGenero =  set(allBook)  & set(buscar_por_genero(palabra))
+                #if buscar_por_titulo(palabra):
+                resultsTitulo =  set(allBook)  & set(buscar_por_titulo(palabra))
+                #if buscar_por_editorial(palabra):                    
+                resultsEditorial = set(allBook)  & set(buscar_por_editorial(palabra))
+                resultsIsbn= set(allBook) & set(buscar_por_isbn(palabra))
+                results= results | (resultsAutor | resultsGenero | resultsTitulo | resultsEditorial | resultsIsbn)
 
-                if buscar_por_autorCap(palabra):
-                    resultsCap = set(resultsCap) & set(buscar_por_autorCap(palabra))
-                if buscar_por_generoCap(palabra):
-                    resultsCap = set(resultsCap) & set(buscar_por_generoCap(palabra))
-                if buscar_por_tituloCap(palabra):
-                    resultsCap = set(resultsCap) & set(buscar_por_tituloCap(palabra))
-                if buscar_por_editorialCap(palabra):
-                    resultsCap = set(resultsCap) & set(buscar_por_editorialCap(palabra))
-            
-            context['libros']=results
-            context['librosCap']= resultsCap 
+                #if buscar_por_autorCap(palabra):
+                resultsAutor = set(AllBookCap) & set(buscar_por_autorCap(palabra))
+                #if buscar_por_generoCap(palabra):
+                resultsGenero = set(AllBookCap) & set(buscar_por_generoCap(palabra))
+                #if buscar_por_tituloCap(palabra):
+                resultsTitulo = set(AllBookCap) & set(buscar_por_tituloCap(palabra))
+                #if buscar_por_editorialCap(palabra):
+                resultsEditorial = set(AllBookCap) & set(buscar_por_editorialCap(palabra))
+                resultsIsbn= set(AllBookCap) & set(buscar_por_isbnCap(palabra))
+                resultsCap= resultsCap | (resultsAutor | resultsGenero | resultsTitulo | resultsEditorial | resultsIsbn)
+
+            context['libros']= set(results)
+            context['librosCap']= set(resultsCap) 
     else:
         context['libros']= Book.objects.all()
         context['librosCap']= BookByChapter.objects.all()
