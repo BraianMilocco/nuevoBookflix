@@ -47,7 +47,7 @@
                     {% if request.session.lectura_otro_perfil == False %}
                         {% for capitulo in capitulos %}
                             <object data="{{capitulo.pdf.url}}" type="application/x-pdf" title="{{libro.title}}" width="500" height="720">
-                                <a href="{{capitulo.pdf.url}}">[⠀{{capitulo.title}}⠀||</a> <a href="/agregar_a_leyendo_libro_cap/{{libro.isbn}}">Agregar a leyendo⠀]</a>
+                                <a href="{{capitulo.pdf.url}}">[⠀{{capitulo.title}}⠀||</a> <a href="/agregar_cap_a_leyendo/{{libro.isbn}}">Agregar a leyendo⠀]</a>
                             </object>
                         {% endfor %}
                         <br>
@@ -90,12 +90,12 @@
                         {% if terminado == False  %}                
                             {% if agregar_futura_lectura == True %}        
                                    
-                                    <a style="margin-top: 30px;" href="/agregar_futuras_lecturas/{{libro.isbn}}">Agregar a futuras lecturas</a>
+                                    <a style="margin-top: 30px;" href="/agregar_futuras_lecturas_libro_cap/{{libro.isbn}}">Agregar a futuras lecturas</a>
                                 
                                     <br>
                             {% else %}
                                 
-                                    <a  href="/quitar_futuras_lecturas/{{libro.isbn}}">Quitar de futuras lecturas</a>
+                                    <a  href="/quitar_futuras_lecturas_libro_cap/{{libro.isbn}}">Quitar de futuras lecturas</a>
                                     <br>
                             {% endif %}
                         {% endif %}    
@@ -112,10 +112,6 @@
                                     <p>El valor de comenzado es:{{comenzado}}</p>
                                     <p>y el de terminado es:{{terminado}}</p>
                                     <p>futuras lecturas:{{agregar_futura_lectura}}</p>
-                                {% else %}
-                                    
-                                        <a style="margin-top:30px;margin-bottom: 30px;" href="/terminar_libro/{{libro.isbn}}"> Terminar Libro</a>
-                                        <br>
                                 {% endif %}
                             {% else %}
                                 

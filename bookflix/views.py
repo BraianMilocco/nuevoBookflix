@@ -795,6 +795,26 @@ def quitar_futuras_lecturas(request,isbn):
     return redirect(to="/leer_libro/"+ str(isbn))
 
 
+def agregar_futuras_lecturas_libro_cap(request,isbn):
+    perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+    libro = BookByChapter.objects.get(isbn=isbn)
+    try:
+        variable = StateOfBookByChapter.objects.get(book=libro, profile=perfil)
+        variable.state= "future_reading"
+    except StateOfBookByChapter.DoesNotExist:
+        variable = StateOfBookByChapter(book=libro,profile=perfil,state="future_reading")
+    variable.save()
+    return redirect(to="/libro_capitulo/"+ str(isbn))
+
+
+def quitar_futuras_lecturas_libro_cap(request,isbn):
+    perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+    libro = BookByChapter.objects.get(isbn=isbn)
+    variable = StateOfBookByChapter.objects.get(book=libro, profile=perfil)
+    variable.state= "null"
+    variable.save()
+    return redirect(to="/libro_capitulo/"+ str(isbn))
+
 def agregar_libro_favoritos(request,isbn):
     perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
     libro = Book.objects.get(isbn=isbn)
@@ -833,7 +853,7 @@ def listar_favoritos(request):
 
 def agregar_a_leyendo(request,isbn):
     perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
-    libro = Bookb.objects.get(isbn=isbn)
+    libro = Book.objects.get(isbn=isbn)
     try:
         variable = StateOfBook.objects.get(book=libro, profile=perfil)
         variable.state= "reading"
