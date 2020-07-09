@@ -31,11 +31,11 @@
                         <p> Le has dado: {{puntajeMio.points}}pts</p>
                         <p> 
                         <a> Puntuar: </a> 
-                        <a href="/puntuar/{{libro.isbn}}/completo/1"> 1pt </a> <a>-</a>
-                        <a href="/puntuar/{{libro.isbn}}/completo/2"> 2pt </a> <a>-</a>
-                        <a href="/puntuar/{{libro.isbn}}/completo/3"> 3pt </a> <a>-</a>
-                        <a href="/puntuar/{{libro.isbn}}/completo/4"> 4pt </a> <a>-</a>
-                        <a href="/puntuar/{{libro.isbn}}/completo/5"> 5pt </a> <a></a>
+                        <a href="/puntuar/{{libro.isbn}}/porcapitulos/1"> 1pt </a> <a>-</a>
+                        <a href="/puntuar/{{libro.isbn}}/porcapitulos/2"> 2pt </a> <a>-</a>
+                        <a href="/puntuar/{{libro.isbn}}/porcapitulos/3"> 3pt </a> <a>-</a>
+                        <a href="/puntuar/{{libro.isbn}}/porcapitulos/4"> 4pt </a> <a>-</a>
+                        <a href="/puntuar/{{libro.isbn}}/porcapitulos/5"> 5pt </a> <a></a>
                         </p>
             
             
@@ -107,7 +107,7 @@
                             {% if not comenzado == True %}
                                 {% if agregar_futura_lectura == True and terminado == True %}
                                     
-                                        <a style="margin-top:30px;margin-bottom: 30px;" href="/agregar_a_leyendo/{{libro.isbn}}"> Quitar de terminado</a>
+                                        <a style="margin-top:30px;margin-bottom: 30px;" href="/agregar_a_leyendo_libro_cap/{{libro.isbn}}"> Quitar de terminado</a>
                                         <br>
                                     <p>El valor de comenzado es:{{comenzado}}</p>
                                     <p>y el de terminado es:{{terminado}}</p>
@@ -115,7 +115,7 @@
                                 {% endif %}
                             {% else %}
                                 
-                                    <a style="margin-top:30px;margin-bottom: 30px;" href="/terminar_libro/{{libro.isbn}}"> Terminar Libro</a>
+                                    <a style="margin-top:30px;margin-bottom: 30px;" href="/terminar_libro_cap/{{libro.isbn}}"> Terminar Libro</a>
                                     <br>
                                 <p>El valor de comenzado es: {{comenzado}} y terminado: {{terminado}} y futuras lecturas:{{agregar_futura_lectura}} </p>    
                             {% endif %}

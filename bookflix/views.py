@@ -545,7 +545,7 @@ def puntuar(request, isbn, tipo, puntos):
             like= LikeBookByChapter.objects.get(author=perfil, book=libro)
             like.points= points
             like.save()
-        except :
+        except:
             like= LikeBookByChapter(points=points, book=libro, author=perfil)
             like.save()
         return redirect("/libro_capitulo/"+ str(libro.isbn))
@@ -759,8 +759,8 @@ def leer_libro_por_capitulo(request,isbn):
      except: 
          puntajeMio= 0
      try:
-         likes= Like.objects.filter(book= libro)
-         cantLikes= Like.objects.filter(book= libro).count()
+         likes= LikeBookByChapter.objects.filter(book=libro)
+         cantLikes= LikeBookByChapter.objects.filter(book=libro).count()
          puntaje= calcularPuntosDeLibro(likes, cantLikes)
      except: puntaje= 0
 
@@ -934,7 +934,15 @@ def terminar_libro(request,isbn):
     variable = StateOfBook.objects.get(book=libro, profile=perfil)
     variable.state="finished"
     variable.save()
-    return redirect(to="/leer_libro/"+ str(isbn))
+    return redirect(to="/libro_capitulo/"+ str(isbn))
+
+def terminar_libro_cap(request,isbn):
+    perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+    libro = BookByChapter.objects.get(isbn=isbn)
+    variable = StateOfBookByChapter.objects.get(book=libro, profile=perfil)
+    variable.state="finished"
+    variable.save()
+    return redirect(to="/libro_capitulo/"+ str(isbn))
 
 #Esta función se puede obviar porque agregar a leyendo hace lo mismo que se necesita, pero la dejo por si en un futuro alguien se marea
 def quitar_terminado(request,isbn):

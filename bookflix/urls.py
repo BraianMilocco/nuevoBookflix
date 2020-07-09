@@ -63,6 +63,7 @@ urlpatterns = [
     #path('agregar_cap_a_leyendo/<isbn>', agregar_cap_a_leyendo, name="agregar_cap_a_leyendo"),
     #path('quitar_cap_de_leyendo/<isbn>', quitar_cap_de_leyendo, name="quitar_cap_de_leyendo"),
     path('terminar_libro/<isbn>', terminar_libro, name="terminar_libro"),
+    path('terminar_libro_cap/<isbn>', terminar_libro_cap, name="terminar_libro_cap"),
     path('quitar_terminado/<isbn>', quitar_terminado, name="quitar_terminado"),
     path('borrar_perfil/<perfil>', borrar_perfil, name="borrar_perfil"),
     path('borrar_perfil_definitivo/<perfil>', borrar_perfil_definitivo, name="borrar_perfil_definitivo"),
