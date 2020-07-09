@@ -129,7 +129,10 @@ def buscarPorIsbs(request, isbn):                       #mmmm me parece que va a
     return render(request, welcome, {"libros":libros}) 
 
 def welcome(request):
-    perfil= Profile.objects.get(id= request.session["perfil_ayuda"])
+    try:
+        perfil= Profile.objects.get(id= request.session["perfil_ayuda"])
+    except:
+        perfil=False
     context={}
     publicacion=Billboard.objects.filter(mostrar_en_home=True)
     libros = Book.objects.filter(mostrar_en_home=True)
@@ -996,7 +999,7 @@ def borrar_cuenta(request):
 def borrar_cuenta_definitivo(request):
     cuenta = Account.objects.get(id=request.user.id)
     cuenta.delete()
-    return redirect(to="/")
+    return redirect(to="/login")
 
 
 def trailers(request):

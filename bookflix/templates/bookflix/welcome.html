@@ -37,71 +37,26 @@
 
 {% include "bookflix/barra.html" %}
 
+{% if request.session.nombrePerfil %}
 
 
+    <h1 style="color: black;">
+        {# <p> {{request.session.nombrePerfil}}</p> #}      
 
-<h1 style="color: black;">
-    {# <p> {{request.session.nombrePerfil}}</p> #}      
+    </h1>
 
-</h1>
+    <hr>
+    <ul id="libros";>
 
- <hr>
- <ul id="libros";>
-
-    {% if libros %}
-    <h2>Libros que no leyó</h2>
-    {% for libro in libros %}
-       <li >
-            {% if request.user.plan == "free"  %}
-            <div>
-                <a href="/solicitar_cambio/">{{libro.title}}</a>
-                <br>
-                <img style="max-width:275px; max-height:275px;" src="{{libro.image.url}}"  alt="fondo" >
-                <!-- -->
-                <br> 
-                <p> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </p>
-                <br>
-                <p> Género(s): {%for genero in libro.genders.all %}
-                    | {{genero.name}} |
-
-                {% endfor %}
-                </p>
-            </div>               
-            {% elif request.user.plan == "normal" and libro.on_normal == True %}
-                <div>
-                    <a href="/leer_libro/{{libro.isbn}}">{{libro.title}}</a>
-                    <br>
-                    <img style="max-width:275px; max-height:275px;" src="{{libro.image.url}}"  alt="fondo" >
-                    
-                    <!-- -->
-                    <br> 
-                    <p> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </p>
-                    <br>
-                    <p> Género(s): {%for genero in libro.genders.all %}
-                        | {{genero.name}} |
-                    {% endfor %}
-                    </p>
-                </div>
-            {% elif request.user.plan == "normal" and libro.on_normal == False %}
+        {% if libros %}
+        <h2>Libros que no leyó</h2>
+        {% for libro in libros %}
+        <li >
+                {% if request.user.plan == "free"  %}
                 <div>
                     <a href="/solicitar_cambio/">{{libro.title}}</a>
                     <br>
                     <img style="max-width:275px; max-height:275px;" src="{{libro.image.url}}"  alt="fondo" >
-                    
-                    <!-- -->
-                    <br> 
-                    <p> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </p>
-                    <br>
-                    <p> Género(s): {%for genero in libro.genders.all %}
-                        | {{genero.name}} |
-                    {% endfor %}
-                    </p>
-                </div>    
-            {% else %}
-                <div>
-                    <a href="/leer_libro/{{libro.isbn}}">{{libro.title}}</a>
-                    <br>
-                    <img style="max-width:275px; max-height:275px;" src="{{libro.image.url}}"  alt="fondo" >
                     <!-- -->
                     <br> 
                     <p> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </p>
@@ -111,68 +66,84 @@
 
                     {% endfor %}
                     </p>
-                </div>
-            {% endif%}
-              
-        </li>
-    {% endfor %}
-    {% else %}
-    <p>No hay libros dados de alta disponibles</p>
-    {% endif %}
+                </div>               
+                {% elif request.user.plan == "normal" and libro.on_normal == True %}
+                    <div>
+                        <a href="/leer_libro/{{libro.isbn}}">{{libro.title}}</a>
+                        <br>
+                        <img style="max-width:275px; max-height:275px;" src="{{libro.image.url}}"  alt="fondo" >
+                        
+                        <!-- -->
+                        <br> 
+                        <p> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </p>
+                        <br>
+                        <p> Género(s): {%for genero in libro.genders.all %}
+                            | {{genero.name}} |
+                        {% endfor %}
+                        </p>
+                    </div>
+                {% elif request.user.plan == "normal" and libro.on_normal == False %}
+                    <div>
+                        <a href="/solicitar_cambio/">{{libro.title}}</a>
+                        <br>
+                        <img style="max-width:275px; max-height:275px;" src="{{libro.image.url}}"  alt="fondo" >
+                        
+                        <!-- -->
+                        <br> 
+                        <p> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </p>
+                        <br>
+                        <p> Género(s): {%for genero in libro.genders.all %}
+                            | {{genero.name}} |
+                        {% endfor %}
+                        </p>
+                    </div>    
+                {% else %}
+                    <div>
+                        <a href="/leer_libro/{{libro.isbn}}">{{libro.title}}</a>
+                        <br>
+                        <img style="max-width:275px; max-height:275px;" src="{{libro.image.url}}"  alt="fondo" >
+                        <!-- -->
+                        <br> 
+                        <p> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </p>
+                        <br>
+                        <p> Género(s): {%for genero in libro.genders.all %}
+                            | {{genero.name}} |
 
-
-
-
-
-</ul>
-
-
-
-
-
-
-
-
-
-
-
-
-<ul id="libros";>
-
-    {% if libros_cap %}
-    <h2>Libros Por Capítulo que no leyó</h2>
-    {% for libro in libros_cap %}
-       <li >
-            {% if request.user.plan == "free"  %}
-            <div>
-                <a href="/solicitar_cambio/">{{libro.title}}</a>
-                <br>
-                <img style="max-width:275px; max-height:275px;" src="{{libro.image.url}}"  alt="fondo" >
-                <!-- -->
-                <br> 
-                <p> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </p>
+                        {% endfor %}
+                        </p>
+                    </div>
+                {% endif%}
                 
-                <p> Género(s): {%for genero in libro.genders.all %}
-                    | {{genero.name}} |
+            </li>
+        {% endfor %}
+        {% else %}
+        <p>No hay libros dados de alta disponibles</p>
+        {% endif %}
 
-                {% endfor %}
-                </p>
-            </div>               
-            {% elif request.user.plan == "normal" and libro.on_normal == True %}
-                <div>
-                    <a href="/libro_capitulo/{{libro.isbn}}">{{libro.title}}</a>
-                    <br>
-                    <img style="max-width:275px; max-height:275px;" src="{{libro.image.url}}"  alt="fondo" >
-                    <!-- -->
-                    <br> 
-                    <p> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </p>
-                    
-                    <p> Género(s): {%for genero in libro.genders.all %}
-                        | {{genero.name}} |
-                    {% endfor %}
-                    </p>
-                </div>
-            {% elif request.user.plan == "normal" and libro.on_normal == False %}
+
+
+
+
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+    <ul id="libros";>
+
+        {% if libros_cap %}
+        <h2>Libros Por Capítulo que no leyó</h2>
+        {% for libro in libros_cap %}
+        <li >
+                {% if request.user.plan == "free"  %}
                 <div>
                     <a href="/solicitar_cambio/">{{libro.title}}</a>
                     <br>
@@ -183,83 +154,117 @@
                     
                     <p> Género(s): {%for genero in libro.genders.all %}
                         | {{genero.name}} |
-                    {% endfor %}
-                    </p>
-                </div>    
-            {% else %}
-                <div>
-                    <a href="/libro_capitulo/{{libro.isbn}}">{{libro.title}}</a>
-                    <br>
-                    <img style="max-width:275px; max-height:275px;" src="{{libro.image.url}}"  alt="fondo" >
-                    <!-- -->
-                    <br> 
-                    <p> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </p>
-                    
-                    <p> Género(s): {%for genero in libro.genders.all %}
-                        | {{genero.name}} |
 
                     {% endfor %}
                     </p>
+                </div>               
+                {% elif request.user.plan == "normal" and libro.on_normal == True %}
+                    <div>
+                        <a href="/libro_capitulo/{{libro.isbn}}">{{libro.title}}</a>
+                        <br>
+                        <img style="max-width:275px; max-height:275px;" src="{{libro.image.url}}"  alt="fondo" >
+                        <!-- -->
+                        <br> 
+                        <p> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </p>
+                        
+                        <p> Género(s): {%for genero in libro.genders.all %}
+                            | {{genero.name}} |
+                        {% endfor %}
+                        </p>
+                    </div>
+                {% elif request.user.plan == "normal" and libro.on_normal == False %}
+                    <div>
+                        <a href="/solicitar_cambio/">{{libro.title}}</a>
+                        <br>
+                        <img style="max-width:275px; max-height:275px;" src="{{libro.image.url}}"  alt="fondo" >
+                        <!-- -->
+                        <br> 
+                        <p> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </p>
+                        
+                        <p> Género(s): {%for genero in libro.genders.all %}
+                            | {{genero.name}} |
+                        {% endfor %}
+                        </p>
+                    </div>    
+                {% else %}
+                    <div>
+                        <a href="/libro_capitulo/{{libro.isbn}}">{{libro.title}}</a>
+                        <br>
+                        <img style="max-width:275px; max-height:275px;" src="{{libro.image.url}}"  alt="fondo" >
+                        <!-- -->
+                        <br> 
+                        <p> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </p>
+                        
+                        <p> Género(s): {%for genero in libro.genders.all %}
+                            | {{genero.name}} |
+
+                        {% endfor %}
+                        </p>
+                    </div>
+                {% endif%}
+                
+            </li>
+        {% endfor %}
+        {% else %}
+        <p>No hay libros dados de alta disponibles</p>
+        {% endif %}
+
+
+
+
+
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {% if historial_libros %}
+        <h2>Libros Que está leyendo</h2>
+        {% for libro in historial_libros %}
+            <li style="display:inline-block; margin: 20px;">
+                <div>
+                    <h3>El perfil {{libro.profile}} añadio el libro: <br> <a href="/leer_libro/{{libro.book.isbn}}">{{libro.book.title}}</a> <br> a {{libro.state}}</h3>
+                    <br>
+                    <img style="max-width:275px; max-height:275px;" src="{{libro.book.image.url}}"  alt="fondo" > 
                 </div>
-            {% endif%}
-              
-        </li>
-    {% endfor %}
-    {% else %}
-    <p>No hay libros dados de alta disponibles</p>
+                <br>
+            </li>
+        {% endfor %}
     {% endif %}
 
 
 
 
-
-</ul>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-{% if historial_libros %}
-    <h2>Libros Que está leyendo</h2>
-    {% for libro in historial_libros %}
+    {% if historial_libros_cap %}
+    <h2>Libros por capítulo que está leyendo</h2>
+    {% for libro in historial_libros_cap %}
         <li style="display:inline-block; margin: 20px;">
             <div>
-                <h3>El perfil {{libro.profile}} añadio el libro: <br> <a href="/leer_libro/{{libro.book.isbn}}">{{libro.book.title}}</a> <br> a {{libro.state}}</h3>
+                <h3>El perfil {{libro.profile}} añadio el libro: <br> {{libro.book}} <br> a {{libro.state}}</h3>
                 <br>
                 <img style="max-width:275px; max-height:275px;" src="{{libro.book.image.url}}"  alt="fondo" > 
             </div>
             <br>
         </li>
-    {% endfor %}
+    {% endfor %}        
+    {% endif %}
+
+{% else %}
+        {% if request.session.user == True %}
+            <h1>Debe elegir un perfil para poder acceder al home</h1>
+            <a href="/select_perfil">Ir a Perfiles</a>
+        {% endif %}
 {% endif %}
-
-
-
-
-{% if historial_libros_cap %}
-<h2>Libros por capítulo que está leyendo</h2>
-{% for libro in historial_libros_cap %}
-    <li style="display:inline-block; margin: 20px;">
-        <div>
-            <h3>El perfil {{libro.profile}} añadio el libro: <br> {{libro.book}} <br> a {{libro.state}}</h3>
-            <br>
-            <img style="max-width:275px; max-height:275px;" src="{{libro.book.image.url}}"  alt="fondo" > 
-        </div>
-        <br>
-    </li>
-{% endfor %}        
-{% endif %}
-
-
 
 </body>
     
