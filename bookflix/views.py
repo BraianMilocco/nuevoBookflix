@@ -151,10 +151,12 @@ def welcome(request):
 
     
     while len(auxLibro) > 3:
-        auxLibro.pop()
+        aux3= random.choice(tuple(auxLibro))
+        auxLibro.remove(aux3)
 
     while len(auxLibroCap) > 3:
-        auxLibroCap.pop()
+        aux3= random.choice(tuple(auxLibro))
+        auxLibroCap.remove(aux3)
 
     context['recomendacion']= auxLibro
     context['recomendacionCapitulo']= auxLibroCap
