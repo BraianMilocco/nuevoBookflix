@@ -6,13 +6,6 @@
             <div style="display: inline;">
                 <h2>{{libro.title}}</h2>
                 <img style="max-width:275px; max-height:275px;" src="{{libro.image.url}}"  alt="fondo" > 
-                {# <button style="position: absolute;margin-left: 10;">Agregar a futuras lecturas</button> #}
-                
-                {# <button onclick="enviarPost( 'publicacion')" style="position: absolute;margin-top: 40;margin-left:10;">Leer Libro</button> #}
-                 
-                {#<embed style="width:300px; height:250px;" frameborder="0" id='pdf' src="{% static 'pdf/cmd.pdf' %}"></embed> #}                    {# % static 'pdf/cmd.pdf' % #}
-
-                {#<input id="submit" type="button" value="Click" href="/"/>      #}     
             </div>  
                     <br>
                     <!-- -->
@@ -54,11 +47,7 @@
                                 <a href="/agregar_a_leyendo/{{libro.isbn}}">Agregar a Leyendo</a>
                                 <br>
                             {% else %}
-                            
-                                    {# <object data="{{libro.pdf.url}}" type="application/x-pdf" title="{{libro.title}}" width="500" height="720"> #}
-                                    {#    <a href="{{libro.pdf.url}}">Ver Libro</a>                                                                #}
-                                    {#</object>                                                                                                    #}
-        
+
                                 <a href="/quitar_de_leyendo/{{libro.isbn}}">Quitar de leyendo</a>
                                 <br>
                             {% endif %}
@@ -84,12 +73,12 @@
 
                     {% endif %}
                         {% if terminado == False  %}                
-                            {% if agregar_futura_lectura == True %}        
+                            {% if agregar_futura_lectura == True and comenzado == False %}        
                                    
                                     <a style="margin-top: 30px;" href="/agregar_futuras_lecturas/{{libro.isbn}}">Agregar a futuras lecturas</a>
                                 
                                     <br>
-                            {% else %}
+                            {% elif agregar_futura_lectura == False %}
                                 
                                     <a  href="/quitar_futuras_lecturas/{{libro.isbn}}">Quitar de futuras lecturas</a>
                                     <br>
