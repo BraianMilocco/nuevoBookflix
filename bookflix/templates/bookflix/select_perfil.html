@@ -35,7 +35,7 @@
 
                 {% endfor %}
                 {% if perfiles|length < 2 %}
-                    <h1>Para crear otro perfil haga click en abajo {{request.user.username}} por favor cree un perfil</h1>
+                    <h3>Para crear otro perfil haga click en abajo {{request.user.username}} por favor cree un perfil</h3>
                     <a href="/crear_perfil/">CrearPerfil</a>
                 {% endif %}
             {% else %}
@@ -56,7 +56,7 @@
 
                 {% endfor %}
                 {% if perfiles|length < 4 %}
-                    <h2 style="margin: 10;">Para crear otro perfil haga click en abajo {{request.user.username}} por favor cree un perfil</h2>
+                    <h3 style="margin: 10;">Para crear otro perfil haga click en abajo {{request.user.username}} por favor cree un perfil</h3>
                     <a style="margin: 10;" href="/crear_perfil/">CrearPerfil</a>
                 {% endif %}
             {% else %}

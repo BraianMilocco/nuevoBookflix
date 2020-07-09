@@ -49,6 +49,8 @@ class UserCreationForm(forms.ModelForm):
 
 admin.site.register(Account, AccountAdmin)
 
+admin.site.register(CapituloLeyendose)
+
 admin.site.register(Author)
 admin.site.register(Gender)
 admin.site.register(Editorial)
@@ -81,7 +83,6 @@ admin.site.register(LibroPorCapituloFavorito)
 
 #admin.site.register(Chapter)
 admin.site.register(Chapter, ChapterAdmin)
-
 admin.site.register(Billboard)
 #admin.site.register(CounterStates)
 admin.site.register(ConfirmationMail)

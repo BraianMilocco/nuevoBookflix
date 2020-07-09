@@ -41,9 +41,13 @@ urlpatterns = [
     path('comentariosDenunciados/', comentariosDenunciados, name="comentariosDenunciados"),
     path('denuncia/<id>/<boole>/<n>/', denuncia, name="denuncia"),
     path('agregar_libro_favoritos/<isbn>', agregar_libro_favoritos, name='agregar_libro_favoritos'),
+    path('agregar_libro_cap_favoritos/<isbn>', agregar_libro_cap_favoritos, name='agregar_libro_cap_favoritos'),
     path('quitar_libro/<isbn>', quitar_libro, name='quitar_libro'),
+    path('quitar_libro_cap/<isbn>', quitar_libro_cap, name='quitar_libro_cap'),
     path('agregar_futuras_lecturas/<isbn>', agregar_futuras_lecturas, name='agregar_futuras_lecturas'),
     path('quitar_futuras_lecturas/<isbn>', quitar_futuras_lecturas, name='quitar_futuras_lecturas'),
+    path('agregar_futuras_lecturas_libro_cap/<isbn>', agregar_futuras_lecturas_libro_cap, name='agregar_futuras_lecturas_libro_cap'),
+    path('quitar_futuras_lecturas_libro_cap/<isbn>', quitar_futuras_lecturas_libro_cap, name='quitar_futuras_lecturas_libro_cap'),
     path('listar_favoritos/', listar_favoritos, name='listar_favoritos'),
     #path('puntuar_libro/<puntuacion>/<isbn>', puntuar_libro, name='puntuar_libro'),
     path('vermiscomentarios/', vermiscomentarios, name="vermiscomentarios"),
@@ -54,6 +58,10 @@ urlpatterns = [
     path('estadisticas/<queEs>', estadisticas, name="estadisticas"),
     path('agregar_a_leyendo/<isbn>', agregar_a_leyendo, name="agregar_a_leyendo"),
     path('quitar_de_leyendo/<isbn>', quitar_de_leyendo, name="quitar_de_leyendo"),
+    path('agregar_a_leyendo_libro_cap/<isbn>', agregar_a_leyendo_libro_cap, name="agregar_a_leyendo_libro_cap"),
+    path('quitar_de_leyendo_libro_cap/<isbn>', quitar_de_leyendo_libro_cap, name="quitar_de_leyendo_libro_cap"),
+    #path('agregar_cap_a_leyendo/<isbn>', agregar_cap_a_leyendo, name="agregar_cap_a_leyendo"),
+    #path('quitar_cap_de_leyendo/<isbn>', quitar_cap_de_leyendo, name="quitar_cap_de_leyendo"),
     path('terminar_libro/<isbn>', terminar_libro, name="terminar_libro"),
     path('quitar_terminado/<isbn>', quitar_terminado, name="quitar_terminado"),
     path('borrar_perfil/<perfil>', borrar_perfil, name="borrar_perfil"),
@@ -61,7 +69,7 @@ urlpatterns = [
     path('borrar_cuenta/', borrar_cuenta, name="borrar_cuenta"),
     path('borrar_cuenta_definitivo/', borrar_cuenta_definitivo, name="borrar_cuenta_definitivo"),
 
-
+ 
 ] 
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

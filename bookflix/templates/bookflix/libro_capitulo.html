@@ -2,20 +2,19 @@
 <html>
     <body>
         {% include "bookflix/barra.html" %}        
-        <div style= "margin: auto; margin: 100px;">
-            <div style="display: inline; margin: auto;">
+        <div style= "margin: auto; margin: 50px;">
+            <div style="display: inline;">
                 <h2>{{libro.title}}</h2>
                 <img style="max-width:275px; max-height:275px;" src="{{libro.image.url}}"  alt="fondo" > 
-                 
                 {# <button style="position: absolute;margin-left: 10;">Agregar a futuras lecturas</button> #}
                 
-                {# <button onclick="enviarPost( 'publicacion')" style="position: absolute;margin-top: 40;margin-left:10;">Leer Libro</button> #}                 
+                {# <button onclick="enviarPost( 'publicacion')" style="position: absolute;margin-top: 40;margin-left:10;">Leer Libro</button> #}
+                 
+                {#<embed style="width:300px; height:250px;" frameborder="0" id='pdf' src="{% static 'pdf/cmd.pdf' %}"></embed> #}                    {# % static 'pdf/cmd.pdf' % #}
 
-                {# <embed style="width:300px; height:250px;" frameborder="0" id='pdf' src="{% static 'pdf/cmd.pdf' %}"></embed> #}                    {# % static 'pdf/cmd.pdf' % #}
-
-                {# <input id="submit" type="button" value="Click" href="/"/>      #}         
+                {#<input id="submit" type="button" value="Click" href="/"/>      #}     
             </div>  
-                    
+                    <br>
                     <!-- -->
                     <p> {{libro.description}} </p>
                     <p> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </p>
@@ -25,44 +24,119 @@
 
                     {% endfor %}
                     </p>
-                    <P>Puntuación: {{puntaje}} pts</P>
                     
-                    
-                    
-                    {% for capitulo in capitulos %}
-                        <object data="{{capitulo.pdf.url}}" type="application/x-pdf" title="{{libro.title}}" width="500" height="720">
-                            <a href="{{capitulo.pdf.url}}">{{capitulo.title}}</a> 
-                        </object>
-                        
-                    {% endfor %}
-
-
-
-
-
-            {#      <p> Capítulo(s): {%for capitulo in libro.cant_chapter.all %} #} {# acá sería otro tipo de for #}
-            {#            | cap en proceso |        #}                                  {# acá buscaría por el número de capítulo y lo traigo de la base #}
-
-            {#              {% endfor }    </p>     #}
+                    <P>Puntuación: {{puntaje}}</P>
+                    {% if terminado %}
+                    <div> 
+                        <p> Le has dado: {{puntajeMio.points}}pts</p>
+                        <p> 
+                        <a> Puntuar: </a> 
+                        <a href="/puntuar/{{libro.isbn}}/completo/1"> 1pt </a> <a>-</a>
+                        <a href="/puntuar/{{libro.isbn}}/completo/2"> 2pt </a> <a>-</a>
+                        <a href="/puntuar/{{libro.isbn}}/completo/3"> 3pt </a> <a>-</a>
+                        <a href="/puntuar/{{libro.isbn}}/completo/4"> 4pt </a> <a>-</a>
+                        <a href="/puntuar/{{libro.isbn}}/completo/5"> 5pt </a> <a></a>
+                        </p>
             
+            
+                    </div>
+ 
+                    {% endif %}
+                   
+                
+                    {% if request.session.lectura_otro_perfil == False %}
+                        {% for capitulo in capitulos %}
+                            <object data="{{capitulo.pdf.url}}" type="application/x-pdf" title="{{libro.title}}" width="500" height="720">
+                                <a href="{{capitulo.pdf.url}}">[⠀{{capitulo.title}}⠀||</a> <a href="/agregar_cap_a_leyendo/{{libro.isbn}}">Agregar a leyendo⠀]</a>
+                            </object>
+                        {% endfor %}
+                        <br>
+                        {% if terminado == False  %}
+
+                            {% if comenzado == False  %}
+                                {#   <a href="/libro_por_leer/{{libro.isbn}}">Empezar libro</a>    acá estaba el "agregar a leyendo diferente" que creo que hizo brian, no se de donde salio, seguro se metio en un merge   #}
+                                <a href="/agregar_a_leyendo_libro_cap/{{libro.isbn}}">Agregar a Leyendo</a>
+                                <br>
+                            {% else %}
+                            
+                                    {# <object data="{{libro.pdf.url}}" type="application/x-pdf" title="{{libro.title}}" width="500" height="720"> #}
+                                    {#    <a href="{{libro.pdf.url}}">Ver Libro</a>                                                                #}
+                                    {#</object>                                                                                                    #}
+        
+                                <a href="/quitar_de_leyendo_libro_cap/{{libro.isbn}}">Quitar de leyendo</a>
+                                <br>
+                            {% endif %}
+
+                        {% endif %}  
+                        
+                        
+
+                    {% if agregar_favorito == True %}
+
+                        <div>
+                            <a style="margin-top:30px;margin-bottom: 30px;" href="/agregar_libro_cap_favoritos/{{libro.isbn}}"> Agregar a Favoritos</a>
+                        </div>
+
+                    {% else %}
+                    <div>
+                        <a style="margin-top:30px;margin-bottom: 30px;" href="/quitar_libro_cap/{{libro.isbn}}"> Quitar de Favoritos</a>
+                    </div>
+                    {% endif %}
+                    {% else %}
+
+                        <p>Suba el plan</p>
+
+                    {% endif %}
+                        {% if terminado == False  %}                
+                            {% if agregar_futura_lectura == True %}        
+                                   
+                                    <a style="margin-top: 30px;" href="/agregar_futuras_lecturas_libro_cap/{{libro.isbn}}">Agregar a futuras lecturas</a>
+                                
+                                    <br>
+                            {% else %}
+                                
+                                    <a  href="/quitar_futuras_lecturas_libro_cap/{{libro.isbn}}">Quitar de futuras lecturas</a>
+                                    <br>
+                            {% endif %}
+                        {% endif %}    
+                        
+                           
+
+
+                        {% if  not terminado == True or not comenzado == True %}
+                            {% if not comenzado == True %}
+                                {% if agregar_futura_lectura == True and terminado == True %}
+                                    
+                                        <a style="margin-top:30px;margin-bottom: 30px;" href="/agregar_a_leyendo/{{libro.isbn}}"> Quitar de terminado</a>
+                                        <br>
+                                    <p>El valor de comenzado es:{{comenzado}}</p>
+                                    <p>y el de terminado es:{{terminado}}</p>
+                                    <p>futuras lecturas:{{agregar_futura_lectura}}</p>
+                                {% endif %}
+                            {% else %}
+                                
+                                    <a style="margin-top:30px;margin-bottom: 30px;" href="/terminar_libro/{{libro.isbn}}"> Terminar Libro</a>
+                                    <br>
+                                <p>El valor de comenzado es: {{comenzado}} y terminado: {{terminado}} y futuras lecturas:{{agregar_futura_lectura}} </p>    
+                            {% endif %}
+                        {% else %}
+                        <p>El valor de comenzado es:{{comenzado}}</p>
+                    {% endif %}
+
+        </div>
+
+
+            <p>El valor de comenzado es:{{comenzado}}</p>
+            <p>y el de terminado es:{{terminado}}</p>
+            <p>futuras lecturas:{{agregar_futura_lectura}}</p>
+            <p>Añadir a favoritos:{{agregar_favorito}}</p>
+
 
         </div>
 
         <a href="/comentar/{{libro.isbn}}"> comentar</a>
         <br>
         <div> 
-
-        </div>
-        <p> Le has dado: {{puntajeMio.points}}pts</p>
-        <p> 
-            <a> Puntuar: </a> 
-            <a href="/puntuar/{{libro.isbn}}/incompleto/1"> 1pt </a> <a>-</a>
-            <a href="/puntuar/{{libro.isbn}}/incompleto/2"> 2pt </a> <a>-</a>
-            <a href="/puntuar/{{libro.isbn}}/incompleto/3"> 3pt </a> <a>-</a>
-            <a href="/puntuar/{{libro.isbn}}/incompleto/4"> 4pt </a> <a>-</a>
-            <a href="/puntuar/{{libro.isbn}}/incompleto/5"> 5pt </a> <a></a>
-            </p>
-
 
 
         {% for coment in comentarios%}
