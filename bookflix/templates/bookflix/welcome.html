@@ -39,7 +39,6 @@
 
 {% if request.session.nombrePerfil %}
 
-
     <h1 style="color: black;">
         {# <p> {{request.session.nombrePerfil}}</p> #}      
 
@@ -48,15 +47,43 @@
     <hr>
     <ul id="libros";>
 
+        
+        <h3>Recomendaciones Personalizadas de Libros</h3>
+        <div> {%for libro in recomendacion%}
+            <li>
+                <a href="/leer_libro/{{libro.isbn}}">  {{libro.title}} </a> 
+                <br> <img style="max-width:150px; max-height:150px;" src="{{libro.image.url}}"  alt="fondo" >
+                <br>  <a> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </a>
+                <br>
+                Género(s): {%for genero in libro.genders.all %}
+                            | {{genero.name}} |
+        
+                        {% endfor %}
+                <br> <a>Editorial: {{libro.editorial}} </a>
+            </li>        
+            {%endfor%} </div>
+            <h3>Recomendaciones personalizadas de Libros Por Capitulo</h3>
+            <div>{%for libro in recomendacionCapitulo%}<li>
+                <a href="/libro_capitulo/{{libro.isbn}}">  {{libro.title}} </a> 
+                <br> <img style="max-width:150px; max-height:150px;" src="{{libro.image.url}}"  alt="fondo" >
+                <br>  <a> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </a>
+                <br>
+                Género(s): {%for genero in libro.genders.all %}
+                            | {{genero.name}} |
+                <br> <a>Editorial: {{libro.editorial}}</a>
+                        {% endfor %}
+            </li>{%endfor%} </div>
+
         {% if libros %}
-        <h2>Libros que no leyó</h2>
+        <p> <h3>Libros que no leyó</h3></p>
         {% for libro in libros %}
         <li >
+            
                 {% if request.user.plan == "free"  %}
                 <div>
                     <a href="/solicitar_cambio/">{{libro.title}}</a>
                     <br>
-                    <img style="max-width:275px; max-height:275px;" src="{{libro.image.url}}"  alt="fondo" >
+                    <img style="max-width:150px; max-height:150px;" src="{{libro.image.url}}"  alt="fondo" >
                     <!-- -->
                     <br> 
                     <p> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </p>
@@ -71,7 +98,7 @@
                     <div>
                         <a href="/leer_libro/{{libro.isbn}}">{{libro.title}}</a>
                         <br>
-                        <img style="max-width:275px; max-height:275px;" src="{{libro.image.url}}"  alt="fondo" >
+                        <img style="max-width:150px; max-height:150px;" src="{{libro.image.url}}"  alt="fondo" >
                         
                         <!-- -->
                         <br> 
@@ -86,7 +113,7 @@
                     <div>
                         <a href="/solicitar_cambio/">{{libro.title}}</a>
                         <br>
-                        <img style="max-width:275px; max-height:275px;" src="{{libro.image.url}}"  alt="fondo" >
+                        <img style="max-width:150px; max-height:150px;" src="{{libro.image.url}}"  alt="fondo" >
                         
                         <!-- -->
                         <br> 
@@ -101,7 +128,7 @@
                     <div>
                         <a href="/leer_libro/{{libro.isbn}}">{{libro.title}}</a>
                         <br>
-                        <img style="max-width:275px; max-height:275px;" src="{{libro.image.url}}"  alt="fondo" >
+                        <img style="max-width:150px; max-height:150px;" src="{{libro.image.url}}"  alt="fondo" >
                         <!-- -->
                         <br> 
                         <p> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </p>
@@ -120,22 +147,7 @@
         <p>No hay libros dados de alta disponibles</p>
         {% endif %}
 
-
-
-
-
     </ul>
-
-
-
-
-
-
-
-
-
-
-
 
     <ul id="libros";>
 
@@ -147,7 +159,7 @@
                 <div>
                     <a href="/solicitar_cambio/">{{libro.title}}</a>
                     <br>
-                    <img style="max-width:275px; max-height:275px;" src="{{libro.image.url}}"  alt="fondo" >
+                    <img style="max-width:150px; max-height:150px;" src="{{libro.image.url}}"  alt="fondo" >
                     <!-- -->
                     <br> 
                     <p> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </p>
@@ -176,7 +188,7 @@
                     <div>
                         <a href="/solicitar_cambio/">{{libro.title}}</a>
                         <br>
-                        <img style="max-width:275px; max-height:275px;" src="{{libro.image.url}}"  alt="fondo" >
+                        <img style="max-width:150px; max-height:150px;" src="{{libro.image.url}}"  alt="fondo" >
                         <!-- -->
                         <br> 
                         <p> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </p>
@@ -190,7 +202,7 @@
                     <div>
                         <a href="/libro_capitulo/{{libro.isbn}}">{{libro.title}}</a>
                         <br>
-                        <img style="max-width:275px; max-height:275px;" src="{{libro.image.url}}"  alt="fondo" >
+                        <img style="max-width:150px; max-height:150px;" src="{{libro.image.url}}"  alt="fondo" >
                         <!-- -->
                         <br> 
                         <p> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </p>
@@ -208,10 +220,6 @@
         {% else %}
         <p>No hay libros dados de alta disponibles</p>
         {% endif %}
-
-
-
-
 
     </ul>
 
@@ -258,6 +266,7 @@
         </li>
     {% endfor %}        
     {% endif %}
+
 
 {% else %}
         {% if request.session.user == True %}

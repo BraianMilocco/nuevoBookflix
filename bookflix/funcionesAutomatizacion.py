@@ -29,39 +29,105 @@ def darDeBajaUsuarios(objectAccounts):
             acc.save()
             
 from random import randint, uniform
+import random
 
 
-def randomCood(num):
-    unique_id = random.randint(0,(num-1))
-    return unique_id
 
+    
 def recomendados(perfil):
+    lib= Book.objects.all()
+    def randomCood(num):
+        if num >= 1:
+            unique_id = random.randint(0,(num-1))
+            return unique_id
+        return num
+#Primero selecciono unlibros que el usuario leyo, de forma random
     try:
-        estados= StateOfBook.objects.filter(profile=perfil, state='finished').values('book')
+        estados= StateOfBook.objects.filter(profile_id =perfil.id, state='finished').values('book')
+        
         libros_leidos=[]
         for i in estados:
-            libros_leidos.append(Book.objects.filter(id__in=i))
-        libroARandom= libros_leidos[randomCood(len(libros_leidos))]
+            libros_leidos.append(Book.objects.get(id = i['book']))
+    #Aqui saco el libro random leido para buscar otros con características similares
+        
+        libroARandom=libros_leidos[randomCood(len(libros_leidos))]
 
-        #queSeleccionar= randomCood(9)
-
-        #if queSeleccionar == 0 or queSeleccionar == 1 or queSeleccionar==2 or queSeleccionar==3:
+    #Recupero algun libro con alguno de los generos de ese libro
         generos= libroARandom.genders.all()
         aux= [ ]
         for genero in generos:
             aux.append(genero)
         genero= aux[randomCood(len(aux))]
-        librosConEseGenero= Book.objects.exclude(id__in=libros_leidos.id).filter(genders=genero)
-        if len(librosConEseGenero)>0:
-            return librosConEseGenero[randomCood(len(librosConEseGenero))]
-
-        #elif queSeleccionar == 4 or queSeleccionar==5 or queSeleccionar==6:
+            
+        librosConEseGenero= set(Book.objects.filter(genders=genero, mostrar_en_home=True)) - set(libros_leidos)
+        librosDeEseGenero=librosConEseGenero
         
-        #else:
+    #Recupero Algun Libro de esa Editorial
+        editorial= libroARandom.editorial
+        
+        librosConEsaEditorial= set(Book.objects.filter(editorial=editorial, mostrar_en_home=True)) - set(libros_leidos)
+        librodeEsaEditorial= librosConEsaEditorial
+        
+    #Recupero Libro de Ese Autor
+        autor= libroARandom.author
+        librosConEseAutor= set(Book.objects.filter(author=autor, mostrar_en_home=True)) - set(libros_leidos)
+        libroDeEseAutor=librosConEseAutor
 
+        auxiliar=  librodeEsaEditorial | libroDeEseAutor | librosDeEseGenero
+
+        if len(auxiliar)> 0:
+            return auxiliar
+        return  ( set(lib) - set(libros_leidos) )
+       
+    except:
+        
+        return  set(lib)
+
+def recomendadosCap(perfil):
+    lib= BookByChapter.objects.all()
+    
+    def randomCood(num):
+        if num >= 1:
+            unique_id = random.randint(0,(num-1))
+            return unique_id
+        return num
+#Primero selecciono unlibros que el usuario leyo, de forma random
+    try:
+        estados= StateOfBookByChapter.objects.filter(profile_id =perfil.id, state='finished').values('book')
+        
+        libros_leidos=[]
+        for i in estados:
+            libros_leidos.append(BookByChapter.objects.get(id = i['book']))
+    #Aqui saco el libro random leido para buscar otros con características similares
+        
+        libroARandom=libros_leidos[randomCood(len(libros_leidos))]
+
+    #Recupero algun libro con alguno de los generos de ese libro
+        generos= libroARandom.genders.all()
+        aux= [ ]
+        for genero in generos:
+            aux.append(genero)
+        genero= aux[randomCood(len(aux))]
+            
+        librosConEseGenero= set(BookByChapter.objects.filter(genders=genero, mostrar_en_home=True)) - set(libros_leidos)
+        librosDeEseGenero=librosConEseGenero
+        
+    #Recupero Algun Libro de esa Editorial
+        editorial= libroARandom.editorial
+        
+        librosConEsaEditorial= set(BookByChapter.objects.filter(editorial=editorial, mostrar_en_home=True)) - set(libros_leidos)
+        librodeEsaEditorial= librosConEsaEditorial
+        
+    #Recupero Libro de Ese Autor
+        autor= libroARandom.author
+        librosConEseAutor= set(BookByChapter.objects.filter(author=autor, mostrar_en_home=True)) - set(libros_leidos)
+        libroDeEseAutor=librosConEseAutor
+
+        auxiliar=  librodeEsaEditorial | libroDeEseAutor | librosDeEseGenero
+        if len(auxiliar)> 0:
+            return auxiliar
+        return  ( set(lib) - set(libros_leidos) )
 
     except:
-        return Book.objects.all()
-
-
-#def recomendadosCapitulo(perfil):
+       
+        return  set(lib)
