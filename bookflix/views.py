@@ -128,6 +128,14 @@ def buscarPorIsbs(request, isbn):                       #mmmm me parece que va a
     libros = Book.object.filter(isbn=isbn)
     return render(request, welcome, {"libros":libros}) 
 
+import random
+
+def randomCood(num):
+        if num >= 1:
+            unique_id = random.randint(0,(num-1))
+            return unique_id
+        return num
+
 def welcome(request):
     perfil= Profile.objects.get(id= request.session["perfil_ayuda"])
     context={}
@@ -137,8 +145,19 @@ def welcome(request):
     trailers = Trailer.objects.filter(mostrar_en_home=True)
     historial_libros = StateOfBookByChapter.objects.filter(state="reading", profile=perfil) #, profile=request.session.nombrePerfil
     historial_libros_cap = StateOfBook.objects.filter(state="reading", profile=perfil)
-    context['recomendacion']= recomendados(perfil)
-    #context['recomendacionCapitulo']= recomendadosCapitulo(perfil)
+    
+    auxLibro=recomendados(perfil)
+    auxLibroCap= recomendadosCap(perfil)
+
+    
+    while len(auxLibro) > 3:
+        auxLibro.pop()
+
+    while len(auxLibroCap) > 3:
+        auxLibroCap.pop()
+
+    context['recomendacion']= auxLibro
+    context['recomendacionCapitulo']= auxLibroCap
     context['publicaciones']=publicacion
     context['trailers']= trailers
     context['libros']=libros
