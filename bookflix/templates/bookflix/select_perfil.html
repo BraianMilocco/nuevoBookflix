@@ -11,9 +11,9 @@
                 {% for perfil in perfiles %} 
        
                     <p>
-                        {#<a style="margin: 10;" href="/">-{{ perfil.name }}</a>  #}
                         <a style="margin: 10;" href="/perfil_seleccionado/{{perfil.id}}">{{perfil.name}}</a>  
-                        <a href="/cambiar_nombre/{{perfil.name}}">Cambiar Nombre</a>
+                        <a style="font-size: 15px; margin-left: 15px;" href="/cambiar_nombre/{{perfil.name}}">Cambiar Nombre</a>
+                        <a style="font-size: 12px; margin: 15px;" href="/borrar_perfil/{{perfil.name}}">Borrar Perfil</a>
                     </p>
        
                 {% endfor %}
@@ -27,10 +27,9 @@
                 {% for perfil in perfiles %} 
 
                     <p>
-                        {#<a style="margin: 10;" href="/">-{{ perfil.name }}</a>  #}
                         <a style="margin: 10;" href="/perfil_seleccionado/{{perfil.id}}">{{perfil.name}}</a>  
-                        <a href="/cambiar_nombre/{{perfil.name}}">Cambiar Nombre</a>
-                        
+                        <a style="font-size: 15px; margin-left: 15px;" href="/cambiar_nombre/{{perfil.name}}">Cambiar Nombre</a>
+                        <a style="font-size: 12px; margin: 15px;" href="/borrar_perfil/{{perfil.name}}">Borrar Perfil</a>
                     </p>
 
                 {% endfor %}
@@ -48,7 +47,7 @@
                 {% for perfil in perfiles %} 
 
                     <p>
-                        {#<a style="margin: 10;" href="/">-{{ perfil.name }}</a>  #}
+                        
                         <a style="margin: 10;" href="/perfil_seleccionado/{{perfil.id}}">{{perfil.name}}</a>  
                         <a style="font-size: 15px; margin-left: 15px;" href="/cambiar_nombre/{{perfil.name}}">Cambiar Nombre</a>
                         <a style="font-size: 12px; margin: 15px;" href="/borrar_perfil/{{perfil.name}}">Borrar Perfil</a>
