@@ -286,8 +286,8 @@ def cambiar_tarjeta(request):
             bankT=form.cleaned_data.get("bank")
             t= CreditCards.objects.get(user= request.user).delete()
             tarjeta= CreditCards(number=numT, cod=codT, date_expiration=dateT, card_name=cardName, bank=bankT, user=request.user)
-            tarjeta_vieja = CreditCards.objects.get(user=request.user)
-            tarjeta_vieja.delete()
+            #tarjeta_vieja = CreditCards.objects.get(user=request.user)
+            #tarjeta_vieja.delete()
             tarjeta.save()
 
             tarjeta_usada= CreditCardsUsed(number=numT, cod=codT, date_expiration=dateT, card_name=cardName, bank=bankT)
@@ -907,7 +907,8 @@ def listar_favoritos(request):
     perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
     libros_favoritos = LibroFavorito.objects.filter(profile=perfil)
     libros_por_capitulo_favoritos = LibroPorCapituloFavorito.objects.filter(profile=perfil)
-    return render(request,"bookflix/listar_favoritos.html", {"libros_favoritos":libros_favoritos, "libros_por_capitulo_favoritos":libros_por_capitulo_favoritos})
+    capitulos_favoritos = CapituloFavorito.objects.filter(profile=perfil)
+    return render(request,"bookflix/listar_favoritos.html", {"libros_favoritos":libros_favoritos, "libros_por_capitulo_favoritos":libros_por_capitulo_favoritos,"capitulos_favoritos":capitulos_favoritos})
 
 def agregar_a_leyendo(request,isbn):
     perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
@@ -1053,6 +1054,10 @@ def borrar_perfil(request,perfil):
 def borrar_perfil_definitivo(request,perfil):
     perfil_a_borrar = Profile.objects.get(account=request.user, name=perfil)
     perfil_a_borrar.delete()
+    request.session["perfil_ayuda"] = False
+    request.session['nombrePerfil']= False
+    request.session['perfil_actual']= None
+    request.session.modified = True
     return redirect(to="/select_perfil")
 
 def borrar_cuenta(request):
@@ -1105,8 +1110,11 @@ def mas_leidos (request):
     return render(request,'bookflix/mas_leidos.html', {"libros":libros})
 
 def mostrar_tiempos(request):
-    cuentas = Account.objects.exclude(time_pay= 0)
-    cuentas = sorted(cuentas, key=lambda  Account : (Account.date_start_plan + timedelta(days=Account.time_pay)) - datetime.datetime.now().date())
+    try:
+        cuentas = Account.objects.exclude(time_pay= 0)
+        cuentas = sorted(cuentas, key=lambda  Account : (Account.date_start_plan + timedelta(days=Account.time_pay)) - datetime.datetime.now().date())
+    except Account.DoesNotExist:
+        cuentas = None    
     return render (request,"bookflix/mostrar_tiempos.html",{"cuentas":cuentas})
 
 

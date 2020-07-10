@@ -12,10 +12,10 @@
 #navegador li{
    display: inline;
    text-align: center;
-   margin-top: 10px;
+   
 }
 #navegador li a {
-   padding: 2px 3px 2px 3px;
+   padding: 2px 2px 2px 2px;
    color: #666;
    background-color: #eeeeee;
    border: 1px solid #ccc;
@@ -53,7 +53,11 @@ td.first {
     <div id="navegador">
       {% if request.user.is_active %}
          <ul>
+            {% if not request.session.nombrePerfil == False %}
             <li style="padding: 2px 3px 2px 3px;color: #666;background-color: #eeeeee;border: 1px solid #ccc;text-decoration: none;border-radius: 10px 10px 10px 10px;margin-right: 30px;">Perfil Actual: {{request.session.nombrePerfil}}</li>
+            {%else%}
+            <li style="padding: 2px 3px 2px 3px;color: #666;background-color: #eeeeee;border: 1px solid #ccc;text-decoration: none;border-radius: 10px 10px 10px 10px;margin-right: 30px;">Seleccione Perfil</li>
+            {%endif%}
             <li><a href="/perfil">Cuenta</a></li>     
             <li><a href="/ ">Home</a></li>
             <li><a href="/buscar ">Buscar</a></li>

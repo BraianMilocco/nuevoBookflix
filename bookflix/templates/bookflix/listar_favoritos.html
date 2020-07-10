@@ -73,5 +73,27 @@
 
 </ul>
 
+
+<ul id="favoritos">
+
+    {% if capitulos_favoritos %}
+        {% for capitulo in capitulos_favoritos %}
+            <li style="display: inline-block;"> 
+                <p>{{capitulo.titulo_capitulo}} </p>
+                del libro:
+                <a href="/libro_capitulo/{{capitulo.book.isbn}}">{{capitulo.book.title}}</a> 
+                <br>
+                <img style="max-width:275px; max-height:275px;" src="{{capitulo.book.image.url}}"  alt="fondo" >
+                <br>
+            </li>
+        {% endfor %}
+    {% else %}
+        <h2></h2>
+        <p>No hay capitulos agregados a favoritos</p>
+    {% endif %}
+
+</ul>
+ <hr>
+
 </body>
 </html>

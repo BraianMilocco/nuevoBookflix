@@ -37,7 +37,7 @@
 
 {% include "bookflix/barra.html" %}
 
-{% if request.session.nombrePerfil %}
+{% if request.session.nombrePerfil  %}
 
     <h1 style="color: black;">
         {# <p> {{request.session.nombrePerfil}}</p> #}      
@@ -47,34 +47,40 @@
     <hr>
     <ul id="libros";>
         {% if historial_libros %}
-        <h2>Libros por capitulo que está leyendo</h2>
-        {% for libro in historial_libros %}
-            <li style="display:inline-block; margin: 20px;">
-                <div>
-                    <h3>El perfil {{libro.profile}} añadio el libro: <br> <a href="/leer_libro/{{libro.book.isbn}}">{{libro.book.title}}</a> <br> a {{libro.state}}</h3>
-                    <br>
-                    <img style="max-width:275px; max-height:275px;" src="{{libro.book.image.url}}"  alt="fondo" > 
-                </div>
-                <br>
-            </li>
-        {% endfor %}
-    {% endif %}
+            {% if not request.user.plan == "free"  %}
+                <h2>Libros por capitulo que está leyendo</h2>
+                {% for libro in historial_libros %}
+                    <li style="display:inline-block; margin: 20px;">
+                        <div>
+                            <h3>El perfil {{libro.profile}} añadio el libro: <br> <a href="/libro_capitulo/{{libro.book.isbn}}">{{libro.book.title}}</a> <br> a leyendo</h3>
+                            <br>
+                            <img style="max-width:275px; max-height:275px;" src="{{libro.book.image.url}}"  alt="fondo" > 
+                        </div>
+                        <br>
+                    </li>
+                {% endfor %}
+            {% else %}
+
+            {% endif %}
+        {% endif %}
 
 
 
 
     {% if historial_libros_cap %}
-    <h2>Libros que está leyendo</h2>
-    {% for libro in historial_libros_cap %}
-        <li style="display:inline-block; margin: 20px;">
-            <div>
-                <h3>El perfil {{libro.profile}} añadio el libro: <br> {{libro.book}} <br> a leyendo</h3>
-                <br>
-                <img style="max-width:275px; max-height:275px;" src="{{libro.book.image.url}}"  alt="fondo" > 
-            </div>
-            <br>
-        </li>
-    {% endfor %}        
+        {% if not request.user.plan == "free"  %}
+        <h2>Libros que está leyendo</h2>
+            {% for libro in historial_libros_cap %}
+                <li style="display:inline-block; margin: 20px;">
+                    <div>
+                        <h3>El perfil {{libro.profile}} añadio el libro: <br> <a href="/leer_libro/{{libro.book.isbn}}">{{libro.book.title}}</a> <br> a leyendo</h3>
+                        <br>
+                        <img style="max-width:275px; max-height:275px;" src="{{libro.book.image.url}}"  alt="fondo" > 
+                    </div>
+                    <br>
+                </li>
+            {% endfor %}        
+        {% endif %}
     {% endif %}
         
         <h3>Recomendaciones Personalizadas de Libros</h3>
@@ -99,12 +105,14 @@
                 <br>
                 Género(s): {%for genero in libro.genders.all %}
                             | {{genero.name}} |
-                <br> <a>Editorial: {{libro.editorial}}</a>
+                
                         {% endfor %}
+                        <br> <a>Editorial: {{libro.editorial}}</a>
             </li>{%endfor%} </div>
+            
 
         {% if libros %}
-        <p> <h3>Libros que no leyó</h3></p>
+        <p> <h3>Libros que le pueden interesar</h3></p>
         {% for libro in libros %}
         <li >
             
@@ -181,7 +189,7 @@
     <ul id="libros";>
 
         {% if libros_cap %}
-        <h2>Libros Por Capítulo que no leyó</h2>
+        <h2>Libros Por Capítulo que le pueden interesar</h2>
         {% for libro in libros_cap %}
         <li >
                 {% if request.user.plan == "free"  %}
@@ -255,7 +263,10 @@
 
 
 {% else %}
-        {% if request.session.user == True %}
+        {% if request.user.email == None %}
+            <h1>Debe estar logueado</h1>
+            <a href="/login">Login</a>
+        {% else %}
             <h1>Debe elegir un perfil para poder acceder al home</h1>
             <a href="/select_perfil">Ir a Perfiles</a>
         {% endif %}
