@@ -968,7 +968,7 @@ def terminar_libro(request,isbn):
     variable = StateOfBook.objects.get(book=libro, profile=perfil)
     variable.state="finished"
     variable.save()
-    return redirect(to="/libro_capitulo/"+ str(isbn))
+    return redirect(to="/leer_libro/"+ str(isbn))
 
 def terminar_libro_cap(request,isbn):
     perfil = Profile.objects.get(id=request.session["perfil_ayuda"])

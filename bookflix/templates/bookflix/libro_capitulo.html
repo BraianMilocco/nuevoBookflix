@@ -45,17 +45,25 @@
                    
                 
                     {% if request.session.lectura_otro_perfil == False %}
-                    
+                        
                         {% for capitulo in capitulos %}
-                                    {{capitulo.favorito}}
-                                    {{favoritos}}
+                        {% with my_var="False" %} {% endwith %}
+                                    {% for favorito in favoritos %}
+                                        {% if favorito.titulo_capitulo == capitulo.title %}
+                                            {% with my_var="True" %} {% endwith %}
+                                        {% endif %}
                                     {% if capitulo.title in favoritos.titulo_capitulo %}
                                         una cosa
                                     {% else %}
                                         otra cosa
                                     {% endif %}
-
-                                    
+                                {% endfor %}
+                                    {% if my_var == True %}
+                                        hola
+                                    {% else %}
+                                        chau
+                                    {% endif %}
+                                {{my_var}}
                                         
                                     
 
