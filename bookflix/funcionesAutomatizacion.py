@@ -44,14 +44,16 @@ def recomendados(perfil):
 #Primero selecciono unlibros que el usuario leyo, de forma random
     try:
         estados= StateOfBook.objects.filter(profile_id =perfil.id, state='finished').values('book')
-        
+        estados2= StateOfBook.objects.filter(profile_id =perfil.id, state='reading').values('book')
         libros_leidos=[]
         for i in estados:
             libros_leidos.append(Book.objects.get(id = i['book']))
     #Aqui saco el libro random leido para buscar otros con características similares
         
         libroARandom=libros_leidos[randomCood(len(libros_leidos))]
-
+        for i in estados2:
+            libros_leidos.append(Book.objects.get(id = i['book']))
+            
     #Recupero algun libro con alguno de los generos de ese libro
         generos= libroARandom.genders.all()
         aux= [ ]
@@ -94,14 +96,15 @@ def recomendadosCap(perfil):
 #Primero selecciono unlibros que el usuario leyo, de forma random
     try:
         estados= StateOfBookByChapter.objects.filter(profile_id =perfil.id, state='finished').values('book')
-        
+        estados2= StateOfBookByChapter.objects.filter(profile_id =perfil.id, state='reading').values('book')
         libros_leidos=[]
         for i in estados:
             libros_leidos.append(BookByChapter.objects.get(id = i['book']))
     #Aqui saco el libro random leido para buscar otros con características similares
         
         libroARandom=libros_leidos[randomCood(len(libros_leidos))]
-
+        for i in estados2:
+            libros_leidos.append(BookByChapter.objects.get(id= i['book']))
     #Recupero algun libro con alguno de los generos de ese libro
         generos= libroARandom.genders.all()
         aux= [ ]

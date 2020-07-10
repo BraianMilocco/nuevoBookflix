@@ -45,10 +45,30 @@
                    
                 
                     {% if request.session.lectura_otro_perfil == False %}
+                    
                         {% for capitulo in capitulos %}
-                            <object data="{{capitulo.pdf.url}}" type="application/x-pdf" title="{{libro.title}}" width="500" height="720">
-                                <a href="{{capitulo.pdf.url}}">[⠀{{capitulo.title}}⠀||</a> <a href="/agregar_cap_a_leyendo/{{libro.isbn}}">Agregar a leyendo⠀]</a>
-                            </object>
+                                    {{capitulo.favorito}}
+                                    {{favoritos}}
+                                    {% if capitulo.title in favoritos.titulo_capitulo %}
+                                        una cosa
+                                    {% else %}
+                                        otra cosa
+                                    {% endif %}
+
+                                    
+                                        
+                                    
+
+
+                               
+                                <a href="{{capitulo.pdf.url}}">[⠀{{capitulo.title}}⠀||</a> 
+                                {% if agregar_favorito == True %}
+                                    <a href="/agregar_cap_favoritos/{{libro.isbn}}/{{capitulo.title}}">Agregar a favoritos]</a> 
+                                {% else %}
+                                    <a style="margin-top:30px;margin-bottom: 30px;" href="/quitar_cap_favoritos/{{libro.isbn}}/{{capitulo.title}} "> Quitar de Favoritos</a>
+                            
+                                {% endif %}
+                
                         {% endfor %}
                         <br>
                         {% if terminado == False  %}
@@ -78,9 +98,9 @@
                         </div>
 
                     {% else %}
-                    <div>
+                    
                         <a style="margin-top:30px;margin-bottom: 30px;" href="/quitar_libro_cap/{{libro.isbn}}"> Quitar de Favoritos</a>
-                    </div>
+                    
                     {% endif %}
                     {% else %}
 

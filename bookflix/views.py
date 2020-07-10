@@ -636,9 +636,10 @@ def leer_libro(request,isbn):
             context['comenzado']= comenzado
             context['terminado']= True
 
+
             ##
-            state = StateOfBook.objects.get(state="finished", profile=perfil, book= libro.id)
-            context['terminado']= True
+            #state = StateOfBook.objects.get(state="finished", profile=perfil, book= libro.id)
+            #context['terminado']= True
 
      try:
         estado = StateOfBook.objects.get(state="finished", profile=request.session["perfil_ayuda"])
@@ -792,8 +793,23 @@ def leer_libro_por_capitulo(request,isbn):
      except StateOfBookByChapter.DoesNotExist:
         context['agregar_futura_lectura'] = True 
 
+     
 
+    #Acá intente algo rancio para agarrar caps favoritos, ver después
+    #  cap_fav_actual = 1
+    #  capitulos=[]
+    #  for i in range (0,libro.cant_chapter): 
+    #     try: 
+    #         CapituloFavorito.objects.get(book=libro, number=cap_actual) 
+    #         CapituloFavorito.append(Chapter.objects.get(book=libro, number=cap_actual))
+    #         cap_fav_actual = cap_fav_actual + 1
+    #     except CapituloFavorito.DoesNotExist: 
+    #         pass
 
+     favoritos = CapituloFavorito.objects.filter(profile=perfil, book=libro).values("titulo_capitulo")
+     #for favorito in favoritos:
+        #context[str(favorito.titulo)] = favorito.titulo
+     context["favoritos"]= favoritos
      return render(request,"bookflix/libro_capitulo.html",context) 
 
 
@@ -854,6 +870,15 @@ def agregar_libro_cap_favoritos(request,isbn):
     return redirect(to="/libro_capitulo/"+ str(isbn))
 
 
+def agregar_cap_favoritos(request,isbn,titulo):
+    perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+    libro = BookByChapter.objects.get(isbn=isbn)
+    capitulo = Chapter.objects.get(book=libro, title=titulo)
+    favorito = CapituloFavorito(profile=perfil, book=libro, titulo_capitulo=titulo, capitulo=capitulo)
+    favorito.save()
+    return redirect(to="/libro_capitulo/"+ str(isbn))
+
+
 def quitar_libro(request,isbn):
     perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
     favorito = LibroFavorito.objects.get(isbn=isbn, profile=perfil)
@@ -864,6 +889,15 @@ def quitar_libro(request,isbn):
 def quitar_libro_cap(request,isbn):
     perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
     favorito = LibroPorCapituloFavorito.objects.get(isbn=isbn, profile=perfil)
+    favorito.delete()
+    return redirect(to="/libro_capitulo/"+ str(isbn))
+
+
+def quitar_cap_favoritos(request,isbn,titulo):
+    perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
+    libro = BookByChapter.objects.get(isbn=isbn)
+    capitulo = Chapter.objects.get(book=libro, title=titulo)
+    favorito = CapituloFavorito.objects.get(profile=perfil, book=libro, titulo_capitulo=titulo, capitulo=capitulo)
     favorito.delete()
     return redirect(to="/libro_capitulo/"+ str(isbn))
 

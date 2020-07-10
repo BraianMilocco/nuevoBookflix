@@ -43,10 +43,39 @@
         {# <p> {{request.session.nombrePerfil}}</p> #}      
 
     </h1>
-
+    
     <hr>
     <ul id="libros";>
+        {% if historial_libros %}
+        <h2>Libros por capitulo que está leyendo</h2>
+        {% for libro in historial_libros %}
+            <li style="display:inline-block; margin: 20px;">
+                <div>
+                    <h3>El perfil {{libro.profile}} añadio el libro: <br> <a href="/leer_libro/{{libro.book.isbn}}">{{libro.book.title}}</a> <br> a {{libro.state}}</h3>
+                    <br>
+                    <img style="max-width:275px; max-height:275px;" src="{{libro.book.image.url}}"  alt="fondo" > 
+                </div>
+                <br>
+            </li>
+        {% endfor %}
+    {% endif %}
 
+
+
+
+    {% if historial_libros_cap %}
+    <h2>Libros que está leyendo</h2>
+    {% for libro in historial_libros_cap %}
+        <li style="display:inline-block; margin: 20px;">
+            <div>
+                <h3>El perfil {{libro.profile}} añadio el libro: <br> {{libro.book}} <br> a leyendo</h3>
+                <br>
+                <img style="max-width:275px; max-height:275px;" src="{{libro.book.image.url}}"  alt="fondo" > 
+            </div>
+            <br>
+        </li>
+    {% endfor %}        
+    {% endif %}
         
         <h3>Recomendaciones Personalizadas de Libros</h3>
         <div> {%for libro in recomendacion%}
@@ -223,49 +252,6 @@
 
     </ul>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    {% if historial_libros %}
-        <h2>Libros Que está leyendo</h2>
-        {% for libro in historial_libros %}
-            <li style="display:inline-block; margin: 20px;">
-                <div>
-                    <h3>El perfil {{libro.profile}} añadio el libro: <br> <a href="/leer_libro/{{libro.book.isbn}}">{{libro.book.title}}</a> <br> a {{libro.state}}</h3>
-                    <br>
-                    <img style="max-width:275px; max-height:275px;" src="{{libro.book.image.url}}"  alt="fondo" > 
-                </div>
-                <br>
-            </li>
-        {% endfor %}
-    {% endif %}
-
-
-
-
-    {% if historial_libros_cap %}
-    <h2>Libros por capítulo que está leyendo</h2>
-    {% for libro in historial_libros_cap %}
-        <li style="display:inline-block; margin: 20px;">
-            <div>
-                <h3>El perfil {{libro.profile}} añadio el libro: <br> {{libro.book}} <br> a {{libro.state}}</h3>
-                <br>
-                <img style="max-width:275px; max-height:275px;" src="{{libro.book.image.url}}"  alt="fondo" > 
-            </div>
-            <br>
-        </li>
-    {% endfor %}        
-    {% endif %}
 
 
 {% else %}

@@ -49,7 +49,7 @@ class UserCreationForm(forms.ModelForm):
 
 admin.site.register(Account, AccountAdmin)
 
-admin.site.register(CapituloLeyendose)
+admin.site.register(CapituloFavorito)
 
 admin.site.register(Author)
 admin.site.register(Gender)
