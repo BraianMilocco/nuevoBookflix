@@ -86,7 +86,11 @@
         <h3>Recomendaciones Personalizadas de Libros</h3>
         <div> {%for libro in recomendacion%}
             <li>
-                <a href="/leer_libro/{{libro.isbn}}">  {{libro.title}} </a> 
+                {% if request.user.plan == "free"  %}
+                    <a href="/solicitar_cambio/">{{libro.title}}</a> 
+                {% else %}
+                    <a href="/leer_libro/{{libro.isbn}}">  {{libro.title}} </a>
+                {% endif %}
                 <br> <img style="max-width:150px; max-height:150px;" src="{{libro.image.url}}"  alt="fondo" >
                 <br>  <a> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </a>
                 <br>
@@ -97,9 +101,15 @@
                 <br> <a>Editorial: {{libro.editorial}} </a>
             </li>        
             {%endfor%} </div>
+
+
             <h3>Recomendaciones personalizadas de Libros Por Capitulo</h3>
             <div>{%for libro in recomendacionCapitulo%}<li>
-                <a href="/libro_capitulo/{{libro.isbn}}">  {{libro.title}} </a> 
+                {% if request.user.plan == "free"  %}
+                    <a href="/solicitar_cambio/">{{libro.title}}</a> 
+                {% else %}
+                    <a href="/libro_capitulo/{{libro.isbn}}">  {{libro.title}} </a>
+                {% endif %}
                 <br> <img style="max-width:150px; max-height:150px;" src="{{libro.image.url}}"  alt="fondo" >
                 <br>  <a> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </a>
                 <br>
