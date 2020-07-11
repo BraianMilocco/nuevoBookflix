@@ -567,7 +567,7 @@ class CapituloFavorito(models.Model):
         verbose_name_plural = "Capitulos Leyéndose"
 
     def __str__(self):
-        return self.book.title + self.book.isbn 
+        return self.titulo_capitulo + "⠀del libro:⠀" +self.book.title 
 
 
 

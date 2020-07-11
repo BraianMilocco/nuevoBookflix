@@ -258,7 +258,51 @@
         <p>No hay libros dados de alta disponibles</p>
         {% endif %}
 
+
+
+
+        <ul id="libros";>
+            {% if futuras_lecturas %}
+                {% if not request.user.plan == "free"  %}
+                    <h2>Libros agregados a futuras lecturas:</h2>
+                    {% for libro in futuras_lecturas %}
+                        <li style="display:inline-block; margin: 20px;">
+                            <div>
+                                <h3>El perfil {{libro.profile}} añadio el libro: <br> <a href="/libro_capitulo/{{libro.book.isbn}}">{{libro.book.title}}</a> <br> a leyendo</h3>
+                                <br>
+                                <img style="max-width:275px; max-height:275px;" src="{{libro.book.image.url}}"  alt="fondo" > 
+                            </div>
+                            <br>
+                        </li>
+                    {% endfor %}
+                {% else %}
+    
+                {% endif %}
+            {% endif %}
+
+
+            <ul id="libros";>
+                {% if futuras_lecturas_por_cap %}
+                    {% if not request.user.plan == "free"  %}
+                        <h2>Libros por capitulo agregados a futuras lecturas</h2>
+                        {% for libro in futuras_lecturas_por_cap %}
+                            <li style="display:inline-block; margin: 20px;">
+                                <div>
+                                    <h3>El perfil {{libro.profile}} añadio el libro: <br> <a href="/libro_capitulo/{{libro.book.isbn}}">{{libro.book.title}}</a> <br> a leyendo</h3>
+                                    <br>
+                                    <img style="max-width:275px; max-height:275px;" src="{{libro.book.image.url}}"  alt="fondo" > 
+                                </div>
+                                <br>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+        
+                    {% endif %}
+                {% endif %}
+
     </ul>
+
+
 
 
 

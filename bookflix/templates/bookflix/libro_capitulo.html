@@ -1,6 +1,8 @@
 {% load static %}
+{% with end_loop="True" %}
 <html>
     <body>
+        
         {% include "bookflix/barra.html" %}        
         <div style= "margin: auto; margin: 50px;">
             <div style="display: inline;">
@@ -45,38 +47,43 @@
                    
                 
                     {% if request.session.lectura_otro_perfil == False %}
-                        
+                    
                         {% for capitulo in capitulos %}
-                        {% with my_var="False" %} {% endwith %}
-                                    {% for favorito in favoritos %}
-                                        {% if favorito.titulo_capitulo == capitulo.title %}
-                                            {% with my_var="True" %} {% endwith %}
-                                        {% endif %}
-                                    {% if capitulo.title in favoritos.titulo_capitulo %}
-                                        una cosa
-                                    {% else %}
-                                        otra cosa
-                                    {% endif %}
-                                {% endfor %}
-                                    {% if my_var == True %}
-                                        hola
-                                    {% else %}
-                                        chau
-                                    {% endif %}
-                                {{my_var}}
-                                        
+                        {# {capitulo.title}} y {{favoritos.0.titulo_capitulo} #} 
+                            {% if capitulo in capitulos %}
+                             
+                            <br>
+                                [<a href="{{capitulo.pdf.url}}">{{capitulo.title}}⠀</a>||
+                                
+                                
+
+                                
+                                {% if favoritos %}
+                                
+                                {% for favorito in favoritos %}
                                     
+                                    
+                                
+                                    {% if capitulo.title in favorito.titulo_capitulo %}
+                                    
+                                        <a style="margin-top:30px;margin-bottom: 30px;" href="/quitar_cap_favoritos/{{libro.isbn}}/{{capitulo.title}} "> Quitar de Favoritos</a>]
+                                        {#{  end_loop  }#}
+                                    {% elif forloop.last and not capitulo.title in favoritos.0.titulo_capitulo and not capitulo.title in favoritos.1.titulo_capitulo and not capitulo.title in favoritos.2.titulo_capitulo and not capitulo.title in favoritos.3.titulo_capitulo and not capitulo.title in favoritos.4.titulo_capitulo  and not capitulo.title in favoritos.5.titulo_capitulo  and not capitulo.title in favoritos.6.titulo_capitulo and not capitulo.title in favoritos.7.titulo_capitulo and not capitulo.title in favoritos.8.titulo_capitulo and not capitulo.title in favoritos.9.titulo_capitulo and not capitulo.title in favoritos.10.titulo_capitulo %}  {# % elif forloop.last  and not capitulo.title in favorito.titulo_capitulo  % #}
+                                        <a href="/agregar_cap_favoritos/{{libro.isbn}}/{{capitulo.title}}">Agregar a favoritos</a>]
+                                        
+                                    {% endif %}
+                                    
+                                {% endfor %}
+                            {% else %}
+                            <a href="/agregar_cap_favoritos/{{libro.isbn}}/{{capitulo.title}}">Agregar a favoritos]</a>
+                            {% endif %}
 
-
-                               
-                                <a href="{{capitulo.pdf.url}}">[⠀{{capitulo.title}}⠀||</a> 
-                                {% if agregar_favorito == True %}
-                                    <a href="/agregar_cap_favoritos/{{libro.isbn}}/{{capitulo.title}}">Agregar a favoritos]</a> 
-                                {% else %}
-                                    <a style="margin-top:30px;margin-bottom: 30px;" href="/quitar_cap_favoritos/{{libro.isbn}}/{{capitulo.title}} "> Quitar de Favoritos</a>
                             
-                                {% endif %}
-                
+
+
+                            {% endif %}
+                            
+
                         {% endfor %}
                         <br>
                         {% if terminado == False  %}
@@ -107,7 +114,7 @@
 
                     {% else %}
                     
-                        <a style="margin-top:30px;margin-bottom: 30px;" href="/quitar_libro_cap/{{libro.isbn}}"> Quitar de Favoritos</a>
+                        <a style="margin-top:30px;margin-bottom: 30px;" href="/quitar_libro_cap/{{libro.isbn}}"> Quitar de Favoritos]</a>
                     
                     {% endif %}
                     {% else %}
@@ -179,6 +186,7 @@
         
 
         {%endfor%}
-
+               
     </body>
+    {% endwith %}
 </html>

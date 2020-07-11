@@ -148,6 +148,8 @@ def welcome(request):
     trailers = Trailer.objects.filter(mostrar_en_home=True)
     historial_libros = StateOfBookByChapter.objects.filter(state="reading", profile=perfil) #, profile=request.session.nombrePerfil
     historial_libros_cap = StateOfBook.objects.filter(state="reading", profile=perfil)
+    futuras_lecturas = StateOfBook.objects.filter(state="future_reading", profile=perfil)
+    futuras_lecturas_por_cap = StateOfBookByChapter.objects.filter(state="future_reading", profile=perfil)
     
     auxLibro=recomendados(perfil)
     auxLibroCap= recomendadosCap(perfil)
@@ -160,7 +162,8 @@ def welcome(request):
     while len(auxLibroCap) > 3:
         aux3= random.choice(tuple(auxLibro))
         auxLibroCap.remove(aux3)
-
+    context['futuras_lecturas']= futuras_lecturas
+    context['futuras_lecturas_por_cap']= futuras_lecturas_por_cap
     context['recomendacion']= auxLibro
     context['recomendacionCapitulo']= auxLibroCap
     context['publicaciones']=publicacion
@@ -806,10 +809,19 @@ def leer_libro_por_capitulo(request,isbn):
     #     except CapituloFavorito.DoesNotExist: 
     #         pass
 
-     favoritos = CapituloFavorito.objects.filter(profile=perfil, book=libro).values("titulo_capitulo")
+     favoritos = CapituloFavorito.objects.filter(profile=perfil, book=libro)#.values("titulo_capitulo")
      #for favorito in favoritos:
         #context[str(favorito.titulo)] = favorito.titulo
      context["favoritos"]= favoritos
+     favoritos3=[]
+     favoritos4=[]
+     for favorito in favoritos.values('titulo_capitulo'):
+         favoritos3.append(favorito)
+        
+
+     
+     #favoritos2 = favoritos1.keys("titulo_capitulo")
+     context["favoritos2"]= favoritos3
      return render(request,"bookflix/libro_capitulo.html",context) 
 
 
@@ -873,9 +885,12 @@ def agregar_libro_cap_favoritos(request,isbn):
 def agregar_cap_favoritos(request,isbn,titulo):
     perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
     libro = BookByChapter.objects.get(isbn=isbn)
-    capitulo = Chapter.objects.get(book=libro, title=titulo)
-    favorito = CapituloFavorito(profile=perfil, book=libro, titulo_capitulo=titulo, capitulo=capitulo)
-    favorito.save()
+    try:
+        favorito = CapituloFavorito.objects.get(book=libro, profile=perfil, titulo_capitulo=titulo)
+    except CapituloFavorito.DoesNotExist:
+        capitulo = Chapter.objects.get(book=libro, title=titulo)
+        favorito = CapituloFavorito(profile=perfil, book=libro, titulo_capitulo=titulo, capitulo=capitulo)
+        favorito.save()
     return redirect(to="/libro_capitulo/"+ str(isbn))
 
 
@@ -897,8 +912,11 @@ def quitar_cap_favoritos(request,isbn,titulo):
     perfil = Profile.objects.get(id=request.session["perfil_ayuda"])
     libro = BookByChapter.objects.get(isbn=isbn)
     capitulo = Chapter.objects.get(book=libro, title=titulo)
-    favorito = CapituloFavorito.objects.get(profile=perfil, book=libro, titulo_capitulo=titulo, capitulo=capitulo)
-    favorito.delete()
+    try:
+        favorito = CapituloFavorito.objects.get(profile=perfil, book=libro, titulo_capitulo=titulo, capitulo=capitulo)
+        favorito.delete()
+    except CapituloFavorito.DoesNotExist:
+        pass
     return redirect(to="/libro_capitulo/"+ str(isbn))
 
 
