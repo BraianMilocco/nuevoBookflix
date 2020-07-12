@@ -145,27 +145,19 @@
                                     
                                         <a style="margin-top:30px;margin-bottom: 30px;" href="/agregar_a_leyendo_libro_cap/{{libro.isbn}}"> Quitar de terminado</a>
                                         <br>
-                                    <p>El valor de comenzado es:{{comenzado}}</p>
-                                    <p>y el de terminado es:{{terminado}}</p>
-                                    <p>futuras lecturas:{{agregar_futura_lectura}}</p>
+                                    
                                 {% endif %}
                             {% else %}
                                 
                                     <a style="margin-top:30px;margin-bottom: 30px;" href="/terminar_libro_cap/{{libro.isbn}}"> Terminar Libro</a>
                                     <br>
-                                <p>El valor de comenzado es: {{comenzado}} y terminado: {{terminado}} y futuras lecturas:{{agregar_futura_lectura}} </p>    
+                                    
                             {% endif %}
                         {% else %}
-                        <p>El valor de comenzado es:{{comenzado}}</p>
+                        
                     {% endif %}
 
         </div>
-
-
-            <p>El valor de comenzado es:{{comenzado}}</p>
-            <p>y el de terminado es:{{terminado}}</p>
-            <p>futuras lecturas:{{agregar_futura_lectura}}</p>
-            <p>Añadir a favoritos:{{agregar_favorito}}</p>
 
 
         </div>

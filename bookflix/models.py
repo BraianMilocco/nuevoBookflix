@@ -563,8 +563,8 @@ class CapituloFavorito(models.Model):
         return self.id
 
     class Meta:
-        verbose_name = "Capitulo Leyéndose"
-        verbose_name_plural = "Capitulos Leyéndose"
+        verbose_name = "Capitulo Favorito"
+        verbose_name_plural = "Capitulos Favoritos"
 
     def __str__(self):
         return self.titulo_capitulo + "⠀del libro:⠀" +self.book.title 
@@ -836,7 +836,7 @@ class UpDownBookByChapter(models.Model):
 
     def __str__(self):
         str(self.book)
-        return book.title
+        return self.book.title
     
 class UpDownChapter(models.Model):
     chapter = models.ForeignKey(Chapter, verbose_name=("Capitulo"), on_delete=models.CASCADE)

@@ -18,7 +18,7 @@
 
 {%endfor%}
 
-{%for coment in deLibro%}
+{%for coment in deLibroPorCap%}
     {%if not user.plan == 'free' and coment.book.mostrar_en_home %}
         {%if user.plan == 'normal' and coment.book.on_normal%} 
             <p> libroPorCapitulo: <a href="/leer_libro/{{coment.publication.isbn}}"> {{coment.book}}</a></p>

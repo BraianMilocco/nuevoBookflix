@@ -624,14 +624,14 @@ def leer_libro(request,isbn):
         try:
             perfil = Profile.objects.exclude(id=request.session["perfil_ayuda"]).get(account=request.user) #aca agrego el isbn al objeto
             try: 
-                state = StateOfBook.objects.get(state="reading", profile=perfil, book= libro.id)
+                state = StateOfBook.objects.get(state="reading", profile=perfil, book=libro.id)
                 request.session["lectura_otro_perfil"] = True
             except StateOfBook.DoesNotExist:
                 pass 
         except Profile.DoesNotExist:
             pass    
         try:
-            estado_propio = StateOfBook.objects.get(state="reading", profile=request.session["perfil_ayuda"])
+            estado_propio = StateOfBook.objects.get(state="reading", book=libro, profile=request.session["perfil_ayuda"])
             comenzado = True
             context['comenzado']= comenzado
         except StateOfBook.DoesNotExist:
@@ -645,7 +645,7 @@ def leer_libro(request,isbn):
             #context['terminado']= True
 
      try:
-        estado = StateOfBook.objects.get(state="finished", profile=request.session["perfil_ayuda"])
+        estado = StateOfBook.objects.get(state="finished", book=libro, profile=request.session["perfil_ayuda"])
         context['terminado']= True
      except:
          context['terminado']= False
@@ -669,7 +669,7 @@ def leer_libro(request,isbn):
      context['comentarios']= comentarios
      #Este try lo agregué para el Agregar y quitar de leyendo, reever en un futuro
      try:
-        estado_propio = StateOfBook.objects.get(state="reading", profile=request.session["perfil_ayuda"])
+        estado_propio = StateOfBook.objects.get(state="reading", book=libro, profile=request.session["perfil_ayuda"])
         comenzado = True
         context['comenzado']= comenzado
      except StateOfBook.DoesNotExist:
@@ -698,7 +698,7 @@ def leer_libro_por_capitulo(request,isbn):
      capitulos=[]
      for i in range (0,libro.cant_chapter): 
         try: 
-            Chapter.objects.get(book=libro, number=cap_actual) 
+            Chapter.objects.get(book=libro, number=cap_actual, active=True) 
             capitulos.append(Chapter.objects.get(book=libro, number=cap_actual))
             cap_actual = cap_actual + 1
         except Chapter.DoesNotExist: 
@@ -751,7 +751,7 @@ def leer_libro_por_capitulo(request,isbn):
             context['terminado']= True
 
      try:
-        estado = StateOfBookByChapter.objects.get(state="finished", profile=request.session["perfil_ayuda"])
+        estado = StateOfBookByChapter.objects.get(state="finished", book=libro, profile=request.session["perfil_ayuda"])
         context['terminado']= True
      except:
          context['terminado']= False
@@ -775,7 +775,7 @@ def leer_libro_por_capitulo(request,isbn):
      context['comentarios']= comentarios
      #Este try lo agregué para el Agregar y quitar de leyendo, reever en un futuro
      try:
-        estado_propio = StateOfBookByChapter.objects.get(state="reading", profile=request.session["perfil_ayuda"])
+        estado_propio = StateOfBookByChapter.objects.get(state="reading", book=libro, profile=request.session["perfil_ayuda"])
         comenzado = True
         context['comenzado']= comenzado
      except StateOfBookByChapter.DoesNotExist:
@@ -791,7 +791,7 @@ def leer_libro_por_capitulo(request,isbn):
      try: 
         perfil = Profile.objects.get(id=request.session["perfil_ayuda"]) 
         libro = BookByChapter.objects.get(isbn=isbn)
-        futura_lectura = StateOfBookByChapter.objects.get(state="future_reading", profile=perfil, book=libro)
+        futura_lectura = StateOfBookByChapter.objects.get(state="future_reading", book=libro, profile=perfil)
         context['agregar_futura_lectura'] = False
      except StateOfBookByChapter.DoesNotExist:
         context['agregar_futura_lectura'] = True 

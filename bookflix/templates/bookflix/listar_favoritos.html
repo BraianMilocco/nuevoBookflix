@@ -49,7 +49,7 @@
             </li>
         {% endfor %}
     {% else %}
-        <h2></h2>
+        
         <p>No hay libros agregados a favoritos</p>
     {% endif %}
 
@@ -73,9 +73,10 @@
 
 </ul>
 
+<hr>
 
 <ul id="favoritos">
-
+    <h3>Capitulo Favoritos</h3>
     {% if capitulos_favoritos %}
         {% for capitulo in capitulos_favoritos %}
             <li style="display: inline-block;"> 

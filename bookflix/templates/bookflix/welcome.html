@@ -123,7 +123,7 @@
 
         {% if libros %}
         <p> <h3>Libros que le pueden interesar</h3></p>
-        {% for libro in libros %}
+        {% for libro in recomendacion %}
         <li >
             
                 {% if request.user.plan == "free"  %}
@@ -200,7 +200,7 @@
 
         {% if libros_cap %}
         <h2>Libros Por Capítulo que le pueden interesar</h2>
-        {% for libro in libros_cap %}
+        {% for libro in recomendacionCapitulo %}
         <li >
                 {% if request.user.plan == "free"  %}
                 <div>

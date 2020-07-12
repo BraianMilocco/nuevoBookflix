@@ -5,26 +5,26 @@
         {% if sesion.nombrePerfil %}
         <h1>Historial</h1>
             {% if historial_libros %}
-            {% for estado in historial_libros %}
-                {% if estado.profile.name == sesion.nombrePerfil %}   
-                    <li style="display:inline-block; margin: 20px;">
-                        <div>
-                            <h3>El perfil {{estado.profile}} terminó el libro: {{estado.book}} </h3>
+                {% for estado in historial_libros %}
+                    {% if estado.profile.name == sesion.nombrePerfil %}   
+                        <li style="display:inline-block; margin: 20px;">
+                            <div>
+                                <h3>El perfil {{estado.profile}} terminó el libro: <br> <a href="/leer_libro/{{estado.book.isbn}}">{{estado.book}}</a> </h3>
+                                <br>
+                                <img style="max-width:275px; max-height:275px;" src="{{estado.book.image.url}}"  alt="fondo" > 
+                            </div>
                             <br>
-                            <img style="max-width:275px; max-height:275px;" src="{{estado.book.image.url}}"  alt="fondo" > 
-                        </div>
-                        <br>
-                    </li>
-                {% endif %}
-            {% endfor %}
-
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
 
             {% if historial_libros_cap %}
             {% for estado in historial_libros_cap %}
                 {% if estado.profile.name == sesion.nombrePerfil %}
                     <li style="display:inline-block; margin: 20px;">
                         <div>
-                            <h3>El perfil {{estado.profile}} terminó el libro: {{estado.book}}</h3>
+                            <h3>El perfil {{estado.profile}} terminó el libro por capitulo: <br> <a href="/libro_capitulo/{{estado.book.isbn}}">{{estado.book}}</a> </h3>
                             <br>
                             <img style="max-width:275px; max-height:275px;" src="{{estado.book.image.url}}"  alt="fondo" > 
                         </div>
@@ -35,9 +35,7 @@
             {% endif %}
 
 
-            {% else %}
-            <p>No hay solicitudes de alta disponibles</p>
-            {% endif %}
+
         {% endif %}
     </body>
 </html>
