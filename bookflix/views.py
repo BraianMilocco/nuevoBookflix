@@ -1238,13 +1238,25 @@ def simuladorTemporal(request):
 
     #Bajas usuarios
     try:
-        sol= UserSolicitud.objects.filter(type_of_solicitud='baja').values('user')
-        ac= Account.objects.filter(id__in= sol)
-        darDeBajaUsuarios(ac)
-        context['libros']= ac
+        sol= UserSolicitud.objects.filter(type_of_solicitud='baja', is_accepted=0).values('user', 'is_accepted', 'id')
+        darDeBajaUsuarios(sol)
+        context['libros']= sol
     except UserSolicitud.DoesNotExist: pass
-    #return render(request, "bookflix/simuladorTemporal.html", context)
+
+
+    try:
+        sol= UserSolicitud.objects.filter(type_of_solicitud='cambio', type_of_plan='normal', is_accepted=0).values('user', 'is_accepted', 'id')
+        CambiarjaUsuariosNormal(sol)
+        context['libros']= sol
+    except UserSolicitud.DoesNotExist: pass
+
+    try:
+        sol= UserSolicitud.objects.filter(type_of_solicitud='cambio', type_of_plan='premium', is_accepted=0).values('user', 'is_accepted', 'id')
+        CambiarjaUsuariosPremium(sol)
+        context['libros']= sol
+    except UserSolicitud.DoesNotExist: pass
     return redirect('/solicitudes')
+
 
 
 #Estadisticas

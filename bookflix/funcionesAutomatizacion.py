@@ -22,11 +22,41 @@ from .models import Account, UserSolicitud, StateOfBook, StateOfBookByChapter, B
 
 def darDeBajaUsuarios(objectAccounts):
 
-    for acc in objectAccounts:
+    for ac in objectAccounts:
+        acc= Account.objects.get(id= ac['user'])
+        sol= UserSolicitud.objects.get(id=ac['id'])
         if timezone.now().date() == (acc.date_start_plan + datetime.timedelta(days=acc.time_pay)):
             acc.plan = 'free'
-            acc. time_pay = 0
+            acc.time_pay = 0
             acc.save()
+            sol.is_accepted=1
+            sol.save()
+            
+def CambiarjaUsuariosNormal(objectAccounts):
+
+    for ac in objectAccounts:
+        acc= Account.objects.get(id= ac['user'])
+        sol= UserSolicitud.objects.get(id=ac['id'])
+        if timezone.now().date() == (acc.date_start_plan + datetime.timedelta(days=acc.time_pay)):
+            acc.plan = 'normal'
+            acc.date_start_plan= timezone.now().date()
+            acc.time_pay = 1
+            acc.save()
+            sol.is_accepted=1
+            sol.save()
+
+def CambiarjaUsuariosPremium(objectAccounts):
+
+    for ac in objectAccounts:
+        acc= Account.objects.get(id= ac['user'])
+        sol= UserSolicitud.objects.get(id=ac['id'])
+        if timezone.now().date() == (acc.date_start_plan + datetime.timedelta(days=acc.time_pay)):
+            acc.date_start_plan= timezone.now().date()
+            acc.plan = 'premium'
+            acc.time_pay = 1
+            acc.save()
+            sol.is_accepted=1
+            sol.save()
             
 from random import randint, uniform
 import random

@@ -136,16 +136,16 @@ class Account(AbstractBaseUser):
     email = models.EmailField(verbose_name='mail',max_length=60, unique=True)
     username = models.CharField("nombre de usuario", max_length=50, unique=True)
     
-    date_joined = models.DateTimeField(verbose_name='date joined', auto_now_add=True)
-    last_login = models.DateField(verbose_name='last login', auto_now=True)
-    is_admin = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
-    is_superuser = models.BooleanField(default=False)
+    date_joined = models.DateTimeField(verbose_name='Fecha de creacion', auto_now_add=True)
+    last_login = models.DateField(verbose_name='último logueo', auto_now=True)
+    is_admin = models.BooleanField(default=False, verbose_name="es admin")
+    is_active = models.BooleanField(default=True, verbose_name="está activo")
+    is_staff = models.BooleanField(default=False, verbose_name="personal")
+    is_superuser = models.BooleanField(default=False, verbose_name="super usuario")
     confirmo= models.BooleanField(default=False)
     plan = models.CharField( max_length=8, choices=AC_CHOICES, default=free)
-    date_start_plan = models.DateField(blank=True, null=True, auto_now=False, auto_now_add=False)
-    time_pay = models.IntegerField(default=0)
+    date_start_plan = models.DateField(blank=True, null=True, auto_now=False, auto_now_add=False, verbose_name="Fecha de inicio del plan")
+    time_pay = models.IntegerField(default=0, verbose_name="Días pagados")
     objects = MyAccountManager()
     #tiempo = tiempo_restante()
 
@@ -895,7 +895,7 @@ class UserSolicitud(models.Model):
     user = models.ForeignKey(Account, on_delete=models.CASCADE, verbose_name="usuario")
     date_of_solicitud = models.DateTimeField("fecha de solicitud",default=timezone.now)
     #Esta tendrá tres valores 0 sin tocar, 1 aceptada, 2 rechazada
-    is_accepted= models.IntegerField(default=0)
+    is_accepted= models.IntegerField(default=0, verbose_name="Fue aceptada")
 
     def publish(self):
         self.save()
