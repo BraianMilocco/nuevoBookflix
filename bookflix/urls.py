@@ -24,7 +24,6 @@ urlpatterns = [
     path('recuperarCuenta/', recuperarCuenta, name='recuperarCuenta'),
     path('leer_libro/<isbn>/', leer_libro, name='leerlibro'),
     path('libro_capitulo/<isbn>/', leer_libro_por_capitulo, name='libro_capitulo'),
-    path('libro_capitulo/', libro_capitulo, name='libro_capitulo'), 
     path("perfil_seleccionado/<id_perfil>/", perfil_seleccionado, name="perfil_seleccionado"),  
     path("simuladorTemporal/", simuladorTemporal, name="simuladorTemporal"),
     path("trailers/", trailers, name="trailers"),

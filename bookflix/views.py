@@ -619,6 +619,8 @@ def calcularPuntosDeLibro(likes, cantLikes):
 def leer_libro(request,isbn):
      context={}
      libro= Book.objects.get(isbn = isbn)  #Aca recupero el libro por el isbn para no cambiar el template
+     if libro.mostrar_en_home == False:
+        return redirect('/')
      request.session["lectura_otro_perfil"] = False
      if request.user.plan == 'normal':
         try:
@@ -694,6 +696,8 @@ def leer_libro(request,isbn):
 def leer_libro_por_capitulo(request,isbn):
      context= {}
      libro = BookByChapter.objects.get(isbn=isbn)
+     if libro.mostrar_en_home == False:
+        return redirect('/')
      cap_actual = 1
      capitulos=[]
      for i in range (0,libro.cant_chapter): 
@@ -796,32 +800,11 @@ def leer_libro_por_capitulo(request,isbn):
      except StateOfBookByChapter.DoesNotExist:
         context['agregar_futura_lectura'] = True 
 
-     
-
-    #Acá intente algo rancio para agarrar caps favoritos, ver después
-    #  cap_fav_actual = 1
-    #  capitulos=[]
-    #  for i in range (0,libro.cant_chapter): 
-    #     try: 
-    #         CapituloFavorito.objects.get(book=libro, number=cap_actual) 
-    #         CapituloFavorito.append(Chapter.objects.get(book=libro, number=cap_actual))
-    #         cap_fav_actual = cap_fav_actual + 1
-    #     except CapituloFavorito.DoesNotExist: 
-    #         pass
-
+    
      favoritos = CapituloFavorito.objects.filter(profile=perfil, book=libro)#.values("titulo_capitulo")
-     #for favorito in favoritos:
-        #context[str(favorito.titulo)] = favorito.titulo
-     context["favoritos"]= favoritos
-     favoritos3=[]
-     favoritos4=[]
-     for favorito in favoritos.values('titulo_capitulo'):
-         favoritos3.append(favorito)
-        
-
      
-     #favoritos2 = favoritos1.keys("titulo_capitulo")
-     context["favoritos2"]= favoritos3
+     context["favoritos"]= favoritos
+     
      return render(request,"bookflix/libro_capitulo.html",context) 
 
 
@@ -1030,9 +1013,7 @@ def libro_cap_por_leer(request,isbn):
 #     return render(request,"bookflix/leer_libro.html")
 
 
-def libro_capitulo(request):
 
-    return render(request,"bookflix/libro_capitulo.html")
 
 
 

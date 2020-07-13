@@ -18,7 +18,9 @@
             </div>  
                     <br>
                     <!-- -->
-                    <p> {{libro.description}} </p>
+                    <p>Descripción: {{libro.description}} </p>
+                    <br>
+                    <p>Editorial: {{libro.editorial}} </p>
                     <p> Autor(a): {{libro.author.name}}, {{libro.author.last_name}} </p>
                     
                     <p> Género(s): {%for genero in libro.genders.all %}
@@ -42,9 +44,9 @@
             
             
                     </div>
- 
+                    
                     {% endif %}
-                   
+                    <p>Capítulos:</p>
                 
                     {% if request.session.lectura_otro_perfil == False %}
                     

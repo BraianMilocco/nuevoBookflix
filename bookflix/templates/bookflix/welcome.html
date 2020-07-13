@@ -85,6 +85,7 @@
         
         <h3>Recomendaciones Personalizadas de Libros</h3>
         <div> {%for libro in recomendacion%}
+            {% if libro.mostrar_en_home == True %}
             <li>
                 {% if request.user.plan == "free"  %}
                     <a href="/solicitar_cambio/">{{libro.title}}</a> 
@@ -100,11 +101,14 @@
                         {% endfor %}
                 <br> <a>Editorial: {{libro.editorial}} </a>
             </li>        
+        {% endif %}
             {%endfor%} </div>
+        
 
 
             <h3>Recomendaciones personalizadas de Libros Por Capitulo</h3>
             <div>{%for libro in recomendacionCapitulo%}<li>
+                {% if libro.mostrar_en_home == True %}
                 {% if request.user.plan == "free"  %}
                     <a href="/solicitar_cambio/">{{libro.title}}</a> 
                 {% else %}
@@ -118,11 +122,14 @@
                 
                         {% endfor %}
                         <br> <a>Editorial: {{libro.editorial}}</a>
-            </li>{%endfor%} </div>
+            </li> 
+            {% endif %}
+            {%endfor%} </div>
             
 
         {% if libros %}
         <p> <h3>Libros que le pueden interesar</h3></p>
+        {% if libro.mostrar_en_home == True %}
         {% for libro in recomendacion %}
         <li >
             
@@ -189,6 +196,7 @@
                 {% endif%}
                 
             </li>
+            {% endif %}
         {% endfor %}
         {% else %}
         <p>No hay libros dados de alta disponibles</p>
@@ -199,6 +207,7 @@
     <ul id="libros";>
 
         {% if libros_cap %}
+        {% if libro.mostrar_en_home == True %}
         <h2>Libros Por Capítulo que le pueden interesar</h2>
         {% for libro in recomendacionCapitulo %}
         <li >
@@ -263,6 +272,7 @@
                 {% endif%}
                 
             </li>
+        {% endif %}
         {% endfor %}
         {% else %}
         <p>No hay libros dados de alta disponibles</p>
